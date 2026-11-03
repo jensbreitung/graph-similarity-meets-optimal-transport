@@ -1,0 +1,46 @@
+% Template for a proof overview  GsimOT/<Folder>/<Name>_overview.tex
+% Copy, fill in, and compile with  python3 scripts/build_overviews.py <Folder>.
+% pdflatex is used: do not put raw Unicode (≤, ∀, ℝ, →, …) into the text; write statements in math mode.
+\input{../../scripts/overview_preamble.tex}
+\begin{document}
+\overviewtitle{Theorem N: <short title>}{Folder \file{GsimOT/<Folder>}}
+\paperversion
+
+\section{Statement}
+% The statement as in the paper (page, appendix), then the main Lean theorem(s) with their exact
+% hypotheses, written in mathematical notation, and how they relate (equal / stronger / weaker).
+
+\section{Where the proof lives}
+% Table: file -- role in the proof -- paper items it covers.
+\begin{longtable}{>{\raggedright\arraybackslash}p{5.2cm} >{\raggedright\arraybackslash}p{10.6cm}}
+\toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
+\file{X.lean} & ... \\
+\end{longtable}
+
+\section{Proof layout}
+% A TikZ dependency diagram: main result at the top, the lemmas it uses below, arrows "uses".
+% Styles: main, res (results of this folder), shared (GsimOT/Common), cited (explicit hypotheses).
+\begin{center}
+\begin{tikzpicture}[node distance=10mm and 6mm]
+  \node[main] (thm) {Theorem N\\\lean{GsimOT.theoremN}};
+  \node[res, below left=of thm] (l1) {Lemma A\\\lean{lemmaA}};
+  \node[shared, below right=of thm] (c) {Lemma B (Common)\\\lean{lemmaB}};
+  \draw[dep] (thm) -- (l1); \draw[dep] (thm) -- (c);
+\end{tikzpicture}
+\end{center}
+
+\section{The proof step by step}
+% Follow the paper's proof in order. For every step: what the paper argues (with page / equation),
+% and the Lean declarations that carry it out. Mention where the Lean argument is organised
+% differently.
+
+\section{Assumptions and trusted base}
+% Cited results that are hypotheses (never axioms); only propext, Classical.choice, Quot.sound.
+
+\section{Notes on the formalisation}
+% Deliberate choices of the formalisation, stronger or more general statements, and how the proof is
+% organised. Issues of the paper (errors, gaps, typos) belong in ISSUES.md, not here.
+
+\section{How to check this result}
+% lake build GsimOT.<Folder>.<Module>;  #print axioms <main theorem>;  the correspondence PDF.
+\end{document}

@@ -1,0 +1,141 @@
+\input{../../scripts/overview_preamble.tex}
+\begin{document}
+\overviewtitle{Theorem 15: NP-hardness of the optimal-transport edit distance}{Folder \file{GsimOT/Theorem16_EditHardness}}
+\paperversion
+
+\section{Statement}
+
+\paragraph{Paper.} Theorem~15 (Section~4, p.~12, l.~418; proof in App.~G, pp.~50--51, l.~1577--1620):
+\emph{$\textsc{GSim}(d^{\mathrm{OT}}_{\mathrm{ed}})$ is NP-hard, even when restricted to collections of paths.}
+It is part~(1) of Theorem~4 (p.~4, l.~134). The proof is the reduction of [GRW18, Theorem~8] from the strongly
+NP-hard problem Three-Partition: an instance $(A,a_1,\dots,a_{3m})$ in unary with $\sum_i a_i=mA$ and
+$A/4<a_i<A/2$ is mapped to $(F_1,F_2,t)$, where $F_1$ is the disjoint union of paths on $a_i$ vertices,
+$F_2$ the disjoint union of $m$ paths on $A$ vertices, and $t=4m$. The claim (p.~50, l.~1584--1585) is that
+$d^{\mathrm{OT}}_{\mathrm{ed}}(F_1,F_2)\le t$ iff the instance is a YES-instance.
+
+\paragraph{Lean.} Only the correctness of the reduction is formalised. With
+$F_1=$ \lean{pathUnion I.a} and $F_2=$ \lean{pathUnion fun _ : Fin I.m => I.A}:
+\begin{itemize}
+\item \lean{GsimOT.Hardness.ThreePartition.dOTEdit_le_iff}: if $a_i\ge2$ for all $i$, then
+  \[ d^{\mathrm{OT}}_{\mathrm{ed}}(F_1,F_2)\le 4m \iff I \text{ is a YES-instance.} \]
+\item \lean{GsimOT.Hardness.ThreePartition.dOTEdit_shift_le_iff}: for \emph{every} instance $I$, the same
+  equivalence for the shifted instance (add $3$ to each $a_i$ and $9$ to $A$, l.~1586--1587), whose
+  YES/NO status equals that of $I$.
+\end{itemize}
+Here $d^{\mathrm{OT}}_{\mathrm{ed}}(G,H)=\min_{Q\in\mathrm{DS}(V,W)}\|B(G,H,Q)\|_{(1)}$ is \lean{GsimOT.dOTEdit}
+(\file{Common/EditDistance.lean}), the same definition used by Proposition~5 and Theorem~6; a
+Three-Partition instance is the structure \lean{GsimOT.Hardness.ThreePartition} (fields \lean{sum_eq},
+\lean{lt_four_mul}: $A<4a_i$, \lean{two_mul_lt}: $2a_i<A$), and \lean{IsYes} asks for
+$\sigma\colon[3m]\to[m]$ with classes of size $3$ and sum $A$.
+
+\section{Where the proof lives}
+\begin{longtable}{>{\raggedright\arraybackslash}p{5.2cm} >{\raggedright\arraybackslash}p{10.6cm}}
+\toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
+\file{Theorem16_EditHardness/Theorem16.lean} & $\mathrm{lost}(Q)$, the identity $\|B\|_{(1)}=4m+2\,\mathrm{lost}(Q)$,
+  both directions of the reduction, the shifted version. \\
+\file{Common/ThreePartition.lean} & Three-Partition instances, the layout bijection of a solution
+  (\lean{layoutEquiv}), the counting step \lean{isYes_of_isDS}, the shift. \\
+\file{Common/PathsAndCycles.lean} & \lean{pathUnion}, edge count \lean{sum_adj_pathUnion}, neighbours
+  (\lean{exists_pathUnion_adj}), constancy along paths (\lean{eq_of_pathUnion_adj}). \\
+\file{Common/EditDistance.lean}, \file{Common/MatrixNorms.lean} & \lean{dOTEdit}, \lean{dOTEdit_le},
+  attainment \lean{exists_dOTEdit_eq}, $C_{\mathrm{ed}}(Q)=\|B(G,H,Q)\|_{(1)}$ (\lean{costEdit_eq_entrywiseNorm_B}). \\
+\end{longtable}
+
+\section{Proof layout}
+\begin{center}
+\begin{tikzpicture}
+  \node[main] (thm) at (0,0) {Theorem 15 (any instance)\\\lean{dOTEdit_shift_le_iff}};
+  \node[shared] (shift) at (6,0) {shift\\\lean{shift_isYes_iff}};
+  \node[main] (red) at (0,-1.8) {Theorem 15, $a_i\ge2$\\\lean{dOTEdit_le_iff}};
+  \node[res] (cost) at (-5.4,-4) {$\|B\|_{(1)}=4m+2\,\mathrm{lost}(Q)$\\\lean{entrywiseNorm_B_eq}\\\lean{sum_adj_sub_sum_adj}};
+  \node[res] (zero) at (0,-4) {$\mathrm{lost}(Q)=0$ $\Rightarrow$ no edge\\to a non-edge\\\lean{mul_eq_zero_of_lost_eq_zero}};
+  \node[res] (perm) at (5.4,-4) {YES: the layout has\\$\mathrm{lost}=0$\\\lean{lost_permMat}};
+  \node[shared] (att) at (-5.4,-6.3) {minimum attained\\\lean{exists_dOTEdit_eq}};
+  \node[shared] (count) at (0,-6.3) {counting step\\\lean{isYes_of_isDS}};
+  \node[shared] (lay) at (5.4,-6.3) {layout bijection\\\lean{layoutEquiv}\\\lean{layout_adj_pathUnion}};
+  \draw[dep] (thm) -- (red); \draw[dep] (thm) -- (shift);
+  \draw[dep] (red) -- (cost.north); \draw[dep] (red) -- (zero); \draw[dep] (red) -- (perm.north);
+  \draw[dep, rounded corners] (red.west) -- (-7.9,-1.8) -- (-7.9,-6.3) -- (att.west);
+  \draw[dep] (zero) -- (count); \draw[dep] (perm) -- (lay);
+\end{tikzpicture}
+\end{center}
+Blue: this folder; grey: \file{GsimOT/Common}. Nothing is cited.
+
+\section{The proof step by step}
+
+\paragraph{Step 0: w.l.o.g.\ $a_i\ge4$ (l.~1586--1587).} The paper adds $3$ to every $a_i$ and $9$ to $A$.
+Lean: \lean{ThreePartition.shift}, \lean{four_le_shift_a}, and \lean{shift_isYes_iff} (each class of a
+solution has exactly three elements, \lean{card_eq_three_of_sum_eq}, so the class sums shift by $9$).
+The formalised reduction \lean{dOTEdit_le_iff} assumes $a_i\ge2$, so that every vertex of $F_1$ has a
+neighbour (\lean{exists_pathUnion_adj}).
+
+\paragraph{Step 1: passing to blowups (l.~1585--1586).} The paper uses
+$d^{\mathrm{OT}}_{\mathrm{ed}}(F_1,F_2)=d^{\bullet}_{\mathrm{ed}}(F_1,F_2)$, cited from [Gro25, Theorem~3.10],
+and argues with alignments of blowups. \emph{The formalisation skips this step} and works with
+$Q\in\mathrm{DS}(V,W)$ directly; see Section~6.
+
+\paragraph{Step 2: YES-instances (l.~1588--1597).} A solution $\sigma$ lays the paths of $F_1$ out
+consecutively on the paths of $F_2$; the bijection $\rho$ maps edges to edges, and only the $2m$ joining
+edges of $F_2$ are not hit, so the cost is $4m$ (the paper then lifts $\rho$ to all blowups).
+Lean: \lean{layoutEquiv} and \lean{layout_adj_pathUnion} (Common), \lean{lost_permMat}
+($\mathrm{lost}(P_\rho)=0$), and Step~3 gives $C_{\mathrm{ed}}(P_\rho)=4m$, hence
+$d^{\mathrm{OT}}_{\mathrm{ed}}\le4m$ by \lean{dOTEdit_le}.
+
+\paragraph{Step 3: the edge count (p.~51, l.~1600--1602).} The paper counts the number $b$ of edges of $F_1'$ that
+an alignment $\pi$ of the $k$-blowups maps to non-edges and obtains
+$\|A^{\pi}_{F_1'}-A_{F_2'}\|_{(1)}=4mk^2+4b$. Lean, for every $Q\in\mathrm{DS}$: with
+\[ \mathrm{lost}(Q)=\sum_{(v,w),(v',w')}Q(v,w)\,A_{F_1}(v,v')\,(1-A_{F_2}(w,w'))\,Q(v',w')\ \ge0 \]
+(\lean{lost}, \lean{lost_nonneg}), the identity $|a-b|=b-a+2a(1-b)$ for $a,b\in\{0,1\}$ and the row and
+column sums of $Q$ give
+\[ \|B(F_1,F_2,Q)\|_{(1)}=\textstyle\sum A_{F_2}-\sum A_{F_1}+2\,\mathrm{lost}(Q)=4m+2\,\mathrm{lost}(Q) \]
+(\lean{entrywiseNorm_B_eq}, \lean{sum_adj_sub_sum_adj}). This is the paper's identity with
+$b/k^2$ replaced by $\mathrm{lost}(Q)/2$ ($\mathrm{lost}$ counts ordered pairs).
+
+\paragraph{Step 4: NO-direction, clouds go into one path (l.~1598--1616).} The paper sets
+$\gamma=1/(2mA)$, takes an alignment of cost at most $(4m+4\gamma)k^2$, deduces $b\le\gamma k^2$, so that
+each cloud has a unique target path $j(v)$ receiving $\ge(1-\gamma)k$ of its vertices, and that $j(\cdot)$ is
+constant along edges. Lean: since the minimum is attained (\lean{exists_dOTEdit_eq}), an optimal $Q$ has
+cost $\le4m$, hence $\mathrm{lost}(Q)=0$ exactly; so $Q(v,w)Q(v',w')=0$ whenever $vv'\in E(F_1)$ and
+$ww'\notin E(F_2)$ (\lean{mul_eq_zero_of_lost_eq_zero}). As every $v$ has a neighbour, the whole row
+of $v$ lies in one path of $F_2$, the same for adjacent vertices, hence for all vertices of a path of $F_1$
+(\lean{eq_of_pathUnion_adj}). These steps are inside the proof of \lean{dOTEdit_le_iff}
+(\lean{hcomp}, \lean{hc}, \lean{hconst}).
+
+\paragraph{Step 5: counting (l.~1617--1620).} The paper shows $|A-S_j|<\gamma mA=\tfrac12$, so $S_j=A$ and,
+as $A/4<a_i<A/2$, exactly three paths go to path $j$. Lean: \lean{isYes_of_isDS} sums the column sums of
+$Q$ over path $j$ of $F_2$ and gets $S_j=A$ exactly; \lean{card_eq_three_of_sum_eq} gives the triples.
+
+\section{Assumptions and trusted base}
+No hypotheses: the result is unconditional and uses only the axioms \lean{propext},
+\lean{Classical.choice}, \lean{Quot.sound} (checked by \file{scripts/CheckAxioms.lean}). The complexity side
+(polynomial size of the construction, strong NP-hardness of Three-Partition [GJ79]) is not formalised.
+Proposition~57 (p.~57, l.~1805--1808: membership of $\textsc{GSim}(\delta^{\mathrm{OT}}_{\mathrm{ed}})$ in NP
+and exact finite blowups) is not formalised.
+
+\section{Notes on the formalisation}
+\begin{itemize}
+\item \textbf{No blowups, nothing cited.} The paper argues with blowups and needs
+  $d^{\mathrm{OT}}_{\mathrm{ed}}=d^{\bullet}_{\mathrm{ed}}$ from [Gro25, Theorem~3.10] (p.~50, l.~1585--1586).
+  Theorem~1 of the paper, which is formalised
+  (\lean{GsimOT.theorem1}), covers only the operator norms, not the edit distance, so following the paper
+  would introduce a cited hypothesis. The Lean proof is the fractional form of the same counting
+  ($b/k^2\leftrightarrow\mathrm{lost}(Q)/2$, the cloud fractions $n_j(v)/k\leftrightarrow$ the row of $Q$),
+  and the $\gamma$-approximation becomes exact because the minimum over $\mathrm{DS}$ is attained.
+\item \textbf{Hypotheses.} \lean{dOTEdit_le_iff} assumes $a_i\ge2$ for all $i$;
+  \lean{dOTEdit_shift_le_iff} applies it to the shifted instance (Step~0) and holds for every instance.
+\item The Lean names \lean{dOTEdit} and \lean{costEdit} stand for the paper's $d^{\mathrm{OT}}_{\mathrm{ed}}$ and
+  $C_{\mathrm{ed}}$.
+\end{itemize}
+
+\section{How to check this result}
+From the repository root (after \texttt{export PATH=\$HOME/.elan/bin:\$PATH}):
+\begin{itemize}
+\item build the module:\\ \texttt{lake build GsimOT.Theorem16\_EditHardness.Theorem16}\\
+  (or, after a full build, \texttt{lake env lean GsimOT/Theorem16\_EditHardness/Theorem16.lean});
+\item check the axioms: \texttt{bash build.sh} runs \file{scripts/CheckAxioms.lean}, which contains\\
+  \texttt{\#print axioms GsimOT.Hardness.ThreePartition.dOTEdit\_le\_iff}\\
+  \texttt{\#print axioms GsimOT.Hardness.ThreePartition.dOTEdit\_shift\_le\_iff};
+\item the table \file{Theorem16_correspondence.pdf} in this folder lists every paper item with its Lean
+  declaration and source line.
+\end{itemize}
+\end{document}

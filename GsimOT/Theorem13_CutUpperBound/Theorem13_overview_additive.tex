@@ -1,0 +1,150 @@
+% Fragment: the additive part of Theorem 11 (Theorem 39, Appendix E.2.2).
+% It is \input by Theorem13_overview.tex; no preamble here.
+\section{The additive bound (Theorem 39)}
+
+\subsection{Statement}
+
+\paragraph{Paper (Theorem~39, p.~36, l.~1112--1114, App.~E.2.2).} Let $d_n:=\lceil 2\log n\rceil$
+($\log$ is the binary logarithm, $n\ge2$). For every $Q\in\mathrm{DS}(n)$ there is a permutation matrix $P$ with
+\[ \zeta_P\le\zeta_Q+36\sqrt{d_n}\,n^{-1/6}. \]
+
+\paragraph{Lean.} \lean{GsimOT.theorem45} (file \file{Theorem45_AdditiveRounding.lean}):
+for finite types $V,W$ with $|V|=|W|=n\ge2$, symmetric matrices $A\in\mathbb R^{V\times V}$, $B\in\mathbb R^{W\times W}$
+with entries in $[0,1]$ and $Q\in\mathrm{DS}(V,W)$ there is a bijection $\pi\colon V\to W$ with
+\[ \lean{epsR A B (permMat pi)}\le\lean{epsR A B Q}+36\sqrt{d_n}\,n^{-1/6},\qquad d_n=\lean{dn n}=\lceil\log_2(n^2)\rceil. \]
+Here \lean{epsR A B R} is $\zeta_R(A,B)$, the weighted cut norm of the discrepancy kernel on $(\Omega_R,\mu_R)$;
+for adjacency matrices it is $\zeta_R$ (Eq.~(21)). The hypothesis \hyp{hCP : ContractionPrinciple} (Lemma~43,
+[LT91]) is discharged by \lean{GsimOT.contractionPrinciple}. The statement is the paper's (for adjacency matrices
+of graphs of the same order), slightly more general (any symmetric $[0,1]$-matrices).
+
+\subsection{Files}
+\begin{longtable}{>{\raggedright\arraybackslash}p{6.3cm} >{\raggedright\arraybackslash}p{9.5cm}}
+\toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
+\file{Definitions.lean} & \lean{radAvg}, \lean{ContractionPrinciple} (statement of Lemma~43), \lean{hSupp} ($h_Q$, Eq.~(33)), \lean{rhoSupp} ($\rho$, Eq.~(34)), \lean{dn} \\
+\file{ContractionPrinciple.lean} & Lemma~43 proved: \lean{contractionPrinciple} (Talagrand's comparison argument) \\
+\file{Lemma46_SpectralTruncation.lean} & Lemma~40, spectral truncation and Eq.~(31), Lemma~45 (Eq.~(30)), zonotopes and Eqs.~(32), (33), (36), (37), Lemma~41, Corollary~46 \\
+\file{Lemma47_MergingPermutations.lean} & Lemma~42 (\lean{Lemma47.lemma43}), Lemma~44, the blocks, Eq.~(38), Lemma~47 \\
+\file{Theorem45_AdditiveRounding.lean} & Eq.~(35), Eq.~(3) with Carath\'eodory, Lemma~48, Theorem~39 \\
+\end{longtable}
+
+\subsection{Proof layout}
+\begin{center}
+\begin{tikzpicture}[every node/.append style={font=\footnotesize}]
+  \node[main] (t39) at (0,0) {Theorem 39\\\lean{theorem45}};
+  \node[res] (l48) at (-4,-1.7) {Lemma 48\\\lean{lemma48}};
+  \node[res] (c46) at (3.2,-1.7) {Corollary 46\\\lean{corollary46}};
+  \node[res] (car) at (-6.4,-3.4) {Eq.~(3) + Carath\'eodory\\\lean{exists_perm_decomp}};
+  \node[res] (l47) at (-2.6,-3.4) {Lemma 47\\\lean{lemma47}};
+  \node[res] (l41) at (0.5,-3.4) {Lemma 41\\\lean{lemma41}};
+  \node[res] (z) at (3.4,-3.4) {Eqs.~(33), (36), (37)\\\lean{eq36}, \lean{eq37}};
+  \node[res] (l45) at (7.0,-3.4) {Lemma 45, Eq.~(30)\\\lean{lemma45}};
+  \node[res] (l42) at (-4.5,-5.1) {Lemma 42\\\lean{Lemma47.lemma43}};
+  \node[res] (l44) at (-1.2,-5.1) {Lemma 44\\\lean{Lemma47.lemma44}};
+  \node[res] (l40) at (7.0,-5.1) {Lemma 40, Eq.~(31)\\\lean{lemma41_2_fst}, \lean{eq28}};
+  \node[res] (l43) at (-1.2,-6.8) {Lemma 43 [LT91]\\\lean{contractionPrinciple}};
+  \node[shared] (cut) at (7.0,-6.8) {cut norm (Common)\\\lean{cutNorm}, \lean{epsR}};
+  \draw[dep] (t39) -- (l48); \draw[dep] (t39) -- (c46);
+  \draw[dep] (t39) to[bend left=22] (l45);
+  \draw[dep] (l48) -- (l47); \draw[dep] (l48) -- (car);
+  \draw[dep] (l47) -- (l42); \draw[dep] (l47) -- (l44); \draw[dep] (l44) -- (l43);
+  \draw[dep] (c46) -- (l41); \draw[dep] (c46) -- (z); \draw[dep] (c46) -- (l45);
+  \draw[dep] (l45) -- (l40); \draw[dep] (l40) -- (cut);
+\end{tikzpicture}
+\end{center}
+Lemma~48 also uses Eq.~(35) (\lean{rhoSupp_convex}); all results in this part are proved, the only external input
+(Lemma~43, cited in the paper) is proved in \file{ContractionPrinciple.lean}.
+
+\subsection{The proof step by step}
+
+\paragraph{Notation (p.~36).} The paper works in $\mathcal L^2(n)$ (inner product $\frac1n\sum_ix_iy_i$) with
+averaging operators. Lean uses the standard inner product and rescales: the paper's eigenvalues are $\lambda_r/n$,
+its eigenfunctions $\sqrt n\,e_r$, and $\|K\|_{\mathcal L^2(n)}\le t$ becomes \lean{OpBound K (t * n)}
+($|\sum_{i,k}f_iK_{ik}g_k|\le tn\cdot\frac{\|f\|^2+\|g\|^2}2$, equivalent by scaling). The couplings $\mu_Q(i,j)=Q_{ij}/n$
+and $\zeta_Q(A',B')=\|D_{A',B'}\|_{\square,\mu_Q}$ are built into \lean{epsR}.
+
+\paragraph{Lemma 40 (Lifted Kernels, p.~36).} \lean{lemma41_2_fst}, \lean{lemma41_2_snd}. As in the paper, for
+$S,T\subseteq\Omega_Q$ the marginal weights $s_i=\sum_jQ_{ij}\mathbf 1_S(i,j)\in[0,1]$ have $\|s\|\le1$
+(\lean{weight_sq_le}), and the cut value is $\langle s,K\sigma\rangle$, bounded by the operator norm.
+
+\paragraph{Lemma 41 (Close Support Functions, p.~37).} \lean{lemma41}, for non-empty compact
+$Z,Z'$ in any real inner product space (without the convexity hypothesis), $\|T\|\le\tau$, with $h_Z$ = \lean{supportFn} and
+$\max_{u,u'\in Z}|\langle u,Tu'\rangle|$ = \lean{bilMax}. The paper's steps: $|h_Z(w)-h_{Z'}(w)|\le\eta\|w\|$
+(\lean{abs_supportFn_sub_le}, by homogeneity \lean{supportFn_smul}); $m_T(Z,Z)\le m_T(Z',Z)+M\eta\tau$ via
+$h_Z(Tu')$, and $m_T(Z',Z)\le m_T(Z',Z')+M\eta\tau$ via $h_{Z'}(T^*u)$ with the adjoint (\lean{lemma41_step});
+the same for $-T$ gives the absolute values (\lean{abs_inner_le_bilMax_add}).
+
+\paragraph{Lemma 42 (symmetrisation, pp.~37--38).} \lean{Lemma47.lemma43}: independent $X_a\in\{0,1\}$ with
+$\mathbb E X_a=\theta_a$ (product weights \lean{bern}), bounded $d_a$; independent copy $X'$ and Jensen, symmetry of
+$X_a-X'_a$ (coordinate swap \lean{swapAt}), triangle inequality --- as in the paper.
+
+\paragraph{Lemma 43 (Talagrand Contraction Lemma, p.~38).} Cited in the paper; stated as \lean{ContractionPrinciple}
+(for non-empty bounded $S$) and proved by \lean{contractionPrinciple}: the two-point lemma, the comparison
+theorem without absolute values (one coordinate at a time), then absolute values and the factor~$2$ by adding $0$
+to $S$ and using $\sigma\mapsto-\sigma$.
+
+\paragraph{Lemma 44 (p.~38, proof pp.~38--39, Eq.~(29)).} \lean{Lemma47.lemma44}: for non-empty blocks $B_a$ and
+$\|u_i\|\le M$, $\mathbb E_\sigma\sup_{w\in B_H}|\sum_a\sigma_a\sum_{i\in B_a}\langle w,u_i\rangle_+|\le2M(\sum_a\ell_a^2)^{1/2}$.
+As in the paper: $\sum_{i\in B_a}\langle w,u_i\rangle_+=\mathbb E_{I_a}(\ell_a\langle w,u_{I_a}\rangle)_+$ with uniform
+independent $I_a\in B_a$ (\lean{sum_piFinset_comp}, over \lean{Fintype.piFinset B}); Jensen; for fixed $I$ Lemma~43 with
+$\gamma(s)=s_+$; $\sup_w|\langle w,g_\sigma\rangle|\le\|g_\sigma\|$; $\mathbb E\|g_\sigma\|\le(\mathbb E\|g_\sigma\|^2)^{1/2}$
+(\lean{radAvg_norm_le}).
+
+\paragraph{Lemma 45 (spectral approximation, p.~39, proof pp.~39--40, Eqs.~(30), (31)).} \lean{lemma45}. Spectral decomposition and
+Parseval (\lean{spectral_entry}, \lean{parseval_row}); truncations $A_t,B_t$ (\lean{specTrunc}) with
+$\|A-A_t\|_{\mathcal L^2(n)}\le t$ (\lean{opBound_sub_specTrunc}); Eq.~(31), $|\zeta_Q(A,B)-\zeta_Q(A_t,B_t)|\le2t$, from
+$D_{A,B}=D_{A_t,B_t}+(A-A_t)^{(1)}-(B-B_t)^{(2)}$ and Lemma~40 (\lean{eq28}); the vectors $z_{ij}$ (\lean{specVec},
+$\|z_{ij}\|\le\sqrt2$ by Parseval, \lean{norm_specVec_le}) and $T_t=\mathrm{diag}(\lambda_r^{-1},-\nu_s^{-1})$
+(\lean{diagOp}, \lean{specDiag}, $\|T_t\|\le1/t$ by \lean{norm_diagOp_le}) with
+$\langle z_{ij},T_tz_{k\ell}\rangle=(A_t)_{ik}-(B_t)_{j\ell}$ (\lean{diagForm_specVec}, \lean{inner_diagOp}).
+The maximum in Eq.~(30) is the cut norm of \lean{zonKernel}. Lean takes $H=\mathbb R^{V\sqcup W}$ (the coordinates
+outside $I_A\sqcup I_B$ are zero), so the case $I_A=I_B=\emptyset$ is not separate.
+
+\paragraph{Zonotopes and $\rho$ (pp.~40--41, Eqs.~(32)--(37)).} $Z_Q$ is the image of \lean{cube} under \lean{zonLin v Q} (Eq.~(32)),
+compact, convex, in the ball of radius $M$ (\lean{isCompact_zonotope}, \lean{convex_zonotope},
+\lean{norm_zonLin_le}); Eq.~(33), $h_{Z_Q}=h_Q$ (\lean{supportFn_zonotope}, maximiser $a_{ij}=\mathbf 1[\langle w,z_{ij}\rangle>0]$);
+Eq.~(34) is \lean{rhoSupp}; Eq.~(35) (\lean{rhoSupp_triangle}, \lean{rhoSupp_convex}); Eq.~(36) as an identity
+(\lean{eq36}: bilinear expansion \lean{eq36_expand}, maximum at indicator vectors); Eq.~(37) (\lean{eq37}).
+
+\paragraph{Corollary 46 (p.~41).} \lean{corollary46}: for $v,T$ satisfying Eq.~(30) and all $P,Q\in\mathrm{DS}(n)$,
+$\zeta_P\le\zeta_Q+4t+\frac{2\sqrt2}{t}\rho(P,Q)$: Lemma~41 with $M=\sqrt2$, $\eta=\rho(P,Q)$, $\tau=1/t$, and Eq.~(37)
+for $P$ and $Q$ --- exactly the paper's chain.
+
+\paragraph{Lemma 47 (Merging Two Permutations, pp.~41--43).} \lean{lemma47} (statement, $20Mn^{-1/3}$) from
+\lean{lemma47_sharp} ($18Mn^{-1/3}$, what the proof gives on p.~43, l.~1333--1334). Steps: $\tau=\pi_0^{-1}\pi_1$ and
+$u_i=z_{i,\pi_0(i)}$ (the w.l.o.g.\ $P_0=I$); $L=\lceil n^{1/3}\rceil$; blocks with properties (i), (ii)
+(\lean{exists_blocks}, from a maximal $L$-separated set of cut points, \lean{exists_sep_cover}); property (i) gives
+$\sum_a|B_a|^2\le2Ln$; $n(h_{T_X}-(1-\theta)h_{\mathrm{id}}-\theta h_\tau)=\sum_a(X_a-\theta)d_a$; Lemma~42 and twice
+Lemma~44 give some $X$ with $\Delta(T_X)\le8M\sqrt{2L/n}\le16Mn^{-1/3}$ (Eq.~(38), \lean{exists_good_choice}); repair
+of $T_X$ outside the at most $n/L$ block boundaries (\lean{exists_equiv_eq_off}), each changed row costing
+$\le2M/n$ (\lean{phi_sub_le}).
+
+\paragraph{Lemma 48 (p.~43).} \lean{lemma48}: Birkhoff (Eq.~(3)) and Carath\'eodory give
+$Q=\sum_{s\le N}\lambda_sP_s$ with $\lambda_s>0$, $N\le n^2$ (\lean{exists_perm_decomp}, via Mathlib's Birkhoff theorem and
+\lean{eq_pos_convex_span_of_mem_convexHull}; the bound $N\le n^2$ from affine independence in $\mathbb R^{n\times n}$
+with constant total mass); a binary tree of height $\le d_n$ (\lean{merge_aux}: induction on the height $k$, splitting the
+index set in halves; \lean{combo} is $Q_\nu$); at each node Lemma~47, the triangle inequality and Eq.~(35) give
+$\rho(P_\nu,Q_\nu)\le\eta_0+(k-1)\eta_0$.
+
+\paragraph{Proof of Theorem 39 (p.~43).} \lean{theorem45}: $t=\sqrt{20d_n}\,n^{-1/6}$, Lemma~45 for this $t$,
+Lemma~48 ($\rho(P,Q)\le20\sqrt2\,d_nn^{-1/3}$), Corollary~46: $\zeta_P\le\zeta_Q+4t+80d_nn^{-1/3}/t=\zeta_Q+8t$ and
+$8\sqrt{20}<36$ (\lean{hs20}: $\sqrt{20}\le9/2$).
+
+\subsection{Notes on the formalisation (additive part)}
+\begin{itemize}
+\item Standard inner product instead of $\mathcal L^2(n)$; $H=\mathbb R^{V\sqcup W}$ instead of $\mathbb R^{I_A\sqcup I_B}$.
+\item Lemma~41 is stated without the convexity hypothesis and Lemma~44 without the disjointness hypothesis;
+  the paper's arguments prove these more general forms.
+\item Lemma~47: blocks from a maximal separated set instead of the cycle decomposition (only properties (i), (ii)
+  are used); Lemma~44 is applied to all blocks with vectors $X_au_i$ instead of only the blocks with $X_a=1$;
+  the proof gives the constant $18M$, as in the paper's proof.
+\item Lemma~48: the binary tree halves the index set at every node instead of padding with zero-weight leaves.
+\item Expectations are finite weighted sums (\lean{radAvg}, \lean{bern}, uniform averages over a \lean{piFinset}).
+\end{itemize}
+The pseudometric $\rho$ is formalised by its definition via support functions, Eq.~(34) (\lean{rhoSupp}); for the
+compact convex zonotopes $Z_Q$ this is the Hausdorff distance of the proof overview (p.~11, l.~368--369).
+
+\subsection{How to check}
+\begin{itemize}
+\item \texttt{lake build GsimOT.Theorem13\_CutUpperBound.Theorem45\_AdditiveRounding}
+\item \texttt{\#print axioms GsimOT.theorem45}: only \lean{propext}, \lean{Classical.choice}, \lean{Quot.sound}.
+\end{itemize}

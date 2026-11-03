@@ -1,0 +1,74 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,landscape]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{array,booktabs,longtable}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\lean}[1]{\textcolor{blue!50!black}{\texttt{\detokenize{#1}}}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+
+
+\begin{center}{\Large\bfseries Proposition 13: no linear bound for the spectral distance}\\[4pt]
+
+{\small Correspondence between the paper and the Lean~4/Mathlib formalisation}\end{center}
+
+\noindent\textbf{Paper.} J.~Breitung, T.~Gervens, M.~Grohe. \emph{Graph Similarity Meets Optimal Transport} (file \texttt{Graph\_Similarity\_Meets\_Optimal\_Transport.pdf} in the repository). Statement, equation, page and line numbers refer to this PDF; \texttt{docs/NUMBERING.md} lists the Lean files and declarations of all numbered statements.\par\smallskip
+
+The folder \texttt{GsimOT/Proposition14\_SpectralLowerBound} formalises Proposition~13 with the construction of App.~F.1, Lemma~49, Theorem~3~(4) and the remark after Proposition~13.\par\paragraph{Checking.} Run \texttt{bash build.sh} in the repository root (see \texttt{README.md}). The script builds the library and runs \texttt{scripts/CheckAxioms.lean}, which must report only the standard axioms \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}: no \texttt{sorry} and no additional axioms.
+
+\paragraph{Main statement in Lean.} \lean{GsimOT.Prop14.proposition13}: for every $r\ge1$, with $n=|V(G_r)|=4r^2+3r+1$,
+\[ d_2(G_r,H_r)=\sqrt r\qquad\text{and}\qquad \tfrac{1}{2\sqrt2}\le d^{\mathrm{OT}}_2(G_r,H_r)\le1; \]
+\lean{GsimOT.Prop14.proposition14} adds $\frac1{2\sqrt2}\le\frac r{\sqrt n}\le d^{\mathrm{OT}}_2(G_r,H_r)$ (Lemma~49).
+\lean{GsimOT.Prop14.no_power_bound}: for every $\alpha>\frac34$ and $C$, some $G_r,H_r$ violate $\delta_2\le C(\delta^{\mathrm{OT}}_2)^\alpha$.
+
+\section*{Correspondence}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Proposition~13 & 11 & $d_2(G_r,H_r)=\sqrt r$ and $\frac1{2\sqrt2}\le d^{\mathrm{OT}}_2(G_r,H_r)\le1$, $n=4r^2+3r+1=\Theta(r^2)$ & \lean{GsimOT.Prop14.proposition13}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Proposition14.lean:46}} \\ \midrule
+{}Prop.~13 + Lemma~49 & 11, 45 & the same with $\frac1{2\sqrt2}\le\frac r{\sqrt n}\le d^{\mathrm{OT}}_2(G_r,H_r)$, the bound $\frac r{\sqrt n}\le d^{\mathrm{OT}}_2(G_r,H_r)$ being Lemma~49 & \lean{GsimOT.Prop14.proposition14}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Proposition14.lean:25}} \\ \midrule
+{}Theorem~3 (4) & 4 & $\delta_2(G_r,H_r)\ge\sqrt r\cdot\delta^{\mathrm{OT}}_2(G_r,H_r)$ & \lean{GsimOT.Prop14.theorem4_item4}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Proposition14.lean:81}} \\ \midrule
+{}after Prop.~13 & 11 & No bound $\delta_2\le C_\alpha(\delta^{\mathrm{OT}}_2)^\alpha$ for $\alpha>\frac34$ (l.~391--393) & \lean{GsimOT.Prop14.no_power_bound}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Proposition14.lean:91}} \newline \lean{GsimOT.Prop14.deltaPQ_eq}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Proposition14.lean:60}} \newline \lean{GsimOT.Prop14.deltaOTPQ_bounds}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Proposition14.lean:67}} \\ \midrule
+{}App.~F.1, Fig.~7 & 45 & Core $X=\{u\}\cup\{v_{i,k}\}$, clocks $C$, tags $T_i$; $N(v_{i,k})=T_i\cup\{c_1,\dots,c_k\}$; $u$ isolated in $G_r$, adjacent to $C$ in $H_r$ & \lean{GsimOT.Prop14.Core}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Construction.lean:27}} \newline \lean{GsimOT.Prop14.Marker}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Construction.lean:30}} \newline \lean{GsimOT.Prop14.Vtx}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Construction.lean:33}} \newline \lean{GsimOT.Prop14.graph}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Construction.lean:61}} \newline \lean{GsimOT.Prop14.Gr}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Construction.lean:67}} \newline \lean{GsimOT.Prop14.Hr}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Construction.lean:70}} \\ \midrule
+{}App.~F.1 & 45 & $|V|=n=4r^2+3r+1$; $H_r$ has minimum degree $\ge r$ & \lean{GsimOT.Prop14.card_Vtx}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Construction.lean:35}} \newline \lean{GsimOT.Prop14.le_deg_Hr}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Construction.lean:138}} \\ \midrule
+{}App.~F.1 & 45 & $d_2(G_r,H_r)=\sqrt r$: row of $\pi(u)$ (spectral norm $\ge$ row norm) and the star for $\mathrm{id}$ (l.~1412--1416) & \lean{GsimOT.Prop14.distPQ_eq}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/SpectralDistance.lean:120}} \newline \lean{GsimOT.Prop14.sqrt_row_le_opNorm22}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/SpectralDistance.lean:47}} \newline \lean{GsimOT.Prop14.sqrt_le_opNorm_alignedDiff}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/SpectralDistance.lean:73}} \newline \lean{GsimOT.Prop14.opNorm_diff_refl_le}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/SpectralDistance.lean:101}} \\ \midrule
+{}Lemma~49 & 45 & $\frac r{\sqrt n}\le d^{\mathrm{OT}}_2(G_r,H_r)\le1$ & \lean{GsimOT.Prop14.lemma53}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:420}} \\ \midrule
+{}Proof of Lemma~49 & 45--46 & Shifts $\sigma_i$ and $Q=\frac1{2r}\sum_iP_{\sigma_i}$ & \lean{GsimOT.Prop14.shift}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:113}} \newline \lean{GsimOT.Prop14.tau}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:129}} \newline \lean{GsimOT.Prop14.Qs}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:137}} \newline \lean{GsimOT.Prop14.Qs_isDS}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:170}} \\ \midrule
+{}Proof of Lemma~49 & 46 & Vectors $d_{xy}$; $C_2(Q)\le1$ (tags: Cauchy--Schwarz, clocks orthogonal; l.~1424--1436) & \lean{GsimOT.Prop14.dv}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:184}} \newline \lean{GsimOT.Prop14.sum_qc_dvDot_le}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:239}} \newline \lean{GsimOT.Prop14.opNorm_Bq_le}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:386}} \newline \lean{GsimOT.Prop14.dOT_le_one}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:400}} \\ \midrule
+{}Proof of Lemma~49 & 46 & Test vector $\mathbf1_R$: $(B\mathbf1_R)(x,y)=\mathbf1_R(x,y)(\deg_G x-\deg_H y)$, hence $C_2(R)\ge r/\sqrt n$ (l.~1437--1446) & \lean{GsimOT.Prop14.le_opNorm_Bmat}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:50}} \newline \lean{GsimOT.Prop14.le_dOT_of_deg}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:101}} \newline \lean{GsimOT.Prop14.le_dOT}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Lemma53.lean:407}} \\ \midrule
+{}Proof of Prop.~13 & 46 & $\frac r{\sqrt n}\ge\frac1{2\sqrt2}$ since $8r^2\ge n$ (l.~1447--1448) & \lean{GsimOT.Prop14.proposition14}\newline{\scriptsize\texttt{Proposition14\_SpectralLowerBound/Proposition14.lean:25}} \\
+\end{longtable}
+
+\section*{Shared notions used (from \texttt{GsimOT/Common})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Sec.~1, App.~A & 2--3, 14 & Couplings $\mathrm{DS}^*(V,W)$; $x^a$ with $0^a:=0$ (convention $0^0=0$) & \lean{GsimOT.IsCoupling}\newline{\scriptsize\texttt{Common/OTDistances.lean:36}} \newline \lean{GsimOT.powZ}\newline{\scriptsize\texttt{Common/OTDistances.lean:42}} \\ \midrule
+{}Sec.~1, Eqs.~(1), (2) & 2--3 & $B(G,H,Q)$ and $B_{p\to q}(G,H,Q)$ & \lean{GsimOT.B}\newline{\scriptsize\texttt{Common/OTDistances.lean:58}} \newline \lean{GsimOT.Bmat}\newline{\scriptsize\texttt{Common/OTDistances.lean:70}} \\ \midrule
+{}Eq.~(2), Sec.~2 & 3, 5 & $\delta^{\mathrm{OT}}_{p\to q}$ (couplings) and $d^{\mathrm{OT}}_{p\to q}$ ($\mathrm{DS}(V,W)$), both infima & \lean{GsimOT.deltaOTPQ}\newline{\scriptsize\texttt{Common/OTDistances.lean:74}} \newline \lean{GsimOT.dOT}\newline{\scriptsize\texttt{Common/OTDistances.lean:79}} \\ \midrule
+{}Secs.~1--2, Apps.~A--B & 3, 5, 14--15 & $\delta^{\mathrm{OT}}_{p\to q}=n^{-\kappa_{p\to q}}d^{\mathrm{OT}}_{p\to q}$ for graphs of the same order $n$ ($d^{\mathrm{OT}}_{p\to q}$ is the unnormalised version, $s(n)=n^{\kappa_{p\to q}}$), via $\mathrm{DS}(V,W)=n\,\mathrm{DS}^*(V,W)$ and the homogeneity of $B_{p\to q}$ and of $\|\cdot\|_{p\to q}$ & \lean{GsimOT.deltaOTPQ_eq_dOT}\newline{\scriptsize\texttt{Common/OTDistances.lean:131}} \newline \lean{GsimOT.Bmat_smul}\newline{\scriptsize\texttt{Common/OTDistances.lean:117}} \newline \lean{GsimOT.opNorm_smul_of_nonneg}\newline{\scriptsize\texttt{Common/OTDistances.lean:94}} \\ \midrule
+{}App.~A & 14--15 & ``All minima \dots\ are attained'' for $\delta^{\mathrm{OT}}_{p\to q}$ and $d^{\mathrm{OT}}_{p\to q}$: lower semicontinuity of $Q\mapsto\|B_{p\to q}(G,H,Q)\|$, compactness & \lean{GsimOT.lowerSemicontinuous_opNorm_Bmat}\newline{\scriptsize\texttt{Common/Attainment.lean:136}} \newline \lean{GsimOT.isCompact_setOf_isCoupling}\newline{\scriptsize\texttt{Common/Attainment.lean:168}} \newline \lean{GsimOT.exists_deltaOTPQ_eq}\newline{\scriptsize\texttt{Common/Attainment.lean:199}} \newline \lean{GsimOT.exists_dOT_eq}\newline{\scriptsize\texttt{Common/Attainment.lean:223}} \\
+\end{longtable}
+
+\section*{Notes on the formalisation}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Upper bound of Lemma~49.} The paper computes $C_2(Q)^2=\|K^\top K\|_2=1$ for the block form $\begin{pmatrix}0&K\\K^\top&0\end{pmatrix}$. The formalisation instead shows $\sum_{(x,y)}Q(x,y)(d_{xy}\cdot\zeta)^2\le\|\zeta\|^2$. It uses Cauchy--Schwarz on each tag block and the orthogonality of the clock markers, and concludes $|y^\top Bx|\le1$ through Lemma~19. This is the same estimate, organised as a bilinear bound.
+\item The lower bound of Lemma~49 is proved for arbitrary graphs (\lean{le_dOT_of_deg}: a vertex whose degree differs from every degree in $H$ by $\ge c$ forces $d^{\mathrm{OT}}_2\ge c/\sqrt n$) and then specialised to $c=r$.
+\item The remark after Proposition~13 is formalised as \lean{no_power_bound}. It uses $\delta_2(G_r,H_r)=\sqrt r/n$, $\delta^{\mathrm{OT}}_2(G_r,H_r)\le1/n$ and $n\le8r^2$; the lower estimate $\delta^{\mathrm{OT}}_2=\Omega(n^{-1})$ is not needed for this conclusion.
+\item Indices: $v_{i,k}$ is \texttt{some (i, k)} and $u$ is \texttt{none} in \lean{Core}; clocks and tags are the two summands of \lean{Marker}. $G_r$ and $H_r$ are one construction \lean{graph} with a Boolean flag for the edges at $u$.
+\item \lean{proposition13} is Proposition~13. \lean{proposition14} states Proposition~13 together with the bound $\frac r{\sqrt n}\le d^{\mathrm{OT}}_2(G_r,H_r)$ of Lemma~49, which the proof of Proposition~13 combines with $\frac r{\sqrt n}\ge\frac1{2\sqrt2}$; \lean{proposition13} is derived from it.
+\end{enumerate}
+
+\end{document}

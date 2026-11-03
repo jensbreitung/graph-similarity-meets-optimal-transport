@@ -1,0 +1,167 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,landscape]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{array,booktabs,longtable}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\lean}[1]{\textcolor{blue!50!black}{\texttt{\detokenize{#1}}}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+
+
+\begin{center}{\Large\bfseries Common notions and shared lemmas}\\[4pt]
+
+{\small Correspondence between the paper and the Lean~4/Mathlib formalisation}\end{center}
+
+\noindent\textbf{Paper.} J.~Breitung, T.~Gervens, M.~Grohe. \emph{Graph Similarity Meets Optimal Transport} (file \texttt{Graph\_Similarity\_Meets\_Optimal\_Transport.pdf} in the repository). Statement, equation, page and line numbers refer to this PDF; \texttt{docs/NUMBERING.md} lists the Lean files and declarations of all numbered statements.\par\smallskip
+
+The folder \texttt{GsimOT/Common} contains the notions shared by all formalised results (Sections~1--2 and App.~A of the paper) together with the auxiliary results that are used by more than one proof: Observation~21, Lemma~22, Lemma~29 and Eq.~(3), the $\ell^p$/operator norms with Lemma~19, the cut norm, the optimal transport distances and the attainment of their minima (App.~A), the edit distance with Eq.~(7), and the graphs of the reductions of Section~4. A reviewer-oriented overview of all definitions is \texttt{Common\_overview.pdf}.\par\paragraph{Checking.} Run \texttt{bash build.sh} in the repository root (see \texttt{README.md}). The script builds the library and runs \texttt{scripts/CheckAxioms.lean}, which must report only the standard axioms \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}: no \texttt{sorry} and no additional axioms.
+
+\section*{Correspondence}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Sec.~2 & 5 & Adjacency matrix $A_G\in\{0,1\}^{V\times V}$ (real entries) & \lean{GsimOT.adj}\newline{\scriptsize\texttt{Common/Basic.lean:41}} \\ \midrule
+{}App.~A & 14 & Degree $\deg_G(v)=|N_G(v)|$; $\sum_{v'}A_G(v,v')=\deg_G(v)$ & \lean{GsimOT.deg}\newline{\scriptsize\texttt{Common/Basic.lean:45}} \newline \lean{GsimOT.sum_adj_eq_deg}\newline{\scriptsize\texttt{Common/Basic.lean:69}} \\ \midrule
+{}App.~A, Eq.~(6) & 14 & Discrepancy $D_{G,H}(v,w,v',w')=A_G(v,v')-A_H(w,w')$ & \lean{GsimOT.disc}\newline{\scriptsize\texttt{Common/Basic.lean:78}} \\ \midrule
+{}Sec.~2 & 5 & $\mathrm{DS}(V,W)$: doubly stochastic matrices & \lean{GsimOT.IsDS}\newline{\scriptsize\texttt{Common/Basic.lean:85}} \\ \midrule
+{}Sec.~2 & 5 & Permutation matrix $P_\pi\in\mathrm{Perm}(V,W)$; $P_\pi\in\mathrm{DS}(V,W)$ & \lean{GsimOT.permMat}\newline{\scriptsize\texttt{Common/Basic.lean:91}} \newline \lean{GsimOT.permMat_isDS}\newline{\scriptsize\texttt{Common/Basic.lean:93}} \\ \midrule
+{}Sec.~2 & 5 & Local cost $L_Q(v,w)=\sum_{(v',w')}|D(v,w,v',w')|\,Q(v',w')$ & \lean{GsimOT.localCost}\newline{\scriptsize\texttt{Common/Basic.lean:131}} \\ \midrule
+{}Sec.~2, Eq.~(7) & 5, 14 & $C_1(Q)=\max_{(v,w)\in\mathrm{supp}(Q)}L_Q(v,w)$ & \lean{GsimOT.costOne}\newline{\scriptsize\texttt{Common/Basic.lean:137}} \newline \lean{GsimOT.localCost_le_costOne}\newline{\scriptsize\texttt{Common/Basic.lean:176}} \newline \lean{GsimOT.costOne_le}\newline{\scriptsize\texttt{Common/Basic.lean:182}} \\ \midrule
+{}Sec.~2 & 5 & $C_1(\pi)=C_1(P_\pi)$ and $L_{P_\pi}(v,\pi(v))=|\pi(N_G(v))\triangle N_H(\pi(v))|$ & \lean{GsimOT.costOneBij}\newline{\scriptsize\texttt{Common/Basic.lean:141}} \newline \lean{GsimOT.localCost_permMat_apply}\newline{\scriptsize\texttt{Common/Basic.lean:207}} \newline \lean{GsimOT.costOneBij_le_iff}\newline{\scriptsize\texttt{Common/Basic.lean:212}} \\ \midrule
+{}Sec.~1, Sec.~2 & 1, 5 & $d_1(G,H)=\min_{\pi\in\mathrm{Bij}(V,W)}C_1(\pi)$ & \lean{GsimOT.dOne}\newline{\scriptsize\texttt{Common/Basic.lean:144}} \\ \midrule
+{}Sec.~2 & 5 & $d_1^{\mathrm{OT}}(G,H)=\min_{Q\in\mathrm{DS}(V,W)}C_1(Q)$ (as an infimum over $\mathrm{DS}(V,W)$) & \lean{GsimOT.dOTOne}\newline{\scriptsize\texttt{Common/Basic.lean:148}} \\ \midrule
+{}Sec.~1, Sec.~2 & 1, 5 & Normalisations $\delta_1=n^{-1}d_1$, $\delta_1^{\mathrm{OT}}=n^{-1}d_1^{\mathrm{OT}}$ (scaling by $1/n$) & \lean{GsimOT.deltaOne}\newline{\scriptsize\texttt{Common/Basic.lean:151}} \newline \lean{GsimOT.deltaOTOne}\newline{\scriptsize\texttt{Common/Basic.lean:154}} \\ \midrule
+{}Sec.~1, Sec.~3 & 3, 6 & $d_1^{\mathrm{OT}}\le d_1$ (every bijection is a fractional alignment) & \lean{GsimOT.dOTOne_le_dOne}\newline{\scriptsize\texttt{Common/Basic.lean:264}} \\ \midrule
+{}Sec.~2, Eq.~(3) & 5 & Birkhoff--von Neumann: $\mathrm{supp}(Q)$ contains the graph of a bijection & \lean{GsimOT.exists_bij_subset_supp}\newline{\scriptsize\texttt{Common/Birkhoff.lean:20}} \\ \midrule
+{}Observation~21 & 20 & $L_Q(v,w)\ge|\deg_G(v)-\deg_H(w)|$ & \lean{GsimOT.claim26}\newline{\scriptsize\texttt{Common/Claim26\_DegreeBound.lean:21}} \newline \lean{GsimOT.claim26_bij}\newline{\scriptsize\texttt{Common/Claim26\_DegreeBound.lean:40}} \\ \midrule
+{}Lemma~22 (construction) & 21 & Adding the clique $K$ ($m=2\Delta+2\tau+k(\tau+\delta)+1$) and the staircase & \lean{GsimOT.lockSize}\newline{\scriptsize\texttt{Common/Lemma27\_LockingMarkers.lean:36}} \newline \lean{GsimOT.stair}\newline{\scriptsize\texttt{Common/Lemma27\_LockingMarkers.lean:40}} \newline \lean{GsimOT.lockGraph}\newline{\scriptsize\texttt{Common/Lemma27\_LockingMarkers.lean:56}} \\ \midrule
+{}Lemma~22 (1) & 21 & $C_1(\pi)<\tau$ $\Rightarrow$ $\pi$ fixes all markers and $\pi(V)=V$ & \lean{GsimOT.lemma27_bij}\newline{\scriptsize\texttt{Common/Lemma27\_LockingMarkers.lean:161}} \\ \midrule
+{}Lemma~22 (2) & 21 & $Q(z_j,z_j)=1$ $\Rightarrow$ $C_1(Q')$ w.r.t.\ $(G',H')$ equals $C_1(Q)$ w.r.t.\ $(G,H)$ & \lean{GsimOT.extendId}\newline{\scriptsize\texttt{Common/Lemma27\_LockingMarkers.lean:260}} \newline \lean{GsimOT.lemma27_cost}\newline{\scriptsize\texttt{Common/Lemma27\_LockingMarkers.lean:351}} \\ \midrule
+{}App.~D.2 & 28 & Pseudometric $\rho_H(w,w')=|N_H(w)\triangle N_H(w')|$ and the triangle inequality & \lean{GsimOT.rho}\newline{\scriptsize\texttt{Common/Lemma35\_Integrality.lean:25}} \newline \lean{GsimOT.rho_triangle}\newline{\scriptsize\texttt{Common/Lemma35\_Integrality.lean:36}} \\ \midrule
+{}Lemma~29 (first part) & 28 & $Q(v,w)>0\Rightarrow\rho_H(\sigma(v),w)\le 2L$ & \lean{GsimOT.rho_le_localCost_add}\newline{\scriptsize\texttt{Common/Lemma35\_Integrality.lean:43}} \newline \lean{GsimOT.lemma35_rho_le}\newline{\scriptsize\texttt{Common/Lemma35\_Integrality.lean:110}} \\ \midrule
+{}Lemma~29 (second part) & 28 & $L<1\Rightarrow\sigma$ is an isomorphism & \lean{GsimOT.rho_eq_zero_of_deg_eq_of_lt_two}\newline{\scriptsize\texttt{Common/Lemma35\_Integrality.lean:79}} \newline \lean{GsimOT.lemma35_iso}\newline{\scriptsize\texttt{Common/Lemma35\_Integrality.lean:120}} \newline \lean{GsimOT.lemma35_dOne_eq_zero}\newline{\scriptsize\texttt{Common/Lemma35\_Integrality.lean:162}} \\ \midrule
+{}Lemma~29 (``in particular'') & 28 & $G\not\cong H\Rightarrow d_1^{\mathrm{OT}}(G,H)\ge 1$ & \lean{GsimOT.lemma35_one_le_dOTOne}\newline{\scriptsize\texttt{Common/Lemma35\_Integrality.lean:176}} \\
+\end{longtable}
+
+\section*{Operator norms (\texttt{OperatorNorm.lean}, \texttt{Attainment.lean})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}App.~A & 14 & $\ell^p$ norm $\|x\|_p$ ($1\le p\le\infty$) & \lean{GsimOT.lpNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:25}} \newline \lean{GsimOT.lpNorm_eq_sum}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:57}} \newline \lean{GsimOT.lpNorm_top}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:62}} \\ \midrule
+{}App.~A & 14 & Operator norm $\|A\|_{p\to q}=\max_{\|x\|_p=1}\|Ax\|_q$ (in Lean the supremum over the unit ball $\|x\|_p\le1$, the same value for nonempty index sets) & \lean{GsimOT.opNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:28}} \newline \lean{GsimOT.lpNorm_mulVec_le}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:128}} \newline \lean{GsimOT.opNorm_le_of_bound}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:135}} \newline \lean{GsimOT.exists_lpNorm_mulVec_eq_opNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:142}} \\ \midrule
+{}App.~A & 14 & Hölder conjugate $q^*$ with $1/q^*=1-1/q$ & \lean{GsimOT.one_le_conjExponent}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:33}} \newline \lean{GsimOT.inv_conjExponent_toReal}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:38}} \\ \midrule
+{}App.~A & 14 & Hölder's inequality $|y^\top z|\le\|y\|_{q^*}\|z\|_q$ and its equality case & \lean{GsimOT.abs_dotProduct_le_lpNorm_mul}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:188}} \newline \lean{GsimOT.exists_dotProduct_eq_lpNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:224}} \\ \midrule
+{}Lemma~19 & 14 & $\|A\|_{p\to q}=\max_{\|y\|_{q^*}=1,\|x\|_p=1}|y^\top Ax|$ (in Lean over the unit balls) & \lean{GsimOT.lemma24}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:290}} \newline \lean{GsimOT.abs_dotProduct_mulVec_le_opNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:267}} \newline \lean{GsimOT.exists_abs_dotProduct_mulVec_eq_opNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:281}} \\ \midrule
+{}-- & -- & Triangle inequality, $\|A\|_{p\to q}\le\sum_{i,j}|A_{ij}|$ and continuity of $\|\cdot\|_{p\to q}$ & \lean{GsimOT.opNorm_add_le}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:169}} \newline \lean{GsimOT.opNorm_le_sum_abs}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:158}} \newline \lean{GsimOT.abs_opNorm_sub_le}\newline{\scriptsize\texttt{Common/Attainment.lean:78}} \newline \lean{GsimOT.continuous_opNorm}\newline{\scriptsize\texttt{Common/Attainment.lean:91}} \\ \midrule
+{}App.~A & 15 & Restricting to rows and columns ``cannot increase the operator norm'' & \lean{GsimOT.lpNorm_le_of_abs_le}\newline{\scriptsize\texttt{Common/Attainment.lean:39}} \newline \lean{GsimOT.opNorm_restrict_le}\newline{\scriptsize\texttt{Common/Attainment.lean:53}} \\
+\end{longtable}
+
+\section*{Cut norm and cut distance (\texttt{CutNorm.lean}, \texttt{AlignedDistances.lean})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}App.~A & 14 & Cut norm $\|A\|_\square=\max_{S,T}|A(S,T)|$ & \lean{GsimOT.cutNorm}\newline{\scriptsize\texttt{Common/CutNorm.lean:32}} \newline \lean{GsimOT.le_cutNorm}\newline{\scriptsize\texttt{Common/CutNorm.lean:39}} \newline \lean{GsimOT.cutNorm_le}\newline{\scriptsize\texttt{Common/CutNorm.lean:44}} \newline \lean{GsimOT.exists_eq_cutNorm}\newline{\scriptsize\texttt{Common/CutNorm.lean:52}} \newline \lean{GsimOT.cutNorm_smul}\newline{\scriptsize\texttt{Common/CutNorm.lean:59}} \\ \midrule
+{}Sec.~1, Sec.~2 & 2, 5 & $B(G,H,Q)$ and $C_\square(Q)=\|B(G,H,Q)\|_\square$ & \lean{GsimOT.B}\newline{\scriptsize\texttt{Common/OTDistances.lean:58}} \newline \lean{GsimOT.costCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:79}} \\ \midrule
+{}Sec.~1, Sec.~2 & 1--2, 5 & $d_\square$, $d_\square^{\mathrm{OT}}$ (infimum) and $\delta_\square=n^{-2}d_\square$, $\delta^{\mathrm{OT}}_\square=n^{-2}d^{\mathrm{OT}}_\square$ & \lean{GsimOT.dCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:82}} \newline \lean{GsimOT.dOTCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:85}} \newline \lean{GsimOT.deltaCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:88}} \newline \lean{GsimOT.deltaOTCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:91}} \\ \midrule
+{}App.~E.2, Eq.~(21), E.2.2 & 32, 36 & $\zeta_R(A,B)=\|D_{A,B}\|_{\square,\mu_R}$ with $\mu_R=R/n$; $\zeta_R(A_G,A_H)=\zeta_R=n^{-2}C_\square(R)$ for graphs & \lean{GsimOT.epsR}\newline{\scriptsize\texttt{Common/CutNorm.lean:105}} \newline \lean{GsimOT.adjMat}\newline{\scriptsize\texttt{Common/CutNorm.lean:94}} \newline \lean{GsimOT.epsR_adjMat}\newline{\scriptsize\texttt{Common/CutNorm.lean:110}} \\ \midrule
+{}Sec.~1, App.~B & 1, 3, 15 & $\kappa_{p\to q}=1/q+1-1/p$, $A^\pi_G-A_H$, $d_{p\to q}$ and $\delta_{p\to q}=n^{-\kappa_{p\to q}}d_{p\to q}$ ($s(n)=n^{\kappa_{p\to q}}$) & \lean{GsimOT.kappa}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:23}} \newline \lean{GsimOT.alignedDiff}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:31}} \newline \lean{GsimOT.distPQ}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:35}} \newline \lean{GsimOT.deltaPQ}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:39}} \\
+\end{longtable}
+
+\section*{Optimal transport distances (\texttt{OTDistances.lean}, \texttt{Attainment.lean})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Sec.~1, App.~A & 2--3, 14 & Couplings $\mathrm{DS}^*(V,W)$; $x^a$ with $0^a:=0$ (convention $0^0=0$) & \lean{GsimOT.IsCoupling}\newline{\scriptsize\texttt{Common/OTDistances.lean:36}} \newline \lean{GsimOT.powZ}\newline{\scriptsize\texttt{Common/OTDistances.lean:42}} \\ \midrule
+{}Sec.~1, Eqs.~(1), (2) & 2--3 & $B(G,H,Q)$ and $B_{p\to q}(G,H,Q)$ & \lean{GsimOT.B}\newline{\scriptsize\texttt{Common/OTDistances.lean:58}} \newline \lean{GsimOT.Bmat}\newline{\scriptsize\texttt{Common/OTDistances.lean:70}} \\ \midrule
+{}Eq.~(2), Sec.~2 & 3, 5 & $\delta^{\mathrm{OT}}_{p\to q}$ (couplings) and $d^{\mathrm{OT}}_{p\to q}$ ($\mathrm{DS}(V,W)$), both infima & \lean{GsimOT.deltaOTPQ}\newline{\scriptsize\texttt{Common/OTDistances.lean:74}} \newline \lean{GsimOT.dOT}\newline{\scriptsize\texttt{Common/OTDistances.lean:79}} \\ \midrule
+{}Secs.~1--2, Apps.~A--B & 3, 5, 14--15 & $\delta^{\mathrm{OT}}_{p\to q}=n^{-\kappa_{p\to q}}d^{\mathrm{OT}}_{p\to q}$ for graphs of the same order $n$ ($d^{\mathrm{OT}}_{p\to q}$ is the unnormalised version, $s(n)=n^{\kappa_{p\to q}}$), via $\mathrm{DS}(V,W)=n\,\mathrm{DS}^*(V,W)$ and the homogeneity of $B_{p\to q}$ and of $\|\cdot\|_{p\to q}$ & \lean{GsimOT.deltaOTPQ_eq_dOT}\newline{\scriptsize\texttt{Common/OTDistances.lean:131}} \newline \lean{GsimOT.Bmat_smul}\newline{\scriptsize\texttt{Common/OTDistances.lean:117}} \newline \lean{GsimOT.opNorm_smul_of_nonneg}\newline{\scriptsize\texttt{Common/OTDistances.lean:94}} \\ \midrule
+{}App.~A & 14--15 & ``All minima \dots\ are attained'' for $\delta^{\mathrm{OT}}_{p\to q}$ and $d^{\mathrm{OT}}_{p\to q}$: lower semicontinuity of $Q\mapsto\|B_{p\to q}(G,H,Q)\|$, compactness & \lean{GsimOT.lowerSemicontinuous_opNorm_Bmat}\newline{\scriptsize\texttt{Common/Attainment.lean:136}} \newline \lean{GsimOT.isCompact_setOf_isCoupling}\newline{\scriptsize\texttt{Common/Attainment.lean:168}} \newline \lean{GsimOT.exists_deltaOTPQ_eq}\newline{\scriptsize\texttt{Common/Attainment.lean:199}} \newline \lean{GsimOT.exists_dOT_eq}\newline{\scriptsize\texttt{Common/Attainment.lean:223}} \\
+\end{longtable}
+
+\section*{Lemma~22 for the edit distance (\texttt{Lemma27\_LockingMarkersEdit.lean})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Lemma~22 (1), $\diamondsuit=\mathrm{ed}$ & 21 & $C_{\mathrm{ed}}(\pi)<\tau$ $\Rightarrow$ $\pi$ fixes all markers and $\pi(V)=V$; via $C_1(\pi)\le C_{\mathrm{ed}}(\pi)$ and the case $\diamondsuit=1$ & \lean{GsimOT.costOneBij_le_costEditBij}\newline{\scriptsize\texttt{Common/Lemma27\_LockingMarkersEdit.lean:26}} \newline \lean{GsimOT.lemma27_bij_edit}\newline{\scriptsize\texttt{Common/Lemma27\_LockingMarkersEdit.lean:41}} \\ \midrule
+{}Lemma~22 (2), $\diamondsuit=\mathrm{ed}$ & 21 & $Q(z_j,z_j)=1$ $\Rightarrow$ $C_{\mathrm{ed}}(Q')$ w.r.t.\ $(G',H')$ equals $C_{\mathrm{ed}}(Q)$ w.r.t.\ $(G,H)$ & \lean{GsimOT.lemma27_cost_edit}\newline{\scriptsize\texttt{Common/Lemma27\_LockingMarkersEdit.lean:53}} \\
+\end{longtable}
+
+\section*{Edit distance and Eq.~(3) (\texttt{EditDistance.lean}, \texttt{BirkhoffDecomposition.lean}, \texttt{MatrixNorms.lean})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Sec.~1, Sec.~2 & 2, 5 & $C_{\mathrm{ed}}(Q)=\sum_{v,w,v',w'}|D(v,w,v',w')|\,Q(v,w)\,Q(v',w')$ and $C_{\mathrm{ed}}(\pi)=C_{\mathrm{ed}}(P_\pi)=\|A_G^\pi-A_H\|_{\mathrm{ed}}$ & \lean{GsimOT.costEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:35}} \newline \lean{GsimOT.costEditBij}\newline{\scriptsize\texttt{Common/EditDistance.lean:39}} \newline \lean{GsimOT.costEditBij_eq}\newline{\scriptsize\texttt{Common/EditDistance.lean:60}} \\ \midrule
+{}Sec.~1, Eq.~(1), Sec.~2, App.~A & 2, 5, 14--15 & $d_{\mathrm{ed}}=\min_\pi C_{\mathrm{ed}}(\pi)$ and $d^{\mathrm{OT}}_{\mathrm{ed}}=\min_{Q\in\mathrm{DS}(V,W)}C_{\mathrm{ed}}(Q)$ (infimum, attained); $d^{\mathrm{OT}}_{\mathrm{ed}}\le d_{\mathrm{ed}}$ & \lean{GsimOT.dEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:42}} \newline \lean{GsimOT.dOTEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:45}} \newline \lean{GsimOT.exists_dOTEdit_eq}\newline{\scriptsize\texttt{Common/EditDistance.lean:109}} \newline \lean{GsimOT.dOTEdit_le_dEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:102}} \\ \midrule
+{}Sec.~1, Sec.~2 & 1--2, 5 & $\delta_{\mathrm{ed}}=n^{-2}d_{\mathrm{ed}}$, $\delta^{\mathrm{OT}}_{\mathrm{ed}}=n^{-2}d^{\mathrm{OT}}_{\mathrm{ed}}$ (scaling by $1/n^2$) & \lean{GsimOT.deltaEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:48}} \newline \lean{GsimOT.deltaOTEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:51}} \\ \midrule
+{}Sec.~1, Sec.~2, App.~A & 2, 5, 14 & $C_{\mathrm{ed}}(Q)=\|B(G,H,Q)\|_{\mathrm{ed}}$ for $Q\ge0$ (entrywise $1$-norm $\|\cdot\|_{\mathrm{ed}}=\|\cdot\|_{(1)}$) & \lean{GsimOT.entrywiseNorm}\newline{\scriptsize\texttt{Common/MatrixNorms.lean:53}} \newline \lean{GsimOT.costEdit_eq_entrywiseNorm_B}\newline{\scriptsize\texttt{Common/MatrixNorms.lean:119}} \\ \midrule
+{}Sec.~2, Eq.~(3) & 5 & Birkhoff--von Neumann: $Q=\sum_i\lambda_iP_{\pi_i}$ with $\lambda_i>0$, $\sum_i\lambda_i=1$ (also: over all $\sigma\in\mathrm{Perm}(V)$ with $\lambda\ge0$); conversely every such combination is in $\mathrm{DS}(V,W)$ & \lean{GsimOT.exists_birkhoff_decomposition_pos}\newline{\scriptsize\texttt{Common/BirkhoffDecomposition.lean:72}} \newline \lean{GsimOT.exists_birkhoff_decomposition}\newline{\scriptsize\texttt{Common/BirkhoffDecomposition.lean:42}} \newline \lean{GsimOT.isDS_of_decomposition}\newline{\scriptsize\texttt{Common/BirkhoffDecomposition.lean:23}} \\
+\end{longtable}
+
+\section*{Eq.~(7) (\texttt{MatrixNorms.lean})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Sec.~2, Eq.~(7) & 5, 14 & $\|B_{1\to1}(G,H,Q)\|_{1\to1}=C_1(Q)=\max_{(v,w)\in\mathrm{supp}(Q)}L_Q(v,w)$ for $Q\in\mathrm{DS}(V,W)$; hence $d^{\mathrm{OT}}_{1\to1}=d^{\mathrm{OT}}_1$ & \lean{GsimOT.opNorm_Bpq_one_one_eq_costOne}\newline{\scriptsize\texttt{Common/MatrixNorms.lean:150}} \newline \lean{GsimOT.dOT_one_one_eq_dOTOne}\newline{\scriptsize\texttt{Common/MatrixNorms.lean:164}} \\
+\end{longtable}
+
+\section*{Doubly stochastic matrices (\texttt{DoublyStochastic.lean})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}-- & -- & Sums over $V\times W$ against $Q\in\mathrm{DS}(V,W)$; partial sums $Q(S,T)$ and their bounds; $\mathrm{DS}(V,W)$ is compact; bounds for infima over $\mathrm{DS}(V,W)$ & \lean{GsimOT.IsDS.sum_mul_fst}\newline{\scriptsize\texttt{Common/DoublyStochastic.lean:35}} \newline \lean{GsimOT.mass}\newline{\scriptsize\texttt{Common/DoublyStochastic.lean:118}} \newline \lean{GsimOT.card_mul_le_of_lt_mass}\newline{\scriptsize\texttt{Common/DoublyStochastic.lean:150}} \newline \lean{GsimOT.isCompact_setOf_isDS}\newline{\scriptsize\texttt{Common/DoublyStochastic.lean:77}} \newline \lean{GsimOT.iInf_isDS_le}\newline{\scriptsize\texttt{Common/DoublyStochastic.lean:98}} \newline \lean{GsimOT.le_iInf_isDS}\newline{\scriptsize\texttt{Common/DoublyStochastic.lean:104}} \\
+\end{longtable}
+
+\section*{Graphs of the reductions of Section~4 (\texttt{PathsAndCycles.lean}, \texttt{ThreePartition.lean}, \texttt{Leaves.lean})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Proofs of Thms.~15--17 & 50--57 & Disjoint unions of paths ($F_1$) and of cycles; their degrees and edge counts & \lean{GsimOT.Hardness.pathUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:56}} \newline \lean{GsimOT.Hardness.cycleUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:226}} \newline \lean{GsimOT.Hardness.sum_adj_pathUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:134}} \newline \lean{GsimOT.Hardness.deg_cycleUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:238}} \\ \midrule
+{}Proof of Thm.~15 & 50 & Three-Partition instances $(A,a_1,\dots,a_{3m})$; the step of adding $3$ to each $a_i$ and $9$ to $A$ & \lean{GsimOT.Hardness.ThreePartition}\newline{\scriptsize\texttt{Common/ThreePartition.lean:26}} \newline \lean{GsimOT.Hardness.ThreePartition.IsYes}\newline{\scriptsize\texttt{Common/ThreePartition.lean:39}} \newline \lean{GsimOT.Hardness.ThreePartition.shift}\newline{\scriptsize\texttt{Common/ThreePartition.lean:206}} \newline \lean{GsimOT.Hardness.ThreePartition.shift_isYes_iff}\newline{\scriptsize\texttt{Common/ThreePartition.lean:223}} \\ \midrule
+{}Proofs of Thms.~15--17 & 50--56 & A solution gives a bijection mapping each path into one component; conversely a $Q\in\mathrm{DS}$ mapping every path into a single component gives a solution (counting mass) & \lean{GsimOT.Hardness.ThreePartition.layoutEquiv}\newline{\scriptsize\texttt{Common/ThreePartition.lean:137}} \newline \lean{GsimOT.Hardness.ThreePartition.isYes_of_isDS}\newline{\scriptsize\texttt{Common/ThreePartition.lean:168}} \\ \midrule
+{}Proofs of Thms.~17, 18 & 54, 57 & Attaching $\ell(b)$ leaves to every vertex $b$ of a base graph & \lean{GsimOT.Hardness.addLeaves}\newline{\scriptsize\texttt{Common/Leaves.lean:33}} \\
+\end{longtable}
+
+\section*{Notes on the formalisation}
+
+\begin{enumerate}[leftmargin=*]
+\item The paper defines $C_1(Q)$ as the operator $1\to1$-norm of $B_{1\to1}(G,H,Q)$ and gives the formula $C_1(Q)=\max_{(v,w)\in\mathrm{supp}(Q)}L_Q(v,w)$ (Sec.~2, p.~5, l.~184--189; Eq.~(7), p.~14). The formalisation takes this formula as the definition of \lean{costOne} and proves the identity (\lean{opNorm_Bpq_one_one_eq_costOne}).
+\item $d_1^{\mathrm{OT}}$, $d^{\mathrm{OT}}_{\mathrm{ed}}$, $d^{\mathrm{OT}}_\square$, $d^{\mathrm{OT}}_{p\to q}$ and $\delta^{\mathrm{OT}}_{p\to q}$ are defined as \emph{infima}. The paper takes minima and argues that they are attained (App.~A, pp.~14--15, l.~503--510). This is formalised for the operator norms (\lean{exists_deltaOTPQ_eq}, \lean{exists_dOT_eq}, following the paper's lower-semicontinuity argument; used by Claim~20) and for the edit distance (\lean{exists_dOTEdit_eq}, used by Theorem~15). For bijections the minimum over the finite set $\mathrm{Bij}(V,W)$ is the infimum.
+\item Normalisation: for graphs of the same order $n$, $\delta_\diamondsuit=d_\diamondsuit/s(n)$ and $\delta^{\mathrm{OT}}_\diamondsuit=d^{\mathrm{OT}}_\diamondsuit/s(n)$ with $s(n)=n^2$ for the edit and the cut distance (p.~1, l.~24--27) and $s(n)=n^{\kappa_{p\to q}}$, $\kappa_{p\to q}=1/q+1-1/p$, for $\|\cdot\|_{p\to q}$ (p.~3, l.~88--90; App.~B, p.~15, l.~513--514), so $s(n)=n$ for $\|\cdot\|_1$. In Lean, \lean{deltaPQ} multiplies $d_{p\to q}$ by $n^{-\kappa}$, the other normalised distances divide by $n$ or $n^2$, and \lean{deltaOTPQ_eq_dOT} proves $\delta^{\mathrm{OT}}_{p\to q}=n^{-\kappa}d^{\mathrm{OT}}_{p\to q}$.
+\item Lemma~22 is stated in the paper for $\diamondsuit\in\{\mathrm{ed},1\}$; both cases are formalised, $\diamondsuit=1$ in \texttt{Lemma27\_LockingMarkers.lean} and $\diamondsuit=\mathrm{ed}$ in \texttt{Lemma27\_LockingMarkersEdit.lean}. In Lean, the clique vertex $y_{i+1}$ is \texttt{Sum.inr i} and the marker index $j$ of the paper is \texttt{j.val + 1}.
+\item Lemma~29 is proved in the paper for an optimal $Q$ and $L=d_1^{\mathrm{OT}}(G,H)$. Its proof only uses that all supported local costs of $Q$ are at most $L$, which is how it is stated in Lean. It is shared by Proposition~8 (via Lemma~27) and Theorem~9.
+\item Eq.~(3): \lean{exists_birkhoff_decomposition} sums over all permutations with weights $\ge0$; \lean{exists_birkhoff_decomposition_pos} is the exact statement with $\lambda_i>0$.
+\end{enumerate}
+
+\end{document}

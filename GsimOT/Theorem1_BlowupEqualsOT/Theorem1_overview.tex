@@ -1,0 +1,146 @@
+\input{../../scripts/overview_preamble.tex}
+\begin{document}
+\overviewtitle{Theorem 1: blowup distances equal optimal transport distances}{Folder \file{GsimOT/Theorem1_BlowupEqualsOT}}
+\paperversion
+
+\section{Statement}
+
+\paragraph{Paper} (Theorem~1, p.~3, l.~92; proof in Appendix~B, pp.~15--20). For all $1\le p,q\le\infty$,
+$\delta^{\bullet}_{p\to q}=\delta^{\mathrm{OT}}_{p\to q}$. Here, for graphs $G$ on $V$ ($|V|=m$) and $H$ on $W$ ($|W|=n$),
+\[
+  \delta^{\bullet}_{p\to q}(G,H)=\lim_{\ell\to\infty}\delta_{p\to q}\bigl(G^{\bullet n\ell},H^{\bullet m\ell}\bigr),
+  \qquad
+  \delta^{\mathrm{OT}}_{p\to q}(G,H)=\min_{Q^*\in\mathrm{DS}^*(V,W)}\bigl\|B_{p\to q}(G,H,Q^*)\bigr\|_{p\to q}\quad\text{(Eq.~(2))},
+\]
+$B_{p\to q}(G,H,Q^*)\bigl((v,w),(v',w')\bigr)=Q^*(v,w)^{1/q}\,\bigl(A_G(v,v')-A_H(w,w')\bigr)\,Q^*(v',w')^{1-1/p}$ with $0^0:=0$,
+and $\delta_{p\to q}=N^{-\kappa}d_{p\to q}$ for graphs of order $N$, $\kappa=1/q+1-1/p$ (p.~3, l.~88--90; App.~B,
+p.~15, l.~513--514). The paper marks blowups with a bomb symbol, written $\bullet$ here ($G^{\bullet k}$,
+$\delta^\bullet$); the Lean names use \lean{blowup}.
+
+\paragraph{Lean.} For all $p,q\in[1,\infty]$ (type \texttt{ENNReal}) and all finite simple graphs $G$ on a
+\hyp{nonempty} $V$ and $H$ on a \hyp{nonempty} $W$:
+\begin{itemize}
+\item \lean{GsimOT.theorem1}: \ \lean{deltaBlowup p q G H = deltaOTPQ p q G H};
+\item \lean{GsimOT.theorem1_tendsto}: \ $\delta_{p\to q}(G^{\bullet n\ell},H^{\bullet m\ell})\to\delta^{\mathrm{OT}}_{p\to q}(G,H)$ as $\ell\to\infty$,
+  so the limit defining $\delta^\bullet$ \emph{exists} (the paper cites [Gro25] for this, p.~2, l.~44--45);
+\item \lean{GsimOT.theorem1_of_tendsto}: the paper's argument literally: \emph{if} the sequence has a limit, then
+  $\delta^\bullet_{p\to q}(G,H)=\delta^{\mathrm{OT}}_{p\to q}(G,H)$.
+\end{itemize}
+\lean{deltaBlowup} is \texttt{limUnder atTop} of \lean{blowupSeq p q G H ell} $=\delta_{p\to q}(G^{\bullet n\ell},H^{\bullet m\ell})$;
+\lean{deltaOTPQ} is the infimum over couplings (the minimum is attained, \lean{exists_deltaOTPQ_eq}). The Lean result is
+therefore the paper's statement plus the existence of the limit, without any cited result.
+
+\section{Where the proof lives}
+\begin{longtable}{>{\raggedright\arraybackslash}p{5.5cm} >{\raggedright\arraybackslash}p{10.3cm}}
+\toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
+\file{Definitions.lean} & blowup $G^{\bullet k}$ on $V\times[k]$ (\lean{blowup}), the sequence \lean{blowupSeq} and \lean{deltaBlowup}. \\
+\file{BlockNorms.lean} & norm bounds for spread and averaged test vectors over the blocks $J(v,w)$ (proofs of Eqs.~(11), (15); H\"older in the form of Eq.~(5)). \\
+\file{LowerBound.lean} & Eqs.~(8)--(11): the coupling $Q^*=|J|/N$ induced by a bijection of the blowups, Eq.~(10), \lean{eq13} (= Eq.~(11)), \lean{deltaOTPQ_le_blowupSeq}. \\
+\file{UpperBound.lean} & Eq.~(15) for every $\ell$ with $\ell mn\,Q^*$ integral: the bijection $\pi$ built from the partitions $I(v,w)$, $J(v,w)$, averaged test vectors (\lean{eq16}). \\
+\file{Approximation.lean} & approximation of a coupling by couplings with denominator $\ell mn$ and the same support (\lean{exists_integral_approx_close}), with norm control (\lean{exists_integral_approx}). \\
+\file{Claim20.lean} & Claim~20 (\lean{claim20}), Eq.~(15) for $\ell=ks$ (\lean{eq15}), and the paper's version of the conclusion (\lean{theorem1_of_tendsto}). \\
+\file{Theorem1.lean} & \lean{theorem1_tendsto}, \lean{theorem1}. \\
+\file{../Common/OperatorNorm.lean} & $\ell^p$ norms, $\|\cdot\|_{p\to q}$, Lemma~19 (\lean{lemma24}). \\
+\file{../Common/OTDistances.lean} & $\mathrm{DS}^*(V,W)$ (\lean{IsCoupling}), $0^a$ (\lean{powZ}), $B_{p\to q}$ (\lean{Bmat}), Eq.~(2) (\lean{deltaOTPQ}). \\
+\file{../Common/AlignedDistances.lean} & $\kappa$, $A_G^\pi-A_H$, $d_{p\to q}$, $\delta_{p\to q}$. \\
+\file{../Common/Attainment.lean} & App.~A: the minimum in Eq.~(2) is attained (\lean{exists_deltaOTPQ_eq}). \\
+\end{longtable}
+
+\section{Proof layout}
+\begin{center}
+\begin{tikzpicture}
+  \node[main]   (thm)    at (0,0)      {Theorem 1\\\lean{theorem1}};
+  \node[res]    (paper)  at (7,0)      {paper's proof\\\lean{theorem1_of_tendsto}};
+  \node[res]    (tend)   at (0,-1.5)   {convergence\\\lean{theorem1_tendsto}};
+  \node[res]    (c20)    at (7,-1.5)   {Claim 20\\\lean{claim20}};
+  \node[res]    (low)    at (-6,-3)    {Eqs.~(8), (9)\\\lean{deltaOTPQ_le_blowupSeq}};
+  \node[res]    (approx) at (-1.3,-3)  {Claim 20 (strong)\\\lean{exists_integral_approx}};
+  \node[res]    (e15b)   at (5.6,-3)   {Eq.~(15), $\ell=ks$\\\lean{eq15}};
+  \node[res]    (e11)    at (-6,-4.6)  {Eq.~(11)\\\lean{eq13}};
+  \node[res]    (close)  at (-0.6,-4.6)  {same support, denominator $\ell mn$\\\lean{exists_integral_approx_close}};
+  \node[res]    (e16)    at (3.6,-4.6) {Eq.~(15)\\\lean{eq16}};
+  \node[shared] (att)    at (7.3,-4.6) {attainment (App.~A)\\\lean{exists_deltaOTPQ_eq}};
+  \node[shared] (l19)    at (-6.2,-6.2) {Lemma 19\\\lean{lemma24}};
+  \node[res]    (blk)    at (-1.6,-6.2) {block norms\\\lean{lpNorm_spread_le}\\\lean{lpNorm_average_le}};
+  \node[shared] (bvn)    at (2.6,-6.2) {Birkhoff--von Neumann\\(Mathlib)};
+  \draw[dep] (thm) -- (tend);
+  \draw[dep] (tend) -- (low); \draw[dep] (tend) -- (approx); \draw[dep] (tend) -- (e16);
+  \draw[dep] (low) -- (e11); \draw[dep] (e11) -- (l19); \draw[dep] (e11) -- (blk);
+  \draw[dep] (approx) -- (close); \draw[dep] (close) -- (bvn);
+  \draw[dep] (e16) -- (blk);
+  \draw[dep] (paper) -- (c20); \draw[dep] (c20) -- (e15b); \draw[dep] (e15b) -- (e16);
+  \draw[dep] (c20) -- (att); \draw[dep] (c20) -- (close);
+\end{tikzpicture}
+\end{center}
+White boxes: this folder; grey: \file{GsimOT/Common} or Mathlib. Not drawn: \lean{eq16} also uses Lemma~19, and \lean{theorem1_of_tendsto} also uses Eqs.~(8), (9). No cited result is assumed.
+
+\section{The proof step by step}
+
+\paragraph{First direction, Eq.~(8) (pp.~15--17, l.~516--567).} Fix $\ell\ge1$, $N=\ell mn$, and a bijection
+$\pi$ of the blowups attaining $d_{p\to q}(G^\bullet,H^\bullet)$ (a minimum over a finite set; Lean simply
+bounds every $\pi$). The sets $I(v,w)$, $J(v,w)$ are the blocks of the map $(w,j)\mapsto(v(w,j),w)$
+(\lean{blockMap}, \lean{blockCard}); $Q^*(v,w)=|J(v,w)|/N$ is \lean{couplingOf}, a coupling by
+\lean{sum_blockCard_row}, \lean{sum_blockCard_col}, \lean{isCoupling_couplingOf}. Eq.~(10),
+$M_\pi((w,j),(w',j'))=D(v,w,v',w')$, is \lean{alignedDiff_blowup_eq_disc}. Eq.~(11),
+$\|M_\pi\|_{p\to q}\ge N^\kappa\|B_{p\to q}(G,H,Q^*)\|$, is \lean{eq13}: optimal $x,y$ from Lemma~19
+(\lean{exists_abs_dotProduct_mulVec_eq_opNorm}), the spread vectors $\tilde x,\tilde y$ with
+$\|\tilde x\|_p,\|\tilde y\|_{q^*}\le1$ (\lean{lpNorm_spread_le}, the paper's computation on p.~16, l.~543--553), and
+the chain of equalities on p.~17, l.~554--567 (\lean{sum_comp_eq_sum_blockCard}, \lean{div_rpow_self_eq_powZ},
+\lean{powZ_eq_rpow_mul_powZ_div}; terms with $|J|=0$ vanish by $0^0=0$). Eqs.~(8), (9) follow:
+\lean{deltaOTPQ_le_blowupSeq}.
+
+\paragraph{Converse, Eqs.~(12), (13) and Claim 20 (pp.~17--18, l.~568--581).} Claim~20: for $\varepsilon>0$ there is a
+\emph{rational} $Q^*$ with $\|B(Q^*)\|\le\min\|B\|+\varepsilon$. The paper's proof: take a minimiser $Q^*_0$
+(\lean{exists_deltaOTPQ_eq}, App.~A), rational $Q^*_k\to Q^*_0$ with $\mathrm{supp}(Q^*_k)=\mathrm{supp}(Q^*_0)$
+(\lean{exists_rational_seq_supp_eq}), entries of $B_{p\to q}$ converge on the fixed support and the norm is
+continuous (\lean{tendsto_opNorm_Bmat_of_supp_eq}, via \lean{tendsto_powZ_apply}, \lean{continuous_opNorm}).
+\lean{claim20} combines these exactly as the paper does.
+
+The rational sequence is obtained differently from the paper (which uses that the couplings vanishing outside
+$S=\mathrm{supp}(Q^*_0)$ form a rational polytope, p.~17, l.~574--575):
+\lean{exists_integral_approx_close} lifts $Q^*_0$ to the doubly stochastic $mn\times mn$ matrix
+$R((v,i),f(w,j))=Q^*_0(v,w)$ (\lean{liftM}, \lean{liftM_mem_doublyStochastic}), decomposes it by Mathlib's
+Birkhoff--von Neumann theorem, rounds the weights to multiples of $1/\ell$ keeping their signs
+(\lean{exists_round_weights}), and averages back (\lean{avgM}, \lean{isCoupling_avgM}, \lean{avgM_liftM}). The
+result has denominator $\ell mn$, the same support, and is $\delta$-close, for \emph{every} large $\ell$.
+
+\paragraph{Eqs.~(14), (15) (pp.~18--20, l.~582--638).} With $k$ clearing the denominators (\lean{exists_denom}) and
+$\ell=ks$, $q(v,w)=NQ^*(v,w)\in\mathbb N$. The partitions $I(v,w)$ of $[\ell n]$ and $J(v,w)$ of $[\ell m]$
+and the glued bijection $\pi$ are \lean{exists_fin_fun_card_fiber}, \lean{card_fiber_prod},
+\lean{exists_blowup_bij}; Eq.~(10) holds again. Averaged vectors $x,y$ satisfy $\|x\|_p,\|y\|_{q^*}\le1$ by
+H\"older, Eq.~(5) (\lean{lpNorm_average_le}); the chain of equalities on pp.~19--20 is \lean{block_sum_eq} inside
+\lean{eq16}, which proves Eq.~(15) for every $\ell$ with $\ell mn\,Q^*$ integral; \lean{eq15} is the case $\ell=ks$.
+
+\paragraph{Conclusion.} The paper: $\delta^\bullet=\lim_\ell=\lim_s\delta(G^{\bullet nks},H^{\bullet mks})\le\|B\|\le\delta^{\mathrm{OT}}+\varepsilon$
+(p.~18, l.~589--590; \lean{theorem1_of_tendsto}, which assumes that the limit exists). \lean{theorem1_tendsto} instead combines
+Eq.~(8) with \lean{exists_integral_approx} and \lean{eq16} for \emph{all} large $\ell$: every term of the sequence
+lies in $[\delta^{\mathrm{OT}},\delta^{\mathrm{OT}}+\varepsilon]$ eventually, so the sequence converges; \lean{theorem1}
+reads off the limit.
+
+\section{Assumptions and trusted base}
+No hypotheses beyond $1\le p,q$ and $V,W\neq\emptyset$; no cited results (the existence of the limit, for which the
+paper cites [Gro25], and the rational approximation of Claim~20 are proved). Only the axioms
+\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound} are used.
+
+\section{Notes on the formalisation}
+\begin{itemize}
+\item \textbf{Existence of the limit} is proved (\lean{theorem1_tendsto}); the paper cites [Gro25] (p.~2, l.~44--45).
+  The literal argument with this citation as a hypothesis is \lean{theorem1_of_tendsto}.
+\item \textbf{Claim 20}: the paper's argument is followed, but the
+  rational sequence with fixed support is constructed by Birkhoff rounding instead of the rational-polytope argument.
+\item \textbf{Minimiser.} Claim~20 starts from a minimiser; its existence (App.~A, pp.~14--15, l.~503--510) is
+  formalised (\lean{lowerSemicontinuous_opNorm_Bmat}, \lean{isCompact_setOf_isCoupling}). \lean{theorem1} itself
+  only needs near-minimisers.
+\item Operator norms are suprema over the unit ball; equal to the paper's maximum over the unit sphere.
+\item Names: \lean{eq13} is Eq.~(11), \lean{eq16} is Eq.~(15); \lean{lemma24} is Lemma~19.
+\end{itemize}
+
+\section{How to check this result}
+\begin{verbatim}
+lake build GsimOT.Theorem1_BlowupEqualsOT.Theorem1
+lake env lean scripts/CheckAxioms.lean     # prints the axioms of GsimOT.theorem1
+\end{verbatim}
+In a Lean file importing the module: \texttt{\#print axioms GsimOT.theorem1},
+\texttt{\#print axioms GsimOT.theorem1\_of\_tendsto}. The full table of correspondences is
+\file{Theorem1_correspondence.pdf} in this folder.
+\end{document}

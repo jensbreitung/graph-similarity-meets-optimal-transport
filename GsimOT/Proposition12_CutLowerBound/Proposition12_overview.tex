@@ -1,0 +1,142 @@
+\input{../../scripts/overview_preamble.tex}
+\begin{document}
+\overviewtitle{Proposition 10: a factor 2 gap for the cut distance}{Folder \file{GsimOT/Proposition12_CutLowerBound}}
+\paperversion
+
+\section{Statement}
+\textbf{Paper} (Section~3.3, p.~9, l.~324; Figure~3, p.~10; proof in App.~E.1, pp.~30--32, l.~950--1001).
+\emph{There are graphs $G,H$ on $145$ vertices with $d_\square(G,H)=8$ and $d^{\mathrm{OT}}_\square(G,H)\le4$.}
+
+\textbf{Lean.}
+\begin{itemize}
+\item \lean{GsimOT.Prop12.proposition12}: \quad $|V| = 145$, \ $d_\square(G,H) = 8$ \ and \ $d^{\mathrm{OT}}_\square(G,H) \le 4$
+for the concrete graphs \lean{G12}, \lean{H12} on the vertex type \lean{Vtx}. This is \emph{exactly} the statement of
+Proposition~10. There are no hypotheses.
+\item \lean{GsimOT.Prop12.dOTCut_eq_four}: \quad $d^{\mathrm{OT}}_\square(G,H)=4$. This is the Lean certificate of the
+remark after Proposition~10 (p.~10, l.~330); \lean{GsimOT.Prop12.four_le_costCut} shows $C_\square(Q)\ge4$ for every
+$Q\in\mathrm{DS}(V,W)$.
+\item \lean{GsimOT.Prop12.theorem4_item3}: \quad $\delta_\square(G,H)=2\,\delta^{\mathrm{OT}}_\square(G,H)$, Theorem~3~(3)
+(p.~4, l.~126).
+\end{itemize}
+Here $d_\square(G,H)=\min_\pi\|A^\pi_G-A_H\|_\square$ (\lean{dCut}), $d^{\mathrm{OT}}_\square(G,H)=\inf_{Q\in\mathrm{DS}(V,W)}C_\square(Q)$
+(\lean{dOTCut}) with $C_\square(Q)=\|B(G,H,Q)\|_\square$ (\lean{costCut}), and $\delta=d/n^2$.
+
+\paragraph{The equality claim.} The remark after Proposition~10 (p.~10, l.~330) says: ``Note that one of our Lean
+certificates verifies that the $d^{\mathrm{OT}}_\square$-bound is tight, so $d^{\mathrm{OT}}_\square(G,H)=4$.'' Its
+footnote~2 (p.~10) links the certificate, the file \file{GsimOT/Proposition12_CutLowerBound/OptimalAlignment.lean} of
+this folder. The paper refers to this file for the proof; the argument is outlined below.
+
+\section{Where the proof lives}
+\begin{longtable}{>{\raggedright\arraybackslash}p{5.2cm} >{\raggedright\arraybackslash}p{10.6cm}}
+\toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
+\file{Construction.lean} & vertex type, pentagon matrix $Z$, graphs \lean{G12}, \lean{H12}, adjacency entries, degrees,
+the finite pentagon bound $|x^\top Zy|\le8$ (App.~E.1, pp.~30--31) \\
+\file{Lemma39_BijectionCost.lean} & Lemma~33: $d_\square(G,H)=8$ (\lean{lemma39}) \\
+\file{Lemma40_FractionalCost.lean} & Lemma~34: $d^{\mathrm{OT}}_\square(G,H)\le4$ (\lean{lemma40}) \\
+\file{OptimalAlignment.lean} & $C_\square(Q)\ge4$ for all $Q$ (\lean{four_le_costCut}), $d^{\mathrm{OT}}_\square(G,H)=4$
+(\lean{dOTCut_eq_four}); the Lean certificate of the remark after Proposition~10 \\
+\file{Proposition12.lean} & Proposition~10 (\lean{proposition12}) and Theorem~3~(3) (\lean{theorem4_item3}) \\
+\end{longtable}
+
+\section{Proof layout}
+\begin{center}
+\begin{tikzpicture}
+  \node[main] (p) at (0,0) {Proposition 10\\\lean{proposition12}};
+  \node[main] (t3) at (5,0) {Theorem 3 (3), $=$\\\lean{theorem4_item3}};
+  \node[res] (opt) at (8,-1.7) {$d^{\mathrm{OT}}_\square\ge4$\\\lean{four_le_dOTCut}};
+  \node[res] (l33) at (-3,-1.7) {Lemma 33: $d_\square=8$\\\lean{lemma39}};
+  \node[res] (l34) at (3,-1.7) {Lemma 34: $d^{\mathrm{OT}}_\square\le4$\\\lean{lemma40}};
+  \node[res] (deg) at (-6,-3.5) {degree test\\\lean{abs_dg_sub_le}};
+  \node[res] (wit) at (-2.6,-3.5) {32 flip patterns\\\lean{eight_le_wit}};
+  \node[res] (z) at (1,-3.5) {pentagon bound $|x^\top Zy|\le 8$\\\lean{abs_bilin_Z_le}};
+  \node[res] (q) at (5,-3.5) {coupling $Q$\\\lean{Q40}, \lean{costCut_Q40_le}};
+  \node[res] (c) at (0,-5.2) {construction\\\lean{G12}, \lean{H12}, \lean{dg}};
+  \node[shared] (cn) at (0,-6.8) {cut norm, $d_\square$, $d^{\mathrm{OT}}_\square$ (Common)\\\lean{cutNorm}, \lean{dCut}, \lean{dOTCut}};
+  \draw[dep] (p) -- (l33); \draw[dep] (p) -- (l34);
+  \draw[dep] (t3) -- (l33); \draw[dep] (t3) -- (l34); \draw[dep] (t3) -- (opt);
+  \draw[dep] (opt) -- (c);
+  \draw[dep] (l33) -- (deg); \draw[dep] (l33) -- (wit); \draw[dep] (l33) -- (z);
+  \draw[dep] (l34) -- (q); \draw[dep] (q) -- (z);
+  \draw[dep] (deg) -- (c); \draw[dep] (wit) -- (c); \draw[dep] (z) -- (c); \draw[dep] (q) -- (c);
+  \draw[dep] (c) -- (cn);
+\end{tikzpicture}
+\end{center}
+
+\section{The proof step by step}
+\paragraph{Construction (App.~E.1, pp.~30--31, l.~950--966).} The core consists of five pairs $\{v_i^+,v_i^-\}$, $i\in\mathbb Z_5$, and each pair $i$
+has its own set $L_i$ of $9(i+1)$ markers adjacent to both vertices of the pair; $135+10=145$ vertices
+(\lean{card_Vtx}). Core edges follow $Z$ ($Z_{ij}=+1$ on the sides, $-1$ on the diagonals of the pentagon):
+$v^\sigma_iv^\tau_j\in E(G)$ iff $\sigma\tau=Z_{ij}$, $w^\sigma_iw^\tau_j\in E(H)$ iff $\sigma\tau=-Z_{ij}$
+(\lean{gAdj}, \lean{hAdj}, \lean{G12}, \lean{H12}). Both graphs live on one vertex type \lean{Vtx}; the natural
+bijection $\mathrm{id}$ ($v_i^\sigma\mapsto w_i^\sigma$, $L_i\to L'_i$; p.~31, l.~984--985) is \lean{Equiv.refl}. The degrees are $13,22,31,40,49$ on the pairs and $2$ on markers, in both
+graphs (\lean{sum_adj_G12}, \lean{sum_adj_H12}); distinct degrees differ by at least $9$ (\lean{nine_le_of_dg_ne}).
+
+\paragraph{Lemma 33, $d_\square(G,H)=8$ (p.~31, l.~967; proof l.~968--988).}
+\begin{enumerate}
+\item \emph{Lower bound, markers fix the pairs} (l.~968--972). With $S=\{\pi(v)\}$, $T=W$ one gets
+$C_\square(\pi)\ge|\deg_G(v)-\deg_H(\pi v)|$ (\lean{abs_dg_sub_le}), which is $\ge9$ unless $\pi$ preserves all degrees.
+A degree-preserving $\pi$ maps every core vertex into its own pair (\lean{symm_inl_of_dg}), i.e.\ $\pi(v_i^\sigma)=w_i^{r_i\sigma}$.
+\item \emph{Lower bound, flip patterns} (l.~973--984). On the core, $A^\pi_G-A_H$ has entries $M_{ij}\sigma\tau$ with
+$M_{ij}=\frac12Z_{ij}(1+r_ir_j)$ (\lean{Mr}), and core cuts realise $x^\top My$ for all $x,y\in\{-1,0,1\}^5$
+(\lean{core_sum_eq_bilin}, \lean{cutOf}). The paper checks $\|M\|_{\infty\to1}\ge8$ for the cases $|K|\le2$ up to
+symmetry; Lean checks all $32$ patterns $r$ with an explicit table of maximisers \lean{wit} by \lean{decide}
+(\lean{eight_le_wit}, \lean{eight_le_of_dg}). Together: \lean{eight_le_cutNorm}.
+\item \emph{Upper bound, $\pi=\mathrm{id}$} (l.~984--988). $A_G-A_H$ vanishes outside the core, every cut value is $x^\top Zy$
+(\lean{cut_sum_eq_core}), and $|x^\top Zy|\le8$ (\lean{abs_bilin_Z_le}, reduced to $\sum_j|(Zx)_j|\le8$ over the $3^5$
+vectors $x$, \lean{sum_abs_Z_mul_le_int}). Hence $C_\square(\mathrm{id})\le8$ (\lean{cutNorm_refl_le}).
+\end{enumerate}
+
+\paragraph{Lemma 34, $d^{\mathrm{OT}}_\square(G,H)\le4$ (p.~31, l.~989; proof pp.~31--32, l.~990--1000).} $Q$ is the identity on markers and $\frac12$ on each pair block
+(\lean{Q40}, \lean{Q40_isDS}). Discrepancies with a marker atom vanish (\lean{B40_eq_zero_left}, \lean{B40_eq_zero_right}); on the
+20 core atoms the entry of $B(G,H,Q)$ is $\frac12\cdot\frac12Z_{ij}(\sigma\sigma'+\tau\tau')\cdot\frac12$ (\lean{B40_atom}).
+Splitting into straight and crossed atoms (\lean{atom_sum_eq}) every cut value is a sum of two terms $\frac14x^\top Zy$, so
+$C_\square(Q)\le\frac14\cdot8+\frac14\cdot8=4$ (\lean{costCut_Q40_le}), and $d^{\mathrm{OT}}_\square\le C_\square(Q)$ (\lean{lemma40}).
+
+\paragraph{$d^{\mathrm{OT}}_\square(G,H)\ge4$ (remark after Proposition~10, p.~10, l.~330; \file{OptimalAlignment.lean}).} Fix $Q\in\mathrm{DS}(V,W)$, write
+$q_x=Q(v,w)$ for atoms $x=(v,w)$, $d(x)=\deg_G(v)-\deg_H(w)$, $L=\sum_xq_x|d(x)|$ and
+$B(f,g)=\sum_{x,y}f(x)q_xD(x,y)q_yg(y)$.
+\begin{enumerate}
+\item \emph{Fractional cuts}: $|B(f,g)|\le C_\square(Q)$ for $f,g\colon\Omega\to[0,1]$. A linear form on
+$[0,1]^\Omega$ is extremal at an indicator (\lean{exists_abs_sum_mul_le}); apply this in $f$, then in $g$
+(\lean{abs_bilin_le_cutNorm}).
+\item \emph{Degree identities}: $\sum_yD(x,y)q_y=d(x)$ (\lean{sum_disc_mul}, \lean{sum_B_right}) and
+$\sum_xq_xd(x)=0$ (\lean{sum_mul_dd}).
+\item \emph{Core test and degree discrepancy} (\lean{degree_add_bil_le}): for $|s|,|t|\le1$ with $s=0$ where $d\ne0$, and $e=\mathrm{sgn}\,d$, the
+pairs $f_\pm=\frac12(1+e\pm s)$, $g_\pm=\frac12(1\pm t)$ take values in $[0,1]$ and
+$B(f_+,g_+)+B(f_-,g_-)=\frac12(L+B(s,t))$, so $L+B(s,t)\le4C_\square(Q)$.
+\item \emph{Mass leaving the pairs}: mass sent from a core vertex outside its pair has $|d|\ge9$, so
+$L\ge9(10-T)$, where $T$ is the mass on the $20$ core atoms (\lean{nine_mul_le_row}, \lean{nine_mul_le_L}).
+\item \emph{The pentagon} (\lean{exists_zForm_ge}): for $x\in[0,2]^5$ there are $a,b\in[-1,1]^5$ with
+$a^\top\mathrm{diag}(x)Z\mathrm{diag}(x)b\ge\frac{16}5\sum_ix_i-8$: for $x_k=\max x$ and $a_j=Z_{kj}$ ($j\ne k$), flipping
+$a_k$ changes the quadratic form by $4x_k(S-x_k)$ (\lean{zForm_flip}, by \lean{fin_cases} on $k$), and
+$2M(S-M)\ge\frac{16}5S-8$ for $M\le S\le5M$, $M\le2$.
+\item \emph{Test functions}: $s=\sigma a_i$ on straight atoms $(v_i^\sigma,w_i^\sigma)$, $\sigma a'_i$ on
+crossed atoms (\lean{testFn}); then $B(s,t)=a^\top CZCb+a'^\top HZHb'$ with $c_i,h_i$ the straight and crossed
+masses of pair $i$ (\lean{disc_atom}, \lean{bil_testFn}). Item~5 for $c$ and $h$ gives $B(s,t)\ge\frac{16}5T-16$.
+\item Together $4C_\square(Q)\ge9(10-T)+\frac{16}5T-16\ge16$ since $T\le10$ (\lean{four_le_costCut}), hence
+$d^{\mathrm{OT}}_\square\ge4$ (\lean{four_le_dOTCut}) and, with Lemma~34, $=4$ (\lean{dOTCut_eq_four}).
+\end{enumerate}
+
+\paragraph{Proposition 10 and Theorem 3 (3).} \lean{proposition12} combines the two lemmas, as the proof of
+Proposition~10 does (p.~32, l.~1001). \lean{theorem4_item3} divides by
+$145^2$: $\delta_\square=8/145^2=2\cdot4/145^2=2\,\delta^{\mathrm{OT}}_\square$.
+
+\section{Assumptions and trusted base}
+No hypotheses. The finite checks use \lean{decide} (no \lean{native_decide}). Only the standard axioms
+\lean{propext}, \lean{Classical.choice}, \lean{Quot.sound} are used.
+
+\section{Notes on the formalisation}
+\begin{itemize}
+\item The case analysis on $|K|$ in Lemma~33 is replaced by a check of all $32$ flip patterns with explicit witnesses.
+\item $d^{\mathrm{OT}}_\square\ge4$ is proved in \file{OptimalAlignment.lean}, the Lean certificate to which the remark after
+Proposition~10 refers (p.~10, l.~330 and footnote~2); its proof is outlined above.
+\item Both graphs live on one vertex type \lean{Vtx}, so the natural bijection $\mathrm{id}$ is \lean{Equiv.refl}.
+\end{itemize}
+
+\section{How to check this result}
+\begin{verbatim}
+lake build GsimOT.Proposition12_CutLowerBound.Proposition12
+lake env lean scripts/CheckAxioms.lean      # prints the axioms of proposition12, dOTCut_eq_four
+\end{verbatim}
+The correspondence table is \file{Proposition12_correspondence.pdf} in the same folder.
+\end{document}

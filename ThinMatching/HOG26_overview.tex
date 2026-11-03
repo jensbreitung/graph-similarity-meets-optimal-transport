@@ -1,0 +1,279 @@
+\input{../scripts/overview_preamble.tex}
+\begin{document}
+\sloppy
+\overviewtitle{Thin perfect matchings [HOG26]}{Library \file{ThinMatching/} \quad (Theorem 35 of the main paper)}
+
+\noindent\textbf{Paper.} A.~Haqi, S.~Oveis Gharan. \emph{On Thin Perfect Matchings up to Polylogarithmic
+Factors}, arXiv:2606.01330v2 (2026) [HOG26]. Statement, section, algorithm and equation numbers below refer
+to [HOG26]; its numbering is independent of the main paper. The main paper (J.~Breitung, T.~Gervens,
+M.~Grohe, \emph{Graph Similarity Meets Optimal Transport},
+\file{Graph_Similarity_Meets_Optimal_Transport.pdf}) cites [HOG26, Theorem~1.4] as its
+\textbf{Theorem~35} (p.~32, l.~1021--1022, App.~E.2.1) and uses it, through Theorem~38, for the
+multiplicative upper bound of Theorem~11 (cut distance). This document is for a reviewer who wants to
+check that Theorem~35 is proved in Lean, conditionally on the tree-cut sparsifier theorem of
+R\"acke and Shah [RS14]. The line-by-line correspondence table is \file{ThinMatching/HOG26_correspondence.pdf}.
+\par\smallskip
+
+\noindent\textbf{Name clashes.} The Lean names follow [HOG26]: \lean{ThinMatching.Lemma36} is
+[HOG26, Lemma~3.6] (not Lemma~36 of the main paper), \lean{ThinMatching.theorem13_support} is
+[HOG26, Theorem~1.3] (not the main paper's Theorem~11, whose Lean name is \lean{GsimOT.theorem13_of_rackeShah}),
+and \lean{ThinMatching.theorem14_bip} is [HOG26, Theorem~1.4].
+
+\section{Statements}
+
+\subsection{Theorem 35 of the main paper}
+\emph{Thinness} (main paper, Eq.~(23), p.~32, l.~1014--1016): a permutation matrix $P\in\mathrm{Perm}(n)$ is
+$\alpha$-thin with respect to $Q\in\mathrm{DS}(n)$ if
+\[ \sum_{(i,j)\in(X\times\overline Y)\cup(\overline X\times Y)} P_{ij}\;\le\;\alpha
+   \sum_{(i,j)\in(X\times\overline Y)\cup(\overline X\times Y)} Q_{ij}\qquad\text{for all }X,Y\subseteq[n]. \]
+\emph{Theorem~35} ([HOG26, Theorem~1.4]): there is an absolute constant $C_{\mathrm{thin}}>0$ such that every
+$Q\in\mathrm{DS}(n)$ admits an $\alpha$-thin permutation matrix with $\alpha\le C_{\mathrm{thin}}\ln(2n)\ln\ln(4n)$.
+
+In Lean (main library, \file{GsimOT/Theorem13_CutUpperBound/Definitions.lean}) this is the proposition
+\lean{GsimOT.ThinPermutationTheorem}, with thinness \lean{GsimOT.IsThin}: for $\pi:V\simeq W$ and all
+$U_V\subseteq V$, $U_W\subseteq W$,
+\[ \#\{v : \neg(v\in U_V\leftrightarrow\pi(v)\in U_W)\}\le a\sum_{v,w}[\neg(v\in U_V\leftrightarrow w\in U_W)]\,Q_{vw}, \]
+which is Eq.~(23) with $X=U_V$, $Y=U_W$: the pair $(v,w)$ is counted iff $(v,w)\in(X\times\overline Y)\cup(\overline X\times Y)$.
+\lean{ThinPermutationTheorem} asks for one $C_{\mathrm{thin}}>0$ such that for all finite types $V,W$ with
+$|V|=|W|$ and all $Q$ with \lean{IsDS Q} there is $\pi$ with \lean{IsThin} $(C_{\mathrm{thin}}\ln(2|V|)\ln\ln(4|V|))\,Q\,\pi$.
+This is exactly Theorem~35 (with $V,W$ of size $n$ instead of $[n]$; ``$\alpha\le$'' is equivalent to ``$\alpha=$''
+because the right-hand side of Eq.~(23) is nonnegative). For $n=0$ the statement is trivial; for $n\ge1$ the
+bound is positive, as required by ``Let $\alpha>0$''. So \lean{GsimOT.ThinPermutationTheorem} is Theorem~35.
+
+\subsection{Formalised statements of [HOG26]}
+Throughout, $x(\delta(S))=$ \lean{cutWeight x S}, $|M\cap\delta(S)|=$ \lean{crossCount M S}, and
+\lean{IsThin} $\alpha\,x\,M$ means $|M\cap\delta(S)|\le\alpha\,x(\delta(S))$ for all $S\subseteq V$
+(\file{Basic.lean}; [HOG26] quantifies over $\emptyset\ne S\subsetneq V$, which is equivalent since both
+sides vanish for $S\in\{\emptyset,V\}$). $x\in\mathrm{PM}(G)$ is \lean{IsFracPM x}: a convex combination of
+perfect matchings. In the bipartite case $x:L\to R\to\mathbb R$ with \lean{IsFracPMBip x} (nonnegative,
+all row and column sums $1$, i.e.\ $x$ is doubly stochastic), $\pi:L\simeq R$, and \lean{IsThinBip}.
+
+\begin{description}[leftmargin=0pt]
+\item[Theorem 1.4, bipartite] \lean{ThinMatching.theorem14_bip}\,(hRS : \lean{RackeShahTheorem}): there is
+  $C>0$ such that for all finite $L,R$ with $|L|=|R|=n$ and every $x$ with \lean{IsFracPMBip x} there is
+  $\pi:L\simeq R$ (not necessarily inside $\mathrm{supp}(x)$) with
+  $|M_\pi\cap\delta(S)|\le C\ln(2n)\ln\ln(4n)\,x(\delta(S))$ for all $S=S_L\cup S_R$.
+  \textbf{This is the statement used for Theorem~35.}
+\item[Theorem 1.4, general] \lean{ThinMatching.theorem14}\,(hRS): there is $C>0$ such that every $x\in\mathrm{PM}(G)$
+  on $V$ has a $C\ln(2|V|)\ln\ln(4|V|)$-thin perfect matching $M$ of the complete graph on $V$
+  ($=C\ln(4n)\ln\ln(8n)$ for $|V|=2n$).
+\item[Theorem 1.3] \lean{ThinMatching.theorem13_support}\,(h36 : \lean{Lemma36}): there is $C>0$ such that every
+  $x\in\mathrm{PM}(G)$ has a perfect matching $M\subseteq\mathrm{supp}(x)$ (\lean{InSupport}) that is
+  $C|V|\ln(2|V|)$-thin.
+\item[Lemma 1.2] \lean{ThinMatching.lemma12}\,(no hypotheses): for $n\ge1$ the graph of Fig.~1 on $2n+2$ vertices
+  has $x\in\mathrm{PM}(G)$ such that every perfect matching $M\subseteq\mathrm{supp}(x)$ has a cut
+  $\emptyset\ne S\subsetneq V$ with $x(\delta(S))>0$ and $|M\cap\delta(S)|\ge\frac n2\,x(\delta(S))$;
+  corollary \lean{lemma12_not_thin}: no such $M$ is $\alpha$-thin for $\alpha<n/2$.
+\end{description}
+Lemma~1.2 and Theorem~1.3 are not needed for Theorem~35; they are formalised for completeness.
+
+\subsection{The two explicit hypotheses}
+\begin{itemize}
+\item \hyp{\lean{RackeShahTheorem}} (\file{TreeSparsifier.lean}) = [HOG26, Theorem~2.2] = [RS14]: there is
+  $C>0$ such that every weighted graph $x$ on $n\ge1$ vertices has a $C\ln(2n)\ln\ln(4n)$-tree-cut sparsifier
+  (\lean{IsTreeCutSparsifier}, Definition~2.1: a weighted tree $T$ with Steiner nodes, $V\hookrightarrow\mathcal V$,
+  and $x(\delta(S))\le\lambda_T(S)\le q\,x(\delta(S))$ for all $S$). [HOG26] cites this result without proof;
+  its proof (R\"acke--Shah, building on R\"acke's hierarchical decompositions) is far outside the scope of
+  this formalisation. $\ln(2n)\ln\ln(4n)$ replaces $\log n\log\log n$ so that the bound is positive for $n\ge1$.
+\item \hyp{\lean{Lemma36}} (\file{SupportConstrained/Sampling.lean}) = [HOG26, Lemma~3.6], whose proof [HOG26]
+  omits (``a simple Chernoff bound and a cut-counting argument''): there are $c,K>0$ such that for every
+  weighted graph $y\le1$ on $W$, every $N\ge\max(1,|W|)$ and every integer $\alpha\ge cN\ln(2N)$: if all
+  nonempty proper cuts have $y(\delta(S))\ge1/(4N)$, then with probability $\ge1-1/(4N)$ the sample $Y$
+  ($\alpha$ independent copies of each edge $e$, each kept with probability $y_e$) satisfies
+  $Y(\delta(S))\le K\alpha\,y(\delta(S))$ for all $S$. Only Theorem~1.3 uses it.
+\end{itemize}
+Both are Lean \texttt{def}s of type \texttt{Prop} that appear as arguments of the theorems, never as
+\texttt{axiom}s: the dependence is visible in every statement, a false hypothesis cannot make other parts
+of the library inconsistent, and \texttt{\#print axioms} shows only \texttt{propext}, \texttt{Classical.choice},
+\texttt{Quot.sound}. \textbf{Theorem~35 depends only on \lean{RackeShahTheorem}}, not on \lean{Lemma36}.
+
+\section{Where the proof lives}
+\noindent Paths are relative to \file{ThinMatching/} unless stated otherwise.
+\begin{longtable}{>{\raggedright\arraybackslash}p{5.8cm} >{\raggedright\arraybackslash}p{9.8cm}}
+\toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
+\file{Basic.lean} & weighted graphs, cuts, perfect matchings (fixed-point-free involutions), thinness, $\mathrm{PM}(G)$; bipartite versions (Secs.~1, 2) \\
+\file{TreeSparsifier.lean} & rooted trees, subtrees, tree cuts, $\lambda_T$, Definition~2.1, hypothesis \lean{RackeShahTheorem} (Theorem~2.2) \\
+\file{Load.lean} & loads and discrepancies (Definitions~4.1, 4.2, 4.4) \\
+\file{LoadVsCut.lean} & Proposition~4.3 (\lean{prop43}) and the charging lemma \lean{exists_cut_edge} \\
+\file{Discrepancy.lean} & Lemma~4.5 (\lean{lemma45_bip}, \lean{lemma45}) \\
+\file{TreePairing.lean} & Algorithm~2, Lemma~4.6 (\lean{lemma46_bip}, \lean{lemma46}) \\
+\file{Theorem14.lean} & Theorem~1.4 (\lean{theorem14_bip}, \lean{theorem14}); bipartite/general translation; constants \\
+\file{LowerBound.lean} & Lemma~1.2, Fig.~1 \\
+\file{SupportConstrained/}\newline\file{Prob.lean} & finite product spaces of Bernoulli coins (probability model of Algorithm~1) \\
+\file{SupportConstrained/}\newline\file{Sampling.lean} & the sampling step, hypothesis \lean{Lemma36} \\
+\file{SupportConstrained/}\newline\file{Trimming.lean} & Definition~3.1, Lemma~3.2 \\
+\file{SupportConstrained/}\newline\file{TutteWitness.lean} & Tutte witnesses (Definition~3.3, Theorem~2.4 via Mathlib's \lean{SimpleGraph.tutte}), Lemma~3.4, Eq.~(1) \\
+\file{SupportConstrained/}\newline\file{Lemma35.lean} & Lemma~3.5 \\
+\file{SupportConstrained.lean} & Theorem~1.3 (\lean{theorem13_support}), Algorithm~1 \\
+\file{GsimOT/Theorem13_CutUpperBound/}\newline\file{FromThinMatching.lean} & bridge (main library): Theorem~35 and Theorem~11 of the main paper assuming only [RS14] \\
+\end{longtable}
+
+\section{Proof layout}
+\subsection{Theorem 1.4 and the bridge to the main paper}
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm, leaf/.style={res, font=\scriptsize}]
+  \node[shared] (t11) at (0,0) {Main paper, Theorem 11\\\lean{GsimOT.theorem13_of_rackeShah}};
+  \node[main] (t35) at (0,-1.5) {Main paper, Theorem 35\\\lean{GsimOT.thinPermutationTheorem_of_rackeShah}};
+  \node[main] (t14b) at (-1.6,-3.2) {Theorem 1.4 (bipartite)\\\lean{theorem14_bip}};
+  \node[res] (t14g) at (4.2,-3.2) {Theorem 1.4 (general)\\\lean{theorem14}};
+  \node[leaf] (tr) at (-6.0,-3.2) {translation $L\oplus R$\\\lean{bipPM}, \lean{cutWeight_bipGraph},\\\lean{load_bipPM}, \lean{log_mul_loglog_le}};
+  \node[cited] (rs) at (-6.0,-5.4) {Theorem 2.2 [RS14]\\\lean{RackeShahTheorem}};
+  \node[res] (p43) at (-2.2,-5.4) {Proposition 4.3\\\lean{prop43}};
+  \node[res] (l45) at (1.4,-5.4) {Lemma 4.5\\\lean{lemma45_bip},\\\lean{lemma45}};
+  \node[res] (l46) at (5.2,-5.4) {Lemma 4.6 (Alg.~2)\\\lean{lemma46_bip},\\\lean{lemma46}};
+  \node[leaf] (ce) at (-4.6,-7.6) {charging lemma\\\lean{exists_cut_edge}};
+  \node[leaf] (ts) at (-1.5,-7.6) {single-edge tree cut\\\lean{treeCutWeight_subtree}};
+  \node[leaf] (odd) at (2.1,-7.6) {odd sets\\\lean{one_le_crossCount_of_odd}};
+  \node[leaf] (lam) at (6.0,-7.6) {laminarity\\\lean{subtree_laminar},\\\lean{subtree_ssubset_of_separates}};
+  \draw[dep] (t11) -- (t35);
+  \draw[dep] (t35) -- (t14b);
+  \draw[dep] (t14b) -- (tr);
+  \draw[dep] (t14b) -- (rs); \draw[dep] (t14b) -- (p43); \draw[dep] (t14b) -- (l45); \draw[dep] (t14b) -- (l46);
+  \draw[dep] (t14g) -- (rs); \draw[dep] (t14g) -- (p43); \draw[dep] (t14g) -- (l45); \draw[dep] (t14g) -- (l46);
+  \draw[dep] (p43) -- (ce); \draw[dep] (p43) -- (ts);
+  \draw[dep] (l45) -- (odd); \draw[dep] (l46) -- (lam);
+\end{tikzpicture}
+\end{center}
+\noindent Theorem~11 of the main paper also needs the rest of \file{GsimOT/Theorem13_CutUpperBound}
+(Lemmas~36, 37, Theorems~38, 39, \dots{} of the main paper, \lean{GsimOT.theorem13_of_thin}); see the overview of that folder.
+
+\subsection{Theorem 1.3 and Lemma 1.2}
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm, leaf/.style={res, font=\scriptsize}]
+  \node[main] (t13) at (0,0) {Theorem 1.3 (Algorithm 1)\\\lean{theorem13_support}};
+  \node[main] (l12) at (6.0,0) {Lemma 1.2 (Fig.~1)\\\lean{lemma12}};
+  \node[res] (l32) at (-6.2,-2) {Lemma 3.2 (Def.~3.1)\\\lean{lemma32}};
+  \node[res] (l35) at (-2.4,-2) {Lemma 3.5\\\lean{lemma35},\\\lean{witness_bound_le}};
+  \node[res] (blk) at (1.6,-2) {union over blocks\\\lean{prob_bad_blocks_le}};
+  \node[res] (good) at (5.6,-2) {thinness from blocks\\\lean{crossCount_le_of_good}};
+  \node[leaf] (l34) at (-7.0,-4.4) {Lemma 3.4\\\lean{card_witnesses_le}};
+  \node[leaf] (eq1) at (-4.0,-4.4) {Eq.~(1)\\\lean{one_le_witnessF_weight}};
+  \node[shared, font=\scriptsize] (tut) at (-0.7,-4.4) {Theorem 2.4 (Tutte)\\\lean{exists_witness_of_no_pm}};
+  \node[leaf] (prob) at (3.0,-4.4) {probability model\\\file{Prob.lean}, \file{Sampling.lean}};
+  \node[cited] (l36) at (6.4,-4.4) {Lemma 3.6\\\lean{Lemma36}};
+  \draw[dep] (t13) -- (l32); \draw[dep] (t13) -- (l35); \draw[dep] (t13) -- (blk); \draw[dep] (t13) -- (good);
+  \draw[dep] (l35) -- (l34); \draw[dep] (l35) -- (eq1); \draw[dep] (l35) -- (tut); \draw[dep] (l35) -- (prob);
+  \draw[dep] (blk) -- (l36); \draw[dep] (blk) -- (prob);
+\end{tikzpicture}
+\end{center}
+\noindent Styles: thick = main results, dashed red = explicit hypotheses (cited results), grey = results
+outside this part (Mathlib's Tutte theorem; the main paper's Theorem~11).
+
+\section{The proof of Theorem 1.4 step by step}
+The proof of [HOG26, Section~4] has three ingredients and a short assembly.
+
+\paragraph{Step 0: trees and tree-cut sparsifiers (Sec.~2, Definition~2.1, Theorem~2.2).}
+A weighted tree with Steiner nodes is a \lean{RootedTree N} (parent function, every vertex reaches the root),
+edge weights $y:N\to\mathbb R$ (edge $\{v,\mathrm{parent}(v)\}$ has weight $y_v$) and an embedding
+$e:V\hookrightarrow N$. \lean{treeCutWeight} is $y(\delta_T(\mathcal S))$, \lean{lambdaT} is
+$\lambda_T(S)=\min\{y(\delta_T(\mathcal S)):\mathcal S\cap V\in\{S,V\setminus S\}\}$, and
+\lean{IsTreeCutSparsifier} $q$ is Definition~2.1. Theorem~2.2 is the hypothesis \lean{RackeShahTheorem}.
+
+\paragraph{Step 1: loads and discrepancies (Definitions~4.1, 4.2, 4.4; \file{Load.lean}).}
+The tree path between $a$ and $b$ uses the edge $f_v=\{v,\mathrm{parent}(v)\}$ iff exactly one of $a,b$ lies in
+\lean{subtree T v}. Hence $\mathrm{load}_M(f_v)$ (\lean{load}, \lean{loadBip}) counts the matching edges with
+exactly one endpoint in the subtree of $v$, and the discrepancies are
+$\Delta_{\mathrm{bip}}=\bigl||L\cap\cdot|-|R\cap\cdot|\bigr|$ (\lean{discBip}) and
+$\Delta_{\mathrm{non\text{-}bip}}=\mathbf 1[|V\cap\cdot|\text{ odd}]$ (\lean{discNonBip}) of $V\cap\mathrm{subtree}(v)$.
+
+\paragraph{Step 2: Proposition 4.3 (p.~7; \lean{prop43}).}
+If $T$ is a $q$-tree-cut sparsifier of $x$ and $\mathrm{load}_M(f_v)\le\beta\,x(\delta(V\cap\mathrm{subtree}(v)))$
+for every tree edge, then $M$ is $\beta q$-thin. Lean follows the paper: take an optimal tree cut $\mathcal S'$
+for $S$ (\lean{exists_eq_ciInf_of_finite}); every crossing matching edge is charged to an edge
+$f_v\in\delta_T(\mathcal S')$ on its tree path (\lean{exists_cut_edge}); since the single-edge cut
+$\mathrm{subtree}(v)$ has value $y_v$ (\lean{treeCutWeight_subtree}) and the sparsifier does not underestimate
+cuts, $\mathrm{load}_M(f_v)\le\beta x(\delta(\cdot))\le\beta\lambda_T(\cdot)\le\beta y_v$; summing,
+$|M\cap\delta(S)|\le\beta\,y(\delta_T(\mathcal S'))=\beta\lambda_T(S)\le\beta q\,x(\delta(S))$.
+
+\paragraph{Step 3: Lemma 4.5 (p.~8; \file{Discrepancy.lean}).}
+Bipartite (\lean{lemma45_bip}): by the degree constraints,
+$\bigl||S_L|-|S_R|\bigr|=|x(S_L,R)-x(L,S_R)|\le x(\delta(S))$, as in the paper.
+General (\lean{lemma45}): $x(\delta(S))\ge1$ for $|S|$ odd; Lean writes $x$ as a convex combination of
+perfect matchings, each of which crosses an odd set (\lean{one_le_crossCount_of_odd},
+\lean{cutWeight_eq_sum_crossCount}), instead of invoking the odd-set constraint (Theorem~2.5).
+
+\paragraph{Step 4: Lemma 4.6, Algorithm 2 (pp.~9--10; \file{TreePairing.lean}).}
+For points placed at tree vertices there is a perfect matching with $\mathrm{load}_M(f)=\Delta(f)$ for every
+tree edge (\lean{lemma46_bip} for $|L|=|R|$, \lean{lemma46} for $|V|$ even). Lean runs the bottom-up greedy
+one pair at a time: it matches a matchable pair inside a subtree of minimal size that contains one (the
+first pair the greedy forms) and recurses (strong induction on the number of points). The paper's key
+observation (inside the chosen subtree no proper subtree contains a matchable pair) becomes
+\lean{subtree_laminar}, \lean{subtree_ssubset_of_separates}: every edge separating the pair sees load and
+discrepancy both grow by one, all other edges see no change.
+
+\paragraph{Step 5: assembly (Section~4; \file{Theorem14.lean}).}
+\lean{theorem14}: obtain the sparsifier $T$ of $x$ from \lean{RackeShahTheorem} with $q=C\ln(2|V|)\ln\ln(4|V|)$,
+the matching $M$ of \lean{lemma46} ($|V|$ is even because a perfect matching exists), check the hypothesis of
+\lean{prop43} with $\beta=1$ by \lean{lemma45}, and conclude that $M$ is $q$-thin.
+\lean{theorem14_bip}: the same argument on the weighted graph \lean{bipGraph x} on $L\oplus R$, with the
+translations \lean{bipPM} ($\pi\mapsto$ involution of $L\oplus R$), \lean{crossCount_bipPM},
+\lean{cutWeight_bipGraph}, \lean{load_bipPM}. Since $|L\oplus R|=2n$ the sparsifier bound is
+$C\ln(4n)\ln\ln(8n)\le6C\ln(2n)\ln\ln(4n)$ (\lean{log_mul_loglog_le}), so \lean{theorem14_bip} holds with
+constant $6C$, where $C$ is the constant of \lean{RackeShahTheorem}. The case $n=0$ is trivial.
+
+\section{The proof of Theorem 1.3 (Section 3) in brief}
+\lean{theorem13_support} follows Algorithm~1 with $n=|V|$, $\varepsilon=1/(4n)$ and
+$\alpha=\lceil c'n\ln(2n)\rceil$, $c'=\max(c,4)$: (1) trimming (Definition~3.1, \lean{lemma32}): blocks that are
+$\varepsilon$-edge-connected, removed weight $\le(n-1)\varepsilon\le1/4$; (2) sampling (\lean{sampleProb});
+(3) Lemma~3.5 (\lean{lemma35}, via Tutte's theorem \lean{exists_witness_of_no_pm}, at most $(n+1)^n$ witnesses
+\lean{card_witnesses_le}, and $x(F)\ge1$ \lean{one_le_witnessF_weight}): no perfect matching with probability
+$\le1/4$ (\lean{witness_bound_le}); (4) \lean{Lemma36} on each block plus a union bound over $\le n$ blocks
+(\lean{prob_bad_blocks_le}): some block bad with probability $\le1/4$; (5) an outcome of positive probability
+avoiding both events (\lean{exists_not_of_prob_lt_one}) gives $M\subseteq Y\subseteq\mathrm{supp}(x)$, and
+\lean{crossCount_le_of_good} (with \lean{sum_cut_eq_sum_blocks}) gives thinness for every cut, also cuts through
+several blocks. Constant: $C=K(\max(c,4)+2)$.
+
+\section{The bridge to the main paper}
+\file{GsimOT/Theorem13_CutUpperBound/FromThinMatching.lean} (main library; it imports
+\file{ThinMatching.Theorem14}):
+\begin{itemize}
+\item \lean{GsimOT.thinPermutationTheorem_of_rackeShah} (hRS : \lean{ThinMatching.RackeShahTheorem}) :
+  \lean{GsimOT.ThinPermutationTheorem}. Proof: take $C$ from \lean{theorem14_bip}; for $Q$ with \lean{IsDS Q}
+  the triple (\lean{nonneg}, \lean{row_sum}, \lean{col_sum}) is \lean{IsFracPMBip Q}; the resulting $\pi$ is thin
+  in the sense of \lean{GsimOT.IsThin} after unfolding \lean{bipCrossCount}, \lean{bipCutWeight} (a \texttt{simpa}).
+  Hence Theorem~35 holds with $C_{\mathrm{thin}}=6\,C_{\mathrm{RS}}$, where $C_{\mathrm{RS}}$ is the constant of
+  \lean{RackeShahTheorem}.
+\item \lean{GsimOT.theorem13_of_rackeShah}, \lean{GsimOT.theorem13_power_of_rackeShah}: Theorem~11 of the main
+  paper (both bounds) assuming only [RS14], by plugging the above into
+  \lean{GsimOT.theorem13_of_thin} and \lean{GsimOT.theorem13_power_of_thin}.
+\end{itemize}
+
+\section{Differences from [HOG26]}
+\begin{itemize}
+\item \emph{Representation.} Trees are rooted (parent function); this is no loss of generality. Loads and
+  discrepancies are taken on the subtree side $V_s(f)$; the paper uses the root side $V_r(f)$, which has the same
+  discrepancy since $|L|=|R|$ resp.\ $|V|$ is even. Perfect matchings are fixed-point-free involutions (general)
+  or bijections $L\simeq R$ (bipartite). $\mathrm{PM}(G)$ is defined as the convex hull of perfect matchings
+  (bipartite: degree constraints, equivalent by Birkhoff--von Neumann).
+\item \emph{Constants.} $\log n\log\log n$ is written $\ln(2n)\ln\ln(4n)$ (positive for $n\ge1$), as in the main
+  paper's Theorem~35. The bipartite constant is $6C_{\mathrm{RS}}$ because the sparsifier lives on $2n$ vertices.
+\item \emph{Lemma 4.5 (general)} uses only the easy direction of Edmonds' theorem (Theorem~2.5).
+\item \emph{Lemma 4.6} is proved by matching one pair at a time in a minimal subtree, not by running the greedy
+  vertex by vertex; the invariant is the paper's.
+\item \emph{Theorem 1.3}: $\varepsilon=1/(4|V|)$ (the paper's $1/(8n)$ for $|V|=2n$); $x(F)\ge1$ instead of
+  $x(F)\ge1/2$; trimming by block labellings (one new block per step); the paper argues thinness only per
+  component, Lean also for cuts through several components (no loss). \lean{Lemma36} is formulated with a global
+  $N\ge|W|$ and failure probability $\le1/(4N)$, which is what the omitted proof gives and what the proof of
+  Theorem~1.3 uses.
+\item \emph{Not formalised}: Corollary~1.6 (metric distortion; needs [ACR23]) and Theorem~2.3 (algorithmic
+  sparsifiers, not used).
+\end{itemize}
+No error in [HOG26] was found in the formalised parts.
+
+\section{How to check}
+From the repository root (with \texttt{elan} on the \texttt{PATH}):
+\begin{itemize}
+\item \texttt{lake build ThinMatching} builds the library (it imports only Mathlib);
+  \texttt{lake build GsimOT.Theorem13\_CutUpperBound.FromThinMatching} builds the bridge.
+\item \texttt{bash build.sh} builds everything, greps for \texttt{sorry}/\texttt{admit}/\texttt{axiom}, and runs
+  \file{scripts/CheckAxioms.lean}, which contains
+  \texttt{\#print axioms} for \lean{ThinMatching.theorem14_bip}, \lean{ThinMatching.theorem14},
+  \lean{ThinMatching.theorem13_support}, \lean{ThinMatching.lemma12}, the lemmas of Sections~3--4 and
+  \lean{GsimOT.thinPermutationTheorem_of_rackeShah}, \lean{GsimOT.theorem13_of_rackeShah}. Each must report
+  only \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}.
+\item To review the statements: read the definitions in \file{Basic.lean} and \file{TreeSparsifier.lean}, the
+  hypothesis \lean{Lemma36} in \file{SupportConstrained/Sampling.lean}, the main theorems in
+  \file{Theorem14.lean}, \file{SupportConstrained.lean}, \file{LowerBound.lean}, and the bridge with
+  \lean{GsimOT.IsThin}, \lean{GsimOT.ThinPermutationTheorem} in \file{GsimOT/Theorem13_CutUpperBound/Definitions.lean}.
+\end{itemize}
+\end{document}

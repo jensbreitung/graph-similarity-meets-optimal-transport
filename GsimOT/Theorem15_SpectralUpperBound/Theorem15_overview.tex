@@ -1,0 +1,175 @@
+\input{../../scripts/overview_preamble.tex}
+\begin{document}
+\overviewtitle{Theorem 14: upper bound for the spectral distance}{Folder \file{GsimOT/Theorem15_SpectralUpperBound}}
+\paperversion
+
+\section{Statement}
+
+\paragraph{Paper.} Theorem~14 (Section~3.4, p.~12, l.~397--398): \emph{for all graphs $G,H$ of the same order,
+$\delta_2(G,H)\le\delta^{\mathrm{OT}}_2(G,H)+2\sqrt{2\,\delta^{\mathrm{OT}}_2(G,H)}$.} The text after it (l.~399)
+derives $\delta_2\le(1+2\sqrt2)\sqrt{\delta^{\mathrm{OT}}_2}$ from $\delta^{\mathrm{OT}}_2\le1$; this is the
+$\delta_2$ bound of Theorem~2 (p.~3, l.~119). The proof is App.~F.2 (pp.~46--50), with Eqs.~(40)--(43) and
+Lemmas~50--52. It ends (p.~50, l.~1573--1575) with the sharper bound
+$\delta_2\le\gamma_Q+4\sqrt{\gamma_Qh}$, $\gamma_Q=\delta^{\mathrm{OT}}_2$,
+$h=\min\{\sqrt{p_G(1-p_G)},\sqrt{p_H(1-p_H)}\}$, $p_G=2|E(G)|/n^2$, and $h\le\frac12$.
+
+\paragraph{Lean.} For finite types $V,W$ with \hyp{$|V|=|W|$} and simple graphs $G$ on $V$, $H$ on $W$,
+writing $\delta=\delta^{\mathrm{OT}}_2(G,H)$ (\lean{deltaOTPQ 2 2 G H}) and $\delta_2=$ \lean{deltaPQ 2 2 G H}:
+\begin{itemize}
+\item \lean{GsimOT.theorem14}: $\delta_2(G,H)\le\delta+2\sqrt{2\delta}$ \quad (exactly Theorem~14);
+\item \lean{GsimOT.theorem15_h}: $\delta_2(G,H)\le\delta+4\sqrt{h\,\delta}$ \quad (the end of the proof);
+\item \lean{GsimOT.theorem15}: $\delta_2\le\min\{1,\delta+4\sqrt{h\delta}\}\le\min\{1,\delta+2\sqrt{2\delta}\}$
+  \quad (\lean{theorem15_h} combined with $\delta_2\le1$, \lean{deltaPQ_two_two_le_one}; it implies Theorem~14);
+\item \lean{GsimOT.theorem15_sqrt}: $\delta_2(G,H)\le(1+2\sqrt2)\sqrt\delta$ \quad (l.~399 and Theorem~2).
+\end{itemize}
+$h$ is written \lean{min (Real.sqrt (edgeDensity G * (1 - edgeDensity G))) (Real.sqrt (edgeDensity H * (1 - edgeDensity H)))}
+with \lean{edgeDensity}$\,=p_G$ (\lean{edgeDensity_eq}: $p_G=2|E(G)|/n^2$). Nothing is cited.
+
+\section{Where the proof lives}
+\begin{longtable}{>{\raggedright\arraybackslash}p{5.2cm} >{\raggedright\arraybackslash}p{10.6cm}}
+\toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
+\file{Tools.lean} & the spectral norm: \lean{opNorm_two_two_eq} ($\|\cdot\|_{2\to2}$ is Mathlib's $\ell^2$ operator
+  norm), \lean{l2_norm_le_frobenius}, \lean{l2_norm_le_one_of_stochastic} ($\|R\|_2\le1$), transposition and
+  reindexing, the variance identity \lean{sum_weighted_sq_sub}. \\
+\file{RandomBijection.lean} & the matrix part of App.~F.2: the kernel \lean{discKernel} ($n\gamma_Q$), Eq.~(40)
+  (\lean{eq40_le}), Lemma~50, Eq.~(42), Lemma~51, Lemma~52, Eqs.~(41), (28), the spectral truncation, Eq.~(43),
+  the chain (a), and the choice of $t$. \\
+\file{Theorem15.lean} & the graph part: centring by $p_G$, the optimal $Q$, the normalised estimate, and the main
+  theorems. \\
+\file{Common/Attainment.lean} & \lean{exists_dOT_eq}: an optimal $Q\in\mathrm{DS}(V,W)$ exists. \\
+\file{Common/BirkhoffDecomposition.lean} & Eq.~(3): \lean{exists_birkhoff_decomposition}. \\
+\file{Common/OperatorNorm.lean} & Lemma~19: \lean{exists_abs_dotProduct_mulVec_eq_opNorm}. \\
+\file{Common/OTDistances.lean} & $B_{2\to2}$ (\lean{Bmat}), $d^{\mathrm{OT}}_2$, $\delta^{\mathrm{OT}}_2$,
+  \lean{deltaOTPQ_eq_dOT}. \\
+\end{longtable}
+
+\section{Proof layout}
+\begin{center}
+\begin{tikzpicture}
+  \node[main] (sq) at (-4.5,0) {after Thm.~14, Thm.~2\\\lean{theorem15_sqrt}};
+  \node[main] (t14) at (0,0) {Theorem 14\\\lean{theorem14}};
+  \node[main] (tmin) at (4.5,0) {with $\min\{1,\cdot\}$\\\lean{theorem15}};
+  \node[res] (le1) at (-5.5,-2) {$\delta^{\mathrm{OT}}_2\le1$\\\lean{deltaOTPQ_two_two_le_one}};
+  \node[main] (th) at (0,-2) {end of proof\\\lean{theorem15_h}};
+  \node[res] (d1) at (5.2,-2) {$\delta_2\le1$\\\lean{deltaPQ_two_two_le_one}};
+  \node[shared] (opt) at (-5,-4) {optimal $Q$\\\lean{exists_dOT_eq}};
+  \node[res] (choice) at (0,-4) {choice of $t$\\\lean{deltaPQ_le_of_isDS}\\\lean{le_of_forall_threshold}};
+  \node[res] (cent) at (5,-4) {centring, $\|A'\|_F=nh$\\\lean{discKernel_shift}, \lean{aligned_shift}\\\lean{sum_sq_shiftAdj}};
+  \node[res] (main) at (0,-6.2) {$\gamma_P\le\gamma_Q+2t+2\gamma_Qh/t$\\\lean{exists_bij_norm_le'}\\\lean{deltaPQ_le_threshold_G/H}};
+  \node[res] (e41) at (-5.6,-8.4) {Eq.~(41), Eq.~(28)\\\lean{eq41}, \lean{eq28}};
+  \node[res] (l50) at (-2,-8.4) {Lemma 50\\\lean{lemma50}};
+  \node[res] (e43) at (2,-8.4) {Eq.~(43)\\\lean{eq43}};
+  \node[res] (trunc) at (5.8,-8.4) {truncation $A'_t$\\\lean{norm_truncLow_le}\\\lean{sq_mul_card_le}};
+  \node[res] (e40) at (-5.6,-10.8) {Eq.~(40)\\\lean{eq40_le}};
+  \node[res] (l51) at (0.6,-10.8) {Lemma 51, Eq.~(42)\\\lean{lemma51}, \lean{eq42}};
+  \node[res] (l52) at (4.2,-10.8) {Lemma 52\\\lean{lemma52}};
+  \node[shared] (l19) at (-2.4,-13) {Lemma 19\\\lean{exists_abs_dotProduct_mulVec_eq_opNorm}};
+  \node[shared] (bvn) at (4.2,-13) {Eq.~(3)\\\lean{exists_birkhoff_decomposition}};
+  \draw[dep] (sq) -- (t14); \draw[dep] (sq) -- (le1);
+  \draw[dep] (t14) -- (th); \draw[dep] (tmin) -- (th); \draw[dep] (tmin) -- (d1);
+  \draw[dep] (th) -- (opt); \draw[dep] (th) -- (choice);
+  \draw[dep] (choice) -- (main); \draw[dep] (main) -- (cent);
+  \draw[dep] (main) -- (e41); \draw[dep] (main) -- (l50); \draw[dep] (main) -- (e43); \draw[dep] (main) -- (trunc);
+  \draw[dep] (l50) -- (e40); \draw[dep] (l50) -- (l19);
+  \draw[dep] (e43) -- (l51); \draw[dep] (e43) -- (l52); \draw[dep] (l52) -- (bvn);
+  \draw[dep] (l51) -- (e40);
+\end{tikzpicture}
+\end{center}
+Arrows mean ``uses''. Blue: this folder; grey: \file{GsimOT/Common}. Nothing is cited.
+
+\section{The proof step by step}
+Matrices are indexed by $V$ and $W$ rather than $[n]$; the Lean works with the unnormalised
+$\|B_{2\to2}(G,H,Q)\|_2=n\gamma_Q$ and the threshold $s=nt$, and all statements become the paper's after dividing
+by $n$.
+
+\paragraph{Eq.~(40) (p.~47, l.~1463--1470).} $\gamma_Q(A',B')$ is the maximum of
+$\frac1{n^2}|\sum f(i,j)Q_{ij}Q_{k\ell}(A'_{ik}-B'_{j\ell})g(k,\ell)|$ over $\|f\|_Q=\|g\|_Q=1$. Substituting
+$\sqrt Q f$ for $f$, this is $n^{-1}$ times the spectral norm of the kernel
+$\sqrt{Q(a)}(A'_{a_1b_1}-B'_{a_2b_2})\sqrt{Q(b)}$ (\lean{discKernel}); for adjacency matrices this kernel is
+$B_{2\to2}(G,H,Q)$, also after centring (\lean{discKernel_shift}). The bilinear bound used twice below is
+\lean{eq40_le}: the sum is $\langle\sqrt Q f,K\sqrt Q g\rangle$, bounded by Cauchy--Schwarz.
+
+\paragraph{Eq.~(41) (l.~1471--1475).} $A-PBP^\top=(A-RAR^\top)+P(Q^\top AQ-B)P^\top$ with $R=PQ^\top$:
+\lean{eq41} (pure algebra; \lean{pmat} is $P_\pi$).
+
+\paragraph{Lemma 50 (l.~1478--1483).} $n^{-1}\|Q^\top A'Q-B'\|_2\le\gamma_Q(A',B')$: \lean{lemma50}. As in the
+paper, Lemma~19 (\lean{exists_abs_dotProduct_mulVec_eq_opNorm}) gives unit vectors $x,y$ attaining the norm, and
+Eq.~(40) is tested with $f(i,j)=y_j$, $g(k,\ell)=x_\ell$; since the columns of $Q$ sum to one the expression is
+$y^\top(Q^\top A'Q-B')x$ and the lifts have norm $\le1$ (\lean{sum_Q_mul_snd}). $\|R\|_2\le1$ for
+$R\in\mathrm{DS}(n)$ (l.~1485--1486) is \lean{norm_pmat_mul_transpose_le}, via \lean{l2_norm_le_one_of_stochastic}.
+
+\paragraph{Lemma 51 and Eq.~(42) (p.~48, l.~1492--1509).} With $F_{ij}=\sum_{k\ell}Q_{k\ell}(A'_{ik}-B'_{j\ell})y_k$
+(\lean{Fmat}) $=x_i-r_j$ (\lean{Fmat_eq}), Eq.~(42) $\sum Q_{ij}F_{ij}^2\le(n\gamma_Q)^2\|y\|^2$ is \lean{eq42}:
+$S^2=\sum QF^2$ is the expression of Eq.~(40) for $f=F$, $g(k,\ell)=y_k$, so $S^2\le n\gamma_Q S\|y\|$, and
+$S=0$ is trivial. Lemma~51 (\lean{lemma51}): $(Q^\top x)_j=r_j+m_j$, $x_i-(Q^\top x)_j=F_{ij}-m_j$, and the
+expansion $\sum_iQ_{ij}(F_{ij}-m_j)^2=\sum_iQ_{ij}F_{ij}^2-m_j^2$ is the variance identity
+\lean{sum_weighted_sq_sub} with $c=0$.
+
+\paragraph{Lemma 52 (pp.~48--49, l.~1518--1522).} The random permutation $P$ with $\mathbb E[P]=Q$ is the one of a Birkhoff
+decomposition $Q=\sum_\sigma\lambda_\sigma P_{\pi_\sigma}$ (\lean{exists_birkhoff_decomposition}); expectations are
+the sums $\sum_\sigma\lambda_\sigma(\cdot)$. \lean{lemma52}: $\sum_\sigma\lambda_\sigma\|(I-R_\sigma)x\|^2=
+\sum_{ij}Q_{ij}(x_i-(Q^\top x)_j)^2$, via $((I-R)x)_i=x_i-(Q^\top x)_{\pi(i)}$ (\lean{one_sub_R_mulVec}) and
+linearity (\lean{sum_birkhoff_eq}).
+
+\paragraph{Optimal $Q$ and centring (p.~49, l.~1526--1532).} The proof starts from an optimal $Q$:
+\lean{exists_dOT_eq} (App.~A), and $\gamma_Q=\delta^{\mathrm{OT}}_2$ by \lean{deltaOTPQ_eq_dOT}
+(in \lean{theorem15_h}). Centring $A'=A-p_GJ$, $B'=B-p_GJ$ (\lean{shiftAdj}) changes neither $D$
+(\lean{discKernel_shift}) nor $A^\pi-B$ (\lean{aligned_shift}), and $\|A'\|_F^2=n^2(p_G-p_G^2)=n^2h^2$
+(\lean{sum_sq_shiftAdj}, using $A_{ik}^2=A_{ik}$). The paper assumes $h=\sqrt{p_G(1-p_G)}$ ``by symmetry'' (l.~1529);
+the Lean proves both cases (\lean{deltaPQ_le_threshold_G}, \lean{deltaPQ_le_threshold_H}; the second centres by
+$p_H$ and applies the argument to $(B',A',Q^\top)$, \lean{exists_aligned_le'}).
+
+\paragraph{Spectral truncation (p.~49, l.~1533--1544).} $A'=\sum_r\lambda_r\phi_r\phi_r^\top$
+(\lean{eigU_spectral}), $A'_t=\sum_{r\in I_t}\lambda_r\phi_r\phi_r^\top$ (\lean{truncHigh}, with the indicator
+\lean{ind} of $I_t=\{r:|\lambda_r|>s\}$, $s=nt$), $\|A'-A'_t\|_2\le nt$ (\lean{norm_truncLow_le}) and
+$|I_t|\,(nt)^2\le\|A'\|_F^2$ (\lean{sq_mul_card_le}, via $\sum_r\lambda_r^2=\|A'\|_F^2$,
+\lean{sum_sq_entries_eq}).
+
+\paragraph{Eq.~(43) (pp.~49--50, l.~1552--1562).} \lean{eq43}: $\mathbb E\|EA'_t\|_2^2\le\mathbb E\|EA'_t\|_F^2=
+\sum_{r\in I_t}\mathbb E\|EA'\phi_r\|_2^2\le(n\gamma_Q)^2|I_t|$. The first step is $\|\cdot\|_2\le\|\cdot\|_F$; the
+equality is $\|K\|_F^2=\sum_r\|K\phi_r\|^2$ (\lean{frobenius_eq_sum_eigvec}; l.~1453 and l.~1554--1556) together with
+$A'_t\phi_r=A'\phi_r$ for $r\in I_t$ and $0$ otherwise (\lean{truncHigh_mulVec_eigvec},
+\lean{frobenius_one_sub_R_truncHigh}); then Lemma~52 and Lemma~51 with $x=A'\phi_r$, $y=\phi_r$, $\|\phi_r\|=1$.
+Some outcome is at most the expectation (\lean{exists_le_of_sum_mul_le}), which gives a permutation with
+$\|EA'_t\|_2\le n\gamma_Qh/t$ (\lean{exists_one_sub_R_truncHigh_le}).
+
+\paragraph{Chain (a) and the main estimate (p.~50, l.~1563--1572).} \lean{exists_bij_norm_le'} splits
+$A'-RA'R^\top=((A'-A'_t)-R(A'-A'_t)R^\top)+(A'_t-RA'_tR^\top)$, applies Eq.~(28) to $A'_t$ (\lean{eq28}:
+$A'_t-RA'_tR^\top=EA'_t+R(EA'_t)^\top$), uses $\|R\|_2\le1$, and obtains $\|A'-RA'R^\top\|_2\le2nt+2n\gamma_Qh/t$;
+with Eq.~(41) and Lemma~50, $\|A'-PB'P^\top\|_2\le n\gamma_Q+2nt+2n\gamma_Qh/t$. \lean{exists_bij_norm_le}
+transfers this to $P^\top A'P-B'$ (the orientation $A^\pi_G-A_H$ of $d_2$), and \lean{deltaPQ_le_threshold_G}
+divides by $n$: $\delta_2\le\gamma_P\le\gamma_Q+2t+2\gamma_Qh/t$.
+
+\paragraph{Choice of $t$ (l.~1573--1575).} \lean{le_of_forall_threshold}: $t=\sqrt{\gamma_Qh}$ if $\gamma_Qh>0$,
+otherwise $t\to0$; this gives \lean{deltaPQ_le_of_isDS} and \lean{theorem15_h}. Finally $h\le\frac12$
+(\lean{min_sqrt_density_le_half}) gives $4\sqrt{h\gamma_Q}\le2\sqrt{2\gamma_Q}$ (\lean{four_sqrt_le}) and
+\lean{theorem14}.
+
+\paragraph{After Theorem 14 (p.~12, l.~399).} $\delta^{\mathrm{OT}}_2\le1$ is
+\lean{deltaOTPQ_two_two_le_one}: for every coupling $Q^*$, $\|B_{2\to2}(G,H,Q^*)\|_2\le\|\cdot\|_F\le\sum Q^*\le1$
+(\lean{opNorm_Bmat_le_sum}). Then $\delta\le\sqrt\delta$ and \lean{theorem15_sqrt} follows from \lean{theorem14}.
+
+\section{Assumptions and trusted base}
+No cited result is used and there are no hypotheses beyond $|V|=|W|$. The axioms are \texttt{propext},
+\texttt{Classical.choice}, \texttt{Quot.sound}. Shared results: Eq.~(3) (derived from Mathlib's Birkhoff--von
+Neumann theorem), Lemma~19, attainment of $d^{\mathrm{OT}}_2$, the spectral theorem of Mathlib.
+
+\section{Notes on the formalisation}
+\begin{itemize}
+\item \textbf{Statement.} \lean{theorem14} is the paper's statement; \lean{theorem15} combines the bound
+  \lean{theorem15_h} at the end of the proof with $\delta_2\le1$ (\lean{deltaPQ_two_two_le_one}) into
+  $\delta_2\le\min\{1,\delta+4\sqrt{h\delta}\}\le\min\{1,\delta+2\sqrt{2\delta}\}$.
+\item \textbf{No symmetry reduction} for $h$: both cases are proved.
+\item \textbf{Normalisation and randomness:} $n\gamma_Q$ instead of $\gamma_Q$, threshold $s=nt$; expectations are
+  sums over a Birkhoff decomposition.
+\end{itemize}
+
+\section{How to check this result}
+\begin{verbatim}
+lake build GsimOT.Theorem15_SpectralUpperBound.Theorem15
+lake env lean scripts/CheckAxioms.lean   # prints the axioms of GsimOT.theorem15, theorem15_sqrt
+\end{verbatim}
+For a single theorem, add \verb|#print axioms GsimOT.theorem14| to a file importing
+\verb|GsimOT.Theorem15_SpectralUpperBound.Theorem15|. The table in \file{Theorem15_correspondence.pdf} lists every
+step with file and line.
+\end{document}

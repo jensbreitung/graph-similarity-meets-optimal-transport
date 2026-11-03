@@ -1,0 +1,43 @@
+% Shared preamble of the proof overview documents  <Folder>/<Name>_overview.tex.
+% Each overview starts with
+%     \input{../../scripts/overview_preamble.tex}
+% (for ThinMatching/: \input{../scripts/overview_preamble.tex}) and is compiled from its own folder by
+% scripts/build_overviews.py.
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{array,booktabs,longtable}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.multipart,fit,calc}
+\usepackage[hidelinks]{hyperref}
+\setlist{itemsep=2pt,topsep=4pt}
+\renewcommand{\arraystretch}{1.2}
+
+% Lean names, files and paper references
+\newcommand{\lean}[1]{\textcolor{blue!50!black}{\texttt{\detokenize{#1}}}}
+\newcommand{\file}[1]{\textcolor{OliveGreen!70!black}{\texttt{\detokenize{#1}}}}
+\newcommand{\paperref}[1]{\textsf{#1}}
+\newcommand{\hyp}[1]{\textcolor{BrickRed}{\textbf{#1}}}
+
+% Boxes for the dependency diagrams
+\tikzset{
+  res/.style={draw, rounded corners, fill=blue!6, align=center, inner sep=4pt, font=\small},
+  main/.style={res, fill=blue!18, very thick},
+  cited/.style={res, fill=red!10, dashed},
+  shared/.style={res, fill=gray!12},
+  dep/.style={-{Stealth[length=2.2mm]}, thick},
+}
+
+\newcommand{\overviewtitle}[2]{%
+  \begin{center}{\Large\bfseries #1}\\[4pt]{\small Proof overview of the Lean~4/Mathlib formalisation}\\[2pt]
+  {\small #2}\end{center}}
+
+% Standard paragraph describing the paper
+\newcommand{\paperversion}{\noindent\textbf{Paper.} J.~Breitung, T.~Gervens, M.~Grohe.
+  \emph{Graph Similarity Meets Optimal Transport}.\\ File \file{Graph_Similarity_Meets_Optimal_Transport.pdf} in the
+  repository; statement, equation, page and line numbers refer to this PDF. \file{docs/NUMBERING.md} lists the Lean
+  files and declarations of all numbered statements.\par\smallskip}
