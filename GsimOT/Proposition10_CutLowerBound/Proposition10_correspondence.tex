@@ -1,0 +1,82 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,landscape]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{array,booktabs,longtable}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\lean}[1]{\textcolor{blue!50!black}{\texttt{\detokenize{#1}}}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+
+
+\begin{center}{\Large\bfseries Proposition 10: a factor 2 gap for the cut distance}\\[4pt]
+
+{\small Correspondence between the paper and the Lean~4/Mathlib formalisation}\end{center}
+
+\noindent\textbf{Paper.} J.~Breitung, T.~Gervens, M.~Grohe. \emph{Graph Similarity Meets Optimal Transport} (file \texttt{Graph\_Similarity\_Meets\_Optimal\_Transport.pdf} in the repository). Statement, equation, page and line numbers refer to this PDF; \texttt{docs/NUMBERING.md} lists the Lean files and declarations of all numbered statements.\par\smallskip
+
+The folder \texttt{GsimOT/Proposition10\_CutLowerBound} formalises Proposition~10 (p.~9) with the construction of Appendix~E.1, Lemmas~33 and~34, the remark after Proposition~10 ($d^{\mathrm{OT}}_\square(G,H)=4$; its Lean certificate, linked in footnote~2 of the paper, is \texttt{OptimalAlignment.lean}) and Theorem~3~(3).\par\paragraph{Checking.} Run \texttt{bash build.sh} in the repository root (see \texttt{README.md}). The script builds the library and runs \texttt{scripts/CheckAxioms.lean}, which must report only the standard axioms \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}: no \texttt{sorry} and no additional axioms.
+
+\paragraph{Main statement in Lean.} \lean{GsimOT.Prop10.proposition10}: the graphs $G,H$ of Appendix~E.1 have $145$ vertices,
+\[ d_\square(G,H)=8\qquad\text{and}\qquad d^{\mathrm{OT}}_\square(G,H)\le4, \]
+exactly as Proposition~10 states. \lean{GsimOT.Prop10.dOTCut_eq_four}: $d^{\mathrm{OT}}_\square(G,H)=4$, the
+Lean certificate of the remark after Proposition~10. \lean{GsimOT.Prop10.theorem3_item3}:
+$\delta_\square(G,H)=2\,\delta^{\mathrm{OT}}_\square(G,H)$ (Theorem~3~(3)).
+
+\section*{Correspondence}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Proposition~10 & 9 & Graphs on $145$ vertices with $d_\square(G,H)=8$ and $d^{\mathrm{OT}}_\square(G,H)\le4$ (exactly as stated) & \lean{GsimOT.Prop10.proposition10}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Proposition10.lean:20}} \newline \lean{GsimOT.Prop10.card_Vtx}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:40}} \\ \midrule
+{}Remark after Prop.~10 & 10 & $d^{\mathrm{OT}}_\square(G,H)=4$ (l.~330; the Lean certificate \texttt{OptimalAlignment.lean}, linked in footnote~2); $C_\square(Q)\ge4$ for every $Q\in\mathrm{DS}(V,W)$ & \lean{GsimOT.Prop10.dOTCut_eq_four}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:412}} \newline \lean{GsimOT.Prop10.four_le_dOTCut}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:406}} \newline \lean{GsimOT.Prop10.four_le_costCut}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:371}} \\ \midrule
+{}Theorem~3~(3) & 4 & $\delta_\square(G,H)=2\,\delta^{\mathrm{OT}}_\square(G,H)$ for these graphs (l.~126) & \lean{GsimOT.Prop10.theorem3_item3}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Proposition10.lean:26}} \\ \midrule
+{}Appendix~E.1 & 30--31 & Core pairs $v_i^\sigma$, markers $L_i$ ($|L_i|=9(i+1)$), matrix $Z$ & \lean{GsimOT.Prop10.Vtx}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:38}} \newline \lean{GsimOT.Prop10.Core}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:32}} \newline \lean{GsimOT.Prop10.Marker}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:35}} \newline \lean{GsimOT.Prop10.Z}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:50}} \\ \midrule
+{}Appendix~E.1, Fig.~3 & 10, 31 & $G$: $v_i^\sigma v_j^\tau\in E$ iff $\sigma\tau=Z_{ij}$; $H$: iff $\sigma\tau=-Z_{ij}$; markers adjacent to their pair & \lean{GsimOT.Prop10.gAdj}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:58}} \newline \lean{GsimOT.Prop10.hAdj}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:65}} \newline \lean{GsimOT.Prop10.G12}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:90}} \newline \lean{GsimOT.Prop10.H12}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:96}} \\ \midrule
+{}Appendix~E.1 & 31 & Degrees $13,22,31,40,49$ on pairs, $2$ on markers; different degrees differ by $\ge9$ & \lean{GsimOT.Prop10.dg}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:170}} \newline \lean{GsimOT.Prop10.sum_adj_G12}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:191}} \newline \lean{GsimOT.Prop10.sum_adj_H12}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:202}} \newline \lean{GsimOT.Prop10.nine_le_of_dg_ne}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:213}} \\ \midrule
+{}Lemma~33 & 31 & $d_\square(G,H)=8$ & \lean{GsimOT.Prop10.lemma33}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma33\_BijectionCost.lean:189}} \\ \midrule
+{}Proof of Lemma~33 & 31 & $C_\square(\pi)\ge|\deg_G(v)-\deg_H(\pi(v))|$ (cut $S=\{\pi v\}$, $T=W$) & \lean{GsimOT.Prop10.abs_dg_sub_le}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma33\_BijectionCost.lean:80}} \\ \midrule
+{}Proof of Lemma~33 & 31 & Pair-preserving $\pi$: core cut values $x^\top My$ with $M_{ij}=\frac12Z_{ij}(1+r_ir_j)$; $\ge8$ for all $32$ patterns $r$ & \lean{GsimOT.Prop10.Mr}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma33\_BijectionCost.lean:88}} \newline \lean{GsimOT.Prop10.wit}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma33\_BijectionCost.lean:91}} \newline \lean{GsimOT.Prop10.eight_le_wit}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma33\_BijectionCost.lean:130}} \newline \lean{GsimOT.Prop10.eight_le_of_dg}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma33\_BijectionCost.lean:155}} \\ \midrule
+{}Proof of Lemma~33 & 31 & Every bijection costs $\ge8$ & \lean{GsimOT.Prop10.eight_le_cutNorm}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma33\_BijectionCost.lean:181}} \\ \midrule
+{}Proof of Lemma~33 & 31 & For $\pi=\mathrm{id}$ every cut value is $x^\top Zy$, $x,y\in\{-1,0,1\}^5$, and $|x^\top Zy|\le8$ & \lean{GsimOT.Prop10.cut_sum_eq_core}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma33\_BijectionCost.lean:25}} \newline \lean{GsimOT.Prop10.abs_bilin_Z_le}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Construction.lean:264}} \newline \lean{GsimOT.Prop10.cutNorm_refl_le}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma33\_BijectionCost.lean:66}} \\ \midrule
+{}Lemma~34 & 31 & $d^{\mathrm{OT}}_\square(G,H)\le4$ & \lean{GsimOT.Prop10.lemma34}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma34\_FractionalCost.lean:173}} \\ \midrule
+{}Proof of Lemma~34 & 31 & $Q$: identity on markers, $\frac12$ on each pair block & \lean{GsimOT.Prop10.Q40}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma34\_FractionalCost.lean:22}} \newline \lean{GsimOT.Prop10.Q40_isDS}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma34\_FractionalCost.lean:39}} \\ \midrule
+{}Proof of Lemma~34 & 32 & Discrepancies involving markers vanish; core discrepancy $\frac12Z_{ij}(\sigma\sigma'+\tau\tau')$ & \lean{GsimOT.Prop10.B40_eq_zero_left}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma34\_FractionalCost.lean:81}} \newline \lean{GsimOT.Prop10.B40_eq_zero_right}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma34\_FractionalCost.lean:92}} \newline \lean{GsimOT.Prop10.B40_atom}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma34\_FractionalCost.lean:104}} \\ \midrule
+{}Proof of Lemma~34 & 32 & Straight/crossed decomposition: two pentagon copies of weight $\frac12$, each cut $\le2$ & \lean{GsimOT.Prop10.atom_sum_eq}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma34\_FractionalCost.lean:122}} \newline \lean{GsimOT.Prop10.costCut_Q40_le}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/Lemma34\_FractionalCost.lean:140}} \\ \midrule
+{}$d^{\mathrm{OT}}_\square\ge4$, step 1 &  & $|B(f,g)|\le C_\square(Q)$ for $f,g\colon\Omega\to[0,1]$ & \lean{GsimOT.Prop10.exists_abs_sum_mul_le}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:46}} \newline \lean{GsimOT.Prop10.abs_bilin_le_cutNorm}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:63}} \\ \midrule
+{}$d^{\mathrm{OT}}_\square\ge4$, step 2 &  & $\sum_y D(x,y)q_y=d(x)$ and $\sum_x q_xd(x)=0$ & \lean{GsimOT.Prop10.sum_disc_mul}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:94}} \newline \lean{GsimOT.Prop10.sum_B_right}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:106}} \newline \lean{GsimOT.Prop10.sum_mul_dd}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:111}} \\ \midrule
+{}$d^{\mathrm{OT}}_\square\ge4$, step 3 &  & $L+B(s,t)\le4C_\square(Q)$ for $|s|,|t|\le1$, $s=0$ where $d\ne0$ & \lean{GsimOT.Prop10.degree_add_bil_le}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:123}} \\ \midrule
+{}$d^{\mathrm{OT}}_\square\ge4$, step 4 &  & $L\ge9(10-T)$, $T$ the mass on the core atoms & \lean{GsimOT.Prop10.nine_mul_le_row}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:324}} \newline \lean{GsimOT.Prop10.nine_mul_le_L}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:348}} \\ \midrule
+{}$d^{\mathrm{OT}}_\square\ge4$, step 5 &  & $\max_{a,b\in\{\pm1\}^5}a^\top\mathrm{diag}(x)Z\mathrm{diag}(x)b\ge\frac{16}5\sum_ix_i-8$ for $x\in[0,2]^5$ & \lean{GsimOT.Prop10.zForm}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:187}} \newline \lean{GsimOT.Prop10.zForm_flip}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:191}} \newline \lean{GsimOT.Prop10.exists_zForm_ge}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:200}} \\ \midrule
+{}$d^{\mathrm{OT}}_\square\ge4$, step 5 &  & Test functions on straight and crossed atoms: $B(s,t)=a^\top CZCb+a'^\top HZHb'$ & \lean{GsimOT.Prop10.testFn}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:232}} \newline \lean{GsimOT.Prop10.disc_atom}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:265}} \newline \lean{GsimOT.Prop10.bil_testFn}\newline{\scriptsize\texttt{Proposition10\_CutLowerBound/OptimalAlignment.lean:277}} \\
+\end{longtable}
+
+\section*{Shared notions used (from \texttt{GsimOT/Common})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Appendix~A & 14 & Cut norm $\|A\|_\square=\max_{S,T}|A(S,T)|$ & \lean{GsimOT.cutNorm}\newline{\scriptsize\texttt{Common/CutNorm.lean:32}} \newline \lean{GsimOT.le_cutNorm}\newline{\scriptsize\texttt{Common/CutNorm.lean:39}} \newline \lean{GsimOT.cutNorm_le}\newline{\scriptsize\texttt{Common/CutNorm.lean:44}} \newline \lean{GsimOT.exists_eq_cutNorm}\newline{\scriptsize\texttt{Common/CutNorm.lean:52}} \newline \lean{GsimOT.cutNorm_smul}\newline{\scriptsize\texttt{Common/CutNorm.lean:59}} \\ \midrule
+{}Section~1, Section~2 & 2, 5 & $B(G,H,Q)$ and $C_\square(Q)=\|B(G,H,Q)\|_\square$ & \lean{GsimOT.B}\newline{\scriptsize\texttt{Common/OTDistances.lean:58}} \newline \lean{GsimOT.costCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:79}} \\ \midrule
+{}Section~1, Section~2 & 1--2, 5 & $d_\square$, $d_\square^{\mathrm{OT}}$ (infimum) and $\delta_\square=n^{-2}d_\square$, $\delta^{\mathrm{OT}}_\square=n^{-2}d^{\mathrm{OT}}_\square$ & \lean{GsimOT.dCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:82}} \newline \lean{GsimOT.dOTCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:85}} \newline \lean{GsimOT.deltaCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:88}} \newline \lean{GsimOT.deltaOTCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:91}} \\ \midrule
+{}Appendix~E.2, Eq.~(21), E.2.2 & 32, 36 & $\zeta_R(A,B)=\|D_{A,B}\|_{\square,\mu_R}$ with $\mu_R=R/n$; $\zeta_R(A_G,A_H)=\zeta_R=n^{-2}C_\square(R)$ for graphs & \lean{GsimOT.epsR}\newline{\scriptsize\texttt{Common/CutNorm.lean:105}} \newline \lean{GsimOT.adjMat}\newline{\scriptsize\texttt{Common/CutNorm.lean:94}} \newline \lean{GsimOT.epsR_adjMat}\newline{\scriptsize\texttt{Common/CutNorm.lean:110}} \\ \midrule
+{}Section~1, Appendix~B & 1, 3, 15 & $\kappa_{p\to q}=1/q+1-1/p$, $A^\pi_G-A_H$, $d_{p\to q}$ and $\delta_{p\to q}=n^{-\kappa_{p\to q}}d_{p\to q}$ ($s(n)=n^{\kappa_{p\to q}}$) & \lean{GsimOT.kappa}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:23}} \newline \lean{GsimOT.alignedDiff}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:31}} \newline \lean{GsimOT.distPQ}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:35}} \newline \lean{GsimOT.deltaPQ}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:39}} \\
+\end{longtable}
+
+\section*{Notes on the formalisation}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{$d^{\mathrm{OT}}_\square(G,H)=4$.} Proposition~10 states $d^{\mathrm{OT}}_\square(G,H)\le4$. The remark after it (p.~10, l.~330) states equality, verified by ``one of our Lean certificates''; its footnote~2 links the file \texttt{OptimalAlignment.lean}, whose main result is \lean{dOTCut_eq_four}. Theorem~3~(3) (p.~4, l.~126) uses this equality. The paper refers to this file for the proof, so the rows ``step 1--5'' above follow the outline in its module docstring. For every $Q\in\mathrm{DS}(V,W)$ with $T$ the mass of $Q$ on the $20$ core atoms, $d(x)=\deg_G(v)-\deg_H(w)$ and $L=\sum_xq_x|d(x)|$: $4C_\square(Q)\ge L+B(s,t)\ge9(10-T)+\frac{16}5T-16\ge16$ for suitable test functions $s,t$.
+\item The finite checks are done by \texttt{decide} (no \texttt{native\_decide}, so no extra axioms). $|x^\top Zy|\le8$ is reduced to $\sum_j|(Zx)_j|\le8$ over the $3^5$ vectors $x$. The lower bound $\ge8$ is checked for each of the $32$ sign patterns $r$ with an explicit table of maximisers \lean{wit}. This replaces the paper's case analysis on $|K|$ up to symmetry.
+\item Both graphs live on the same vertex type \lean{Vtx} $=(\mathrm{Fin}\,5\times\mathrm{Bool})\oplus\Sigma_i\,\mathrm{Fin}(9(i+1))$; the natural bijection $\mathrm{id}$ of the paper is \texttt{Equiv.refl}.
+\end{enumerate}
+
+\end{document}

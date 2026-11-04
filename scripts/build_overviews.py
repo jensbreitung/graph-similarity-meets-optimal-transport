@@ -6,7 +6,7 @@ scripts/gen_correspondence.py generates). They share scripts/overview_preamble.t
 Run from the repository root:
 
     python3 scripts/build_overviews.py                 # all overviews
-    python3 scripts/build_overviews.py Theorem7_EditUpperBound   # only these folders
+    python3 scripts/build_overviews.py Theorem6_EditUpperBound   # only these folders
 """
 
 import glob

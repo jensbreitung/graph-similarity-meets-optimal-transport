@@ -1,0 +1,63 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,landscape]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{array,booktabs,longtable}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\lean}[1]{\textcolor{blue!50!black}{\texttt{\detokenize{#1}}}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+
+
+\begin{center}{\Large\bfseries Proposition 12: cut distance and spectral distance}\\[4pt]
+
+{\small Correspondence between the paper and the Lean~4/Mathlib formalisation}\end{center}
+
+\noindent\textbf{Paper.} J.~Breitung, T.~Gervens, M.~Grohe. \emph{Graph Similarity Meets Optimal Transport} (file \texttt{Graph\_Similarity\_Meets\_Optimal\_Transport.pdf} in the repository). Statement, equation, page and line numbers refer to this PDF; \texttt{docs/NUMBERING.md} lists the Lean files and declarations of all numbered statements.\par\smallskip
+
+The folder \texttt{GsimOT/Proposition12\_CutVsSpectral} formalises Proposition~12 (p.~11) and its proof (beginning of Appendix~F, pp.~44--45).\par\paragraph{Checking.} Run \texttt{bash build.sh} in the repository root (see \texttt{README.md}). The script builds the library and runs \texttt{scripts/CheckAxioms.lean}, which must report only the standard axioms \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}: no \texttt{sorry} and no additional axioms.
+
+\paragraph{Main statement in Lean.} \lean{GsimOT.proposition12}: for all graphs $G,H$ of the same order,
+\[ \delta_\square(G,H)\le\delta_2(G,H)\le2\sqrt{\delta_\square(G,H)}. \]
+
+\section*{Correspondence}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Proposition~12 & 11 & $\delta_\square(G,H)\le\delta_2(G,H)\le2\sqrt{\delta_\square(G,H)}$ & \lean{GsimOT.proposition12}\newline{\scriptsize\texttt{Proposition12\_CutVsSpectral/Proposition12.lean:221}} \\ \midrule
+{}Proof of Prop.~12 (Appendix~F) & 44--45 & $\frac1{\sqrt{mn}}\|A\|_\square\le\|A\|_2$ (l.~1384; Cauchy--Schwarz, l.~1391--1396) & \lean{GsimOT.cutNorm_le_sqrt_mul_opNorm_two}\newline{\scriptsize\texttt{Proposition12\_CutVsSpectral/Proposition12.lean:118}} \\ \midrule
+{}Proof of Prop.~12 ([Nik09, Thm.~3]) & 44--45 & $\|A\|_2\le2\sqrt{\|A\|_{(\infty)}\|A\|_\square}$ with $\|A\|_{(\infty)}=\max_{v,w}|A_{vw}|$ (l.~1384--1385; cited in the paper, l.~1397; proved here) & \lean{GsimOT.opNorm_two_le_two_sqrt_cutNorm}\newline{\scriptsize\texttt{Proposition12\_CutVsSpectral/Proposition12.lean:210}} \newline \lean{GsimOT.opNorm_two_le_two_sqrt_of_abs_le}\newline{\scriptsize\texttt{Proposition12\_CutVsSpectral/Proposition12.lean:155}} \newline \lean{GsimOT.maxEntryNorm}\newline{\scriptsize\texttt{Proposition12\_CutVsSpectral/Proposition12.lean:27}} \\ \midrule
+{}(proof of [Nik09]) & -- & $\|A\|_{\infty\to1}\le4\|A\|_\square$ (sign vectors) & \lean{GsimOT.infOneNorm_le_four_cutNorm}\newline{\scriptsize\texttt{Proposition12\_CutVsSpectral/Proposition12.lean:64}} \\ \midrule
+{}Proof of Prop.~12 & 44 & Apply to $A^\pi_G-A_H$ (entries in $[-1,1]$) and normalise (l.~1385--1387) & \lean{GsimOT.proposition12}\newline{\scriptsize\texttt{Proposition12\_CutVsSpectral/Proposition12.lean:221}} \\
+\end{longtable}
+
+\section*{Shared notions used (from \texttt{GsimOT/Common})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Appendix~A & 14 & Cut norm $\|A\|_\square=\max_{S,T}|A(S,T)|$ & \lean{GsimOT.cutNorm}\newline{\scriptsize\texttt{Common/CutNorm.lean:32}} \newline \lean{GsimOT.le_cutNorm}\newline{\scriptsize\texttt{Common/CutNorm.lean:39}} \newline \lean{GsimOT.cutNorm_le}\newline{\scriptsize\texttt{Common/CutNorm.lean:44}} \newline \lean{GsimOT.exists_eq_cutNorm}\newline{\scriptsize\texttt{Common/CutNorm.lean:52}} \newline \lean{GsimOT.cutNorm_smul}\newline{\scriptsize\texttt{Common/CutNorm.lean:59}} \\ \midrule
+{}Section~1, Section~2 & 2, 5 & $B(G,H,Q)$ and $C_\square(Q)=\|B(G,H,Q)\|_\square$ & \lean{GsimOT.B}\newline{\scriptsize\texttt{Common/OTDistances.lean:58}} \newline \lean{GsimOT.costCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:79}} \\ \midrule
+{}Section~1, Section~2 & 1--2, 5 & $d_\square$, $d_\square^{\mathrm{OT}}$ (infimum) and $\delta_\square=n^{-2}d_\square$, $\delta^{\mathrm{OT}}_\square=n^{-2}d^{\mathrm{OT}}_\square$ & \lean{GsimOT.dCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:82}} \newline \lean{GsimOT.dOTCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:85}} \newline \lean{GsimOT.deltaCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:88}} \newline \lean{GsimOT.deltaOTCut}\newline{\scriptsize\texttt{Common/CutNorm.lean:91}} \\ \midrule
+{}Appendix~E.2, Eq.~(21), E.2.2 & 32, 36 & $\zeta_R(A,B)=\|D_{A,B}\|_{\square,\mu_R}$ with $\mu_R=R/n$; $\zeta_R(A_G,A_H)=\zeta_R=n^{-2}C_\square(R)$ for graphs & \lean{GsimOT.epsR}\newline{\scriptsize\texttt{Common/CutNorm.lean:105}} \newline \lean{GsimOT.adjMat}\newline{\scriptsize\texttt{Common/CutNorm.lean:94}} \newline \lean{GsimOT.epsR_adjMat}\newline{\scriptsize\texttt{Common/CutNorm.lean:110}} \\ \midrule
+{}Section~1, Appendix~B & 1, 3, 15 & $\kappa_{p\to q}=1/q+1-1/p$, $A^\pi_G-A_H$, $d_{p\to q}$ and $\delta_{p\to q}=n^{-\kappa_{p\to q}}d_{p\to q}$ ($s(n)=n^{\kappa_{p\to q}}$) & \lean{GsimOT.kappa}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:23}} \newline \lean{GsimOT.alignedDiff}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:31}} \newline \lean{GsimOT.distPQ}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:35}} \newline \lean{GsimOT.deltaPQ}\newline{\scriptsize\texttt{Common/AlignedDistances.lean:39}} \\
+\end{longtable}
+
+\section*{Notes on the formalisation}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Nikiforov's inequality is proved, not cited.} The paper cites [Nik09, Thm.~3] (p.~45, l.~1397) for $\|A\|_2\le2\sqrt{\|A\|_{(\infty)}\|A\|_\square}$. The formalisation proves it directly. By the Schur test, $\|Ax\|_2^2=x^\top A^\top Ax\le\max_j\sum_k|(A^\top A)_{jk}|\,\|x\|_2^2$. Moreover $\sum_k|(A^\top A)_{jk}|=\sum_iA_{ij}(As)_i\le\|A\|_{(\infty)}\|A\|_{\infty\to1}\le4\|A\|_{(\infty)}\|A\|_\square$ for a suitable sign vector $s$.
+\item $\delta_2=\delta_{2\to2}=n^{-\kappa_{2\to2}}d_2$ with $\kappa_{2\to2}=1$, using the shared definitions in \texttt{Common/AlignedDistances.lean} and the operator norms of \texttt{Common/OperatorNorm.lean}.
+\item The first inequality is formalised as $\|A\|_\square\le\sqrt{mn}\,\|A\|_2$ (\lean{cutNorm_le_sqrt_mul_opNorm_two}), the paper's $\frac1{\sqrt{mn}}\|A\|_\square\le\|A\|_2$ (p.~44, l.~1384) multiplied by $\sqrt{mn}$.
+\end{enumerate}
+
+\end{document}

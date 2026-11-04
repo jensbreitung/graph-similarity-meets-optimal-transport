@@ -1,7 +1,7 @@
 /-
 # ℓᵖ norms and operator `p → q` norms of matrices
 
-Paper, App. A (Matrix Norms, p. 14, l. 474–486) and Lemma 19 (p. 14, l. 488–492).
+Paper, Appendix A (Matrix Norms, p. 14, l. 474–486) and Lemma 19 (p. 14, l. 488–492).
 
 For finite index types and `1 ≤ p, q ≤ ∞` we use
 * `lpNorm p x` — the ℓᵖ norm of `x : ι → ℝ` (via Mathlib's `PiLp`);
@@ -287,7 +287,7 @@ lemma exists_abs_dotProduct_mulVec_eq_opNorm {p q : ENNReal} (hp : 1 ≤ p) (hq 
   exact ⟨x, y, hx, hy, by rw [hyz, abs_of_nonneg (lpNorm_nonneg _ _), hAx]⟩
 
 /-- **Lemma 19** (p. 14, l. 488–489). `‖A‖_{p→q} = max_{‖y‖_{q*} ≤ 1, ‖x‖_p ≤ 1} |yᵀ A x|`. -/
-theorem lemma24 {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) (A : Matrix ι κ ℝ) :
+theorem lemma19 {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) (A : Matrix ι κ ℝ) :
     IsGreatest {t | ∃ x y, lpNorm p x ≤ 1 ∧ lpNorm (ENNReal.conjExponent q) y ≤ 1 ∧
       t = |y ⬝ᵥ (A *ᵥ x)|} (opNorm p q A) := by
   obtain ⟨x, y, hx, hy, h⟩ := exists_abs_dotProduct_mulVec_eq_opNorm hp hq A

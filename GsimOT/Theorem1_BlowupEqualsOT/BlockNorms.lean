@@ -1,11 +1,11 @@
 /-
 # Norms of spread and averaged vectors
 
-Paper, App. B (pp. 16–19): the norm computations for the test vectors `x̃, ỹ` (proof of Eq. (11),
-p. 16, l. 538–553) and `x, y` (proof of Eq. (15), pp. 18–19, l. 604–620).
+Paper, Appendix B (pp. 16–19): the norm computations for the test vectors `x̃, ỹ` (proof of
+Eq. (11), p. 16, l. 538–553) and `x, y` (proof of Eq. (15), pp. 18–19, l. 604–620).
 
 A *block map* `b : β → α` partitions the finite set `β` into the blocks `b⁻¹(a)`, `a ∈ α`, of
-sizes `c(a) = |b⁻¹(a)|`.  In App. B, `α = V × W`, `β = W × [ℓm]` and the block of `(v, w)`
+sizes `c(a) = |b⁻¹(a)|`.  In Appendix B, `α = V × W`, `β = W × [ℓm]` and the block of `(v, w)`
 is `{w} × J(v, w)`.
 
 * Spreading (proof of Eq. (11)): `z̃(j) := z(b j) / c(b j)^{1/r}` satisfies `‖z̃‖_r ≤ ‖z‖_r`.

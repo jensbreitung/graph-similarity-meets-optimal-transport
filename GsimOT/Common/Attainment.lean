@@ -1,7 +1,7 @@
 /-
 # The minima defining the operator-norm optimal transport distances are attained
 
-Paper, App. A (pp. 14–15, l. 503–510): "All minima in the definitions of the graph distances
+Paper, Appendix A (pp. 14–15, l. 503–510): "All minima in the definitions of the graph distances
 are attained. [...] For optimal transport, the coupling polytopes `DS*(V, W)` and `DS(V, W)` are
 compact, and the objectives are [...] lower semicontinuous for all operator `p → q`-norms. For the
 operator norms, let `(Q*_k)` be a convergent sequence in `DS*(V, W)`. Note that every pair in the
@@ -20,7 +20,7 @@ shows that the infima are minima, following the argument above.
 * `isCompact_setOf_isCoupling`: `DS*(V, W)` is compact.
 * `exists_deltaOTPQ_eq`, `exists_dOT_eq`: the minima of Eq. (2) and of `d^OT_{p→q}` are attained.
 
-Used by Claim 20 (Theorem 1, App. B, p. 17, l. 573–574), which starts from a minimiser.
+Used by Claim 20 (Theorem 1, Appendix B, p. 17, l. 573–574), which starts from a minimiser.
 -/
 import GsimOT.Common.OTDistances
 import GsimOT.Common.DoublyStochastic
@@ -129,7 +129,7 @@ lemma Bmat_eq_zero_of_not_supp {Q : V → W → ℝ} (a b : V × W)
   simp only [not_and_or, not_not] at h
   rcases h with h | h <;> simp [Bmat, h]
 
-/-- **Lower semicontinuity** (App. A, p. 15, l. 505–510): `Q ↦ ‖B_{p→q}(G, H, Q)‖_{p→q}` is
+/-- **Lower semicontinuity** (Appendix A, p. 15, l. 505–510): `Q ↦ ‖B_{p→q}(G, H, Q)‖_{p→q}` is
 lower semicontinuous. At `Q`, the matrices `B_{p→q}(G, H, Q')` restricted to the rows and columns
 indexed by `supp(Q)` depend continuously on `Q'`, their norms are at most `‖B_{p→q}(G, H, Q')‖`,
 and at `Q' = Q` the restriction is `B_{p→q}(G, H, Q)` itself. -/
@@ -194,8 +194,8 @@ lemma isCompact_setOf_isCoupling : IsCompact {Q : V → W → ℝ | IsCoupling Q
   rw [hQ.row_sum v] at h1
   linarith
 
-/-- **The minimum in Eq. (2) is attained** (App. A, pp. 14–15, l. 503–510): for nonempty `V`, `W`
-there is a coupling `Q* ∈ DS*(V, W)` with `‖B_{p→q}(G, H, Q*)‖_{p→q} = δ^OT_{p→q}(G, H)`. -/
+/-- **The minimum in Eq. (2) is attained** (Appendix A, pp. 14–15, l. 503–510): for nonempty `V`,
+`W` there is a coupling `Q* ∈ DS*(V, W)` with `‖B_{p→q}(G, H, Q*)‖_{p→q} = δ^OT_{p→q}(G, H)`. -/
 theorem exists_deltaOTPQ_eq {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) [Nonempty V]
     [Nonempty W] : ∃ Q, IsCoupling Q ∧ opNorm p q (Bmat p q G H Q) = deltaOTPQ p q G H := by
   have hne : {Q : V → W → ℝ | IsCoupling Q}.Nonempty := by
@@ -217,7 +217,7 @@ theorem exists_deltaOTPQ_eq {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) [Nonem
   · exact ciInf_le ⟨0, by rintro _ ⟨Q', rfl⟩; exact opNorm_nonneg _ _ _⟩
       (⟨Q, hQ⟩ : {Q : V → W → ℝ // IsCoupling Q})
 
-/-- **The minimum defining `d^OT_{p→q}` is attained** (App. A, p. 15, l. 509–510, "The same
+/-- **The minimum defining `d^OT_{p→q}` is attained** (Appendix A, p. 15, l. 509–510, "The same
 argument applies to `DS(V, W)`"): if `|V| = |W|`, some `Q ∈ DS(V, W)` has
 `‖B_{p→q}(G, H, Q)‖_{p→q} = d^OT_{p→q}`. -/
 theorem exists_dOT_eq [DecidableEq V] [DecidableEq W] {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q)

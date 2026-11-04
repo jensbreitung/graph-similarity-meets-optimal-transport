@@ -1,7 +1,7 @@
 /-
 # Claim 20 and the paper's proof of Eq. (12)
 
-Paper, App. B, pp. 17–18, l. 568–591 (converse inequality, Eqs. (12)–(15) and Claim 20).
+Paper, Appendix B, pp. 17–18, l. 568–591 (converse inequality, Eqs. (12)–(15) and Claim 20).
 
 * `tendsto_opNorm_Bmat_of_supp_eq`: on a fixed support, `Q*_k → Q*_0` implies
   `‖B_{p→q}(G, H, Q*_k)‖ → ‖B_{p→q}(G, H, Q*_0)‖` (proof of Claim 20, l. 576–580).
@@ -88,7 +88,7 @@ omit [DecidableEq V] [DecidableEq W] in
 /-- **Claim 20** (pp. 17–18, l. 573–581). For every `ε > 0` there is a coupling `Q* ∈ DS*(V, W)`
 with rational entries such that `‖B_{p→q}(G, H, Q*)‖ ≤ min_{Q*_0} ‖B_{p→q}(G, H, Q*_0)‖ + ε`
 (Eq. (13)). As in the paper, the proof starts from a minimiser `Q*_0` (`exists_deltaOTPQ_eq`,
-App. A), approximates it on its support by rational couplings and uses continuity. -/
+Appendix A), approximates it on its support by rational couplings and uses continuity. -/
 theorem claim20 {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) [Nonempty V] [Nonempty W] {ε : ℝ}
     (hε : 0 < ε) :
     ∃ Q, IsCoupling Q ∧ (∀ v w, ∃ r : ℚ, Q v w = r) ∧
@@ -135,14 +135,14 @@ theorem eq15 {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) [Nonempty V] [Nonempt
     {Q : V → W → ℝ} (hQ : IsCoupling Q) {k : ℕ} (hk : 0 < k)
     (hint : ∀ v w, ∃ c : ℕ, (k : ℝ) * Q v w = c) {s : ℕ} (hs : 0 < s) :
     blowupSeq p q G H (k * s) ≤ opNorm p q (Bmat p q G H Q) := by
-  refine eq16 hp hq (k * s) (Nat.mul_pos hk hs) hQ fun v w => ?_
+  refine eq15_of_integral hp hq (k * s) (Nat.mul_pos hk hs) hQ fun v w => ?_
   obtain ⟨c, hc⟩ := hint v w
   refine ⟨Fintype.card V * Fintype.card W * s * c, ?_⟩
   push_cast
   rw [← hc]
   ring
 
-/-- **Theorem 1, following the paper's proof literally** (App. B). *Assuming* that the limit
+/-- **Theorem 1, following the paper's proof literally** (Appendix B). *Assuming* that the limit
 defining `δ^•_{p→q}(G, H)` exists (the paper cites [Gro25], p. 2, l. 44–45), it equals
 `δ^OT_{p→q}(G, H)`. Eq. (8): every term is at least `δ^OT` (`deltaOTPQ_le_blowupSeq`, via
 Eqs. (9)–(11)). Eqs. (12), (14): for every `ε > 0`, Claim 20 gives a rational `Q*`, and Eq. (15)

@@ -1,9 +1,9 @@
 /-
 # The cut norm and the cut distance
 
-Paper, App. A (cut norm, p. 14, l. 480–481), Section 1 (`δ^OT_□`, p. 2, l. 75–77), Section 2
-(`C_♢(Q)`, `d_♢`, `d_♢^OT`, p. 5, l. 184–187) and App. E.2 (`ζ_Q`, Eq. (21), p. 32, l. 1006, and
-the weighted cut norm of App. E.2.2, p. 36, l. 1129–1139).
+Paper, Appendix A (cut norm, p. 14, l. 480–481), Section 1 (`δ^OT_□`, p. 2, l. 75–77), Section 2
+(`C_♢(Q)`, `d_♢`, `d_♢^OT`, p. 5, l. 184–187) and Appendix E.2 (`ζ_Q`, Eq. (21), p. 32, l. 1006, and
+the weighted cut norm of Appendix E.2.2, p. 36, l. 1129–1139).
 
 * `cutNorm A`        : `‖A‖_□ = max_{S ⊆ ι, T ⊆ κ} |A(S, T)|` for `A ∈ ℝ^{ι×κ}`.
 * `B G H Q` (Common/OTDistances.lean): `B(G, H, Q)` with entries `Q(v,w) D(v,w,v',w') Q(v',w')`.
@@ -12,7 +12,7 @@ the weighted cut norm of App. E.2.2, p. 36, l. 1129–1139).
 * `dOTCut G H`       : `d_□^OT(G, H) = min_{Q ∈ DS(V,W)} C_□(Q)` (infimum).
 * `deltaCut`, `deltaOTCut` : the normalisations `n⁻² d_□`, `n⁻² d_□^OT` (p. 1, l. 26–27).
 * `epsR A B R`       : `ζ_R(A, B) = ‖D_{A,B}‖_{□, μ_R}` for real matrices `A ∈ ℝ^{V×V}`,
-  `B ∈ ℝ^{W×W}` and `R ∈ DS(V, W)` with `μ_R = R/n` (App. E.2.2, where the matrix is called `Q`
+  `B ∈ ℝ^{W×W}` and `R ∈ DS(V, W)` with `μ_R = R/n` (Appendix E.2.2, where the matrix is called `Q`
   and the paper writes `ζ_Q(A, B)`); `ζ_R = n⁻² C_□(R)` for graphs (p. 10, l. 340, and
   Eq. (21)).
 -/
@@ -99,7 +99,7 @@ section Weighted
 
 variable {V W : Type*} [Fintype V] [Fintype W] [DecidableEq V] [DecidableEq W]
 
-/-- `ζ_R(A, B) = ‖D_{A,B}‖_{□, μ_R}` with `μ_R(v, w) = R(v, w)/n` (App. E.2.2, p. 36,
+/-- `ζ_R(A, B) = ‖D_{A,B}‖_{□, μ_R}` with `μ_R(v, w) = R(v, w)/n` (Appendix E.2.2, p. 36,
 l. 1129–1138), i.e.
 `max_{S, T ⊆ V × W} |∑_{x ∈ S, y ∈ T} μ_R(x) μ_R(y) (A(x₁, y₁) - B(x₂, y₂))|`. -/
 noncomputable def epsR (A : Matrix V V ℝ) (B : Matrix W W ℝ) (R : V → W → ℝ) : ℝ :=

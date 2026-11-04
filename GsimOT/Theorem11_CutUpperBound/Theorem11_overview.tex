@@ -1,0 +1,174 @@
+\input{../../scripts/overview_preamble.tex}
+\begin{document}
+\overviewtitle{Theorem 11: upper bound for the cut distance}{Folder \file{GsimOT/Theorem11_CutUpperBound}}
+\paperversion
+
+\section{Statement}
+\textbf{Paper} (Theorem~11, p.~10, l.~333--337; proof overview pp.~10--11, l.~338--380; proof in Appendix~E.2, pp.~32--44).
+There is a universal constant $C>0$ such that for all graphs $G,H$ of the same order, with
+$\delta_\square=\delta_\square(G,H)$ and $\delta^{\mathrm{OT}}_\square=\delta^{\mathrm{OT}}_\square(G,H)$,
+\[
+\delta^{\mathrm{OT}}_\square\le\delta_\square\le C\,\delta^{\mathrm{OT}}_\square\ln\frac{e}{\delta^{\mathrm{OT}}_\square}
+\ln\Bigl(e\ln\frac{e}{\delta^{\mathrm{OT}}_\square}\Bigr),
+\]
+the right-hand side being $0$ if $\delta^{\mathrm{OT}}_\square=0$. Consequently $\delta_\square=O((\delta^{\mathrm{OT}}_\square)^{1-\varepsilon})$
+for every $\varepsilon>0$; Theorem~2 (p.~3, l.~118--120) states this as $\delta_\square\le C_\varepsilon(\delta^{\mathrm{OT}}_\square)^{1-\varepsilon}$,
+and E.2.3 (p.~44, l.~1377--1379) as $\delta_\square\le C_\alpha(\delta^{\mathrm{OT}}_\square)^\alpha$ for every $\alpha<1$.
+
+\textbf{Lean.} The paper cites the thin-matching theorem of Haqi and Oveis Gharan (Theorem~35 = [HOG26, Thm.~1.4]); it
+is the hypothesis \lean{hThin : ThinPermutationTheorem}.
+\begin{itemize}
+\item \lean{GsimOT.theorem11_of_thin hThin}: $\exists C>0$ such that for all finite types $V,W$, graphs $G$ on $V$, $H$ on $W$
+with $|V|=|W|$: $\delta^{\mathrm{OT}}_\square\le\delta_\square$ and $\delta_\square\le C f\ln(e/f)\ln(e\ln(e/f))$ with
+$f=\delta^{\mathrm{OT}}_\square$. (In Lean $\ln 0=0$ and $e/0=0$, so the right-hand side is $0$ for $f=0$, as in the paper.)
+\item \lean{GsimOT.theorem11_power_lt_one_of_thin hThin}: for every $\alpha<1$ there is $C_\alpha>0$ with
+$\delta_\square\le C_\alpha f^\alpha$ (the statement of E.2.3; \lean{theorem11_power_of_thin} is the special case $0<\alpha<1$).
+\item \lean{GsimOT.theorem2_cut_of_thin hThin}: for every $\varepsilon>0$ there is $C_\varepsilon>0$ with
+$\delta_\square\le C_\varepsilon f^{1-\varepsilon}$ (Theorem~2, cut part).
+\item \lean{theorem11_of_rackeShah}, \lean{theorem11_power_lt_one_of_rackeShah}, \lean{theorem2_cut_of_rackeShah}
+(\file{FromThinMatching.lean}): the same, assuming only the tree-cut sparsifier theorem [RS14], since Theorem~35 is
+derived from the separate library \file{ThinMatching/}.
+\end{itemize}
+These are exactly the paper's statements (with the paper's constant $C=\max\{2,39C_1,113\}$, $C_1=1+4C_{\mathrm{thin}}$).
+
+\section{Where the proof lives}
+\begin{longtable}{>{\raggedright\arraybackslash}p{5.2cm} >{\raggedright\arraybackslash}p{10.6cm}}
+\toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
+\file{Definitions.lean} & thinness Eq.~(23) (\lean{IsThin}), Theorem~35 as a hypothesis (\lean{ThinPermutationTheorem}),
+the contraction principle statement, support functions, $d_n$ \\
+\file{Theorem38_ThinRounding.lean} & Appendix~E.2.1: Lemma~36 (\lean{lemma36}), Lemma~37 (\lean{lemma37}), Eqs.~(24)--(28),
+Eq.~(26) (\lean{eq26}), Theorem~38 (\lean{theorem38}) \\
+\file{Corollary46_SpectralTruncation.lean}, \file{Lemma47_MergingPermutations.lean}, \file{ContractionPrinciple.lean},
+\file{Theorem39_AdditiveRounding.lean} & Appendix~E.2.2: the additive rounding, Theorem~39 (\lean{theorem39}) \\
+\file{Theorem11.lean} & Appendix~E.2.3: graph facts, numerics, Eq.~(39) (\lean{eq39}), Theorem~11 (\lean{theorem11}),
+the power bounds and Theorem~2 \\
+\file{FromThinMatching.lean} & Theorem~35 from \file{ThinMatching/} and the \lean{_of_rackeShah} versions \\
+\end{longtable}
+The paper's $\zeta_Q$ (Eq.~(21)) is \lean{epsR (adjMat G) (adjMat H) Q}, and $\zeta_Q=n^{-2}C_\square(Q)$ (\lean{epsR_adjMat}).
+
+\section{Proof layout}
+\begin{center}
+\begin{tikzpicture}[every node/.append style={font=\footnotesize}]
+  \node[main] (rs) at (-0.8,0.2) {Theorem 11 / Theorem 2, assuming [RS14]\\\lean{theorem11_of_rackeShah}, \lean{theorem2_cut_of_rackeShah}};
+  \node[main] (t11) at (-0.8,-1.4) {Theorem 11 (E.2.3)\\\lean{theorem11}, \lean{theorem11_power_lt_one}};
+  \node[res] (num) at (5.6,-1.4) {numerics of E.2.3\\\lean{main_numeric}, \lean{power_numeric_lt_one}};
+  \node[res] (e39) at (-3.6,-3.0) {Eq. (39), $C_1=1+4C_{\mathrm{thin}}$\\\lean{eq39}};
+  \node[res] (t39) at (3.6,-3.0) {Theorem 39 (additive)\\\lean{theorem39}};
+  \node[res] (t38) at (-3.6,-4.5) {Theorem 38\\\lean{theorem38}};
+  \node[res] (e26) at (-3.6,-6.0) {Eq. (26): $\zeta_P\le(1+4\alpha)\zeta_Q$\\\lean{eq26}};
+  \node[res] (e27l) at (-6.4,-7.6) {Eq. (27), first\\\lean{eq27_left}};
+  \node[res] (e27r) at (-2.4,-7.6) {Eq. (27), second; Eq. (28)\\\lean{eq27_right}, \lean{eq28_cut}};
+  \node[res] (ea) at (-4.6,-9.1) {$\|EA\|_\square\le2\alpha n^2\zeta_Q$, Eq. (25)\\\lean{normEA_le}, \lean{cut_R_EAt_le}};
+  \node[res] (l36) at (-6.4,-10.6) {Lemma 36\\\lean{lemma36}};
+  \node[res] (l37) at (-3.0,-10.6) {Lemma 37, Eq. (24)\\\lean{lemma37}};
+  \node[cited] (hog) at (-7.0,-4.5) {Theorem 35 [HOG26]\\\lean{ThinPermutationTheorem}};
+  \node[res] (l48) at (3.6,-4.5) {Lemma 48 (tree merging)\\\lean{lemma48}};
+  \node[res] (l47) at (3.6,-6.0) {Lemma 47 (two permutations)\\\file{Lemma47_MergingPermutations.lean}};
+  \node[res] (c46) at (6.9,-8.6) {Lemma 45, Corollary 46\\\file{Corollary46_SpectralTruncation.lean}};
+  \node[res] (cp) at (2.4,-7.6) {Lemmas 42--44, [LT91]\\\lean{contractionPrinciple}};
+  \node[shared] (com) at (2.0,-10.6) {Common: cut norm, $\mathrm{DS}$, Birkhoff\\\lean{cutNorm}, \lean{epsR}, \lean{IsDS}};
+  \node[cited] (rsc) at (6.0,0.2) {[RS14] via \file{ThinMatching/}\\\lean{RackeShahTheorem}};
+  \draw[dep] (rs) -- (t11); \draw[dep] (rs) -- (rsc);
+  \draw[dep] (t11) -- (num); \draw[dep] (t11) -- (e39); \draw[dep] (t11) -- (t39);
+  \draw[dep] (e39) -- (t38); \draw[dep] (t38) -- (e26); \draw[dep] (t38) -- (hog);
+  \draw[dep] (e26) -- (e27l); \draw[dep] (e26) -- (e27r); \draw[dep] (e27r) -- (ea);
+  \draw[dep] (ea) -- (l36); \draw[dep] (ea) -- (l37);
+  \draw[dep] (t39) -- (l48); \draw[dep] (l48) -- (l47); \draw[dep] (t39.east) to[bend left=30] (c46);
+  \draw[dep] (l47) -- (cp);
+  \draw[dep] (l37) -- (com); \draw[dep] (cp) -- (com); \draw[dep] (c46) -- (com);
+\end{tikzpicture}
+\end{center}
+Left: the multiplicative branch (Appendix~E.2.1); right: the additive branch (Appendix~E.2.2); top: the combination (Appendix~E.2.3).
+Dashed boxes are cited results, which are explicit hypotheses.
+
+\section{The multiplicative bound (Appendix E.2.1, pp. 32--35)}
+Throughout Appendix~E.2, $V=W=[n]$ with $n\ge2$, $A,B$ are the adjacency matrices, and $\zeta_Q$ is defined by Eq.~(21)
+(sets) $=$ Eq.~(22) ($[0,1]$-valued functions), p.~32. In Lean $V$, $W$ are arbitrary finite types of equal size;
+testing on sets is \lean{abs_cut_le_epsR}.
+\begin{enumerate}
+\item \textbf{Thinness, Eq. (23)} (p.~32, l.~1014--1015): $P$ is $\alpha$-thin w.r.t.\ $Q$ if for all $X,Y$ the mass of $P$ on the cut
+$(X\times\overline Y)\cup(\overline X\times Y)$ is at most $\alpha$ times that of $Q$. \lean{IsThin} is this, written with
+$U=U_V\sqcup U_W$ as in the proof overview (p.~10, l.~350--353).
+\item \textbf{Theorem 35} (p.~32, l.~1021--1022) is the hypothesis \lean{ThinPermutationTheorem}: some $P$ is
+$C_{\mathrm{thin}}\ln(2n)\ln\ln(4n)$-thin.
+\item \textbf{Lemma 36} (p.~33, l.~1026--1028): $\sum_i|x_i-y_{\pi(i)}|\le\alpha\sum_{ij}Q_{ij}|x_i-y_j|$. As in the paper: Eq.~(23) for the
+level sets $X_s,Y_s$ gives the pointwise inequality (\lean{hpt} in \lean{lemma36}, with \lean{levelInd_apply}), and
+$\int|1[x>s]-1[y>s]|\,ds=|x-y|$ (\lean{integral_levelInd}); integrate.
+\item \textbf{Lemma 37} (p.~33, l.~1038--1039; proof pp.~33--34): $n^{-2}\sum_{ij}Q_{ij}|x_i-(Q^\top x)_j|\le4\zeta_Q$ for $x=A\mathbf 1_T$
+(\lean{lemma37}; the paper allows $y\in[0,1]^n$, only $y=\mathbf1_Y$ is used). Steps: $F_{ij}=x_i-r_j$, Eq.~(24)
+$n^{-2}\sum Q_{ij}|F_{ij}|\le2\zeta_Q$ via $S_\pm$, then $x_i-(Q^\top x)_j=F_{ij}-\sum_{i'}Q_{i'j}F_{i'j}$ and the triangle
+inequality.
+\item \textbf{Eq. (25)} (p.~34, l.~1066--1072): $\|RK\|_\square\le\|K\|_\square$, used in the form \lean{abs_sum_mul_le_of_cut}.
+\item \textbf{Theorem 38} (p.~34, l.~1074--1075; proof pp.~34--35): $\zeta_P\le(1+4\alpha)\zeta_Q$ for some $P$ (\lean{theorem38}). Its proof:
+  \begin{enumerate}
+  \item $\zeta_P=n^{-2}\|A-PBP^\top\|_\square$ (p.~34, l.~1080--1084): \lean{epsR_permMat_le} (direction $\le$).
+  \item split $A-PBP^\top=(A-RAR^\top)+P(Q^\top AQ-B)P^\top$, $R=PQ^\top$, i.e.\ $R(v,k)=Q(k,\pi v)$ (p.~35, l.~1085--1089): \lean{hsplit} in
+  \lean{eq26}; conjugation invariance by testing on $\pi(S)\times\pi(T)$.
+  \item Eq.~(27), first bound $n^{-2}\|Q^\top AQ-B\|_\square\le\zeta_Q$ (p.~35, l.~1091--1095): \lean{eq27_left}.
+  \item $f=EA\mathbf1_Y$ with $E=I-R$; Lemma~36, Lemma~37, $\sum_if_i=0$ give $n^{-2}\|EA\|_\square\le2\alpha\zeta_Q$
+  (l.~1096--1105): \lean{normEA_le}, with \lean{abs_sum_le_half_of_sum_eq_zero}.
+  \item Eq.~(28) $A-RAR^\top=EA+R(EA)^\top$ (symmetry of $A$): \lean{eq28_cut}; Eq.~(25) and transposition:
+  \lean{cut_R_EAt_le}; together the second bound of Eq.~(27): \lean{eq27_right}.
+  \item Eq.~(26) for every $\alpha$-thin $P$: \lean{eq26}; with Theorem~35: \lean{theorem38}.
+  \end{enumerate}
+\end{enumerate}
+
+\IfFileExists{Theorem11_overview_additive.tex}{\input{Theorem11_overview_additive.tex}}{%
+\section{The additive bound (Appendix E.2.2)}
+Theorem~39 (p.~36): $\zeta_P\le\zeta_Q+36\sqrt{d_n}\,n^{-1/6}$, $d_n=\lceil2\log n\rceil$, is \lean{theorem39}
+(\file{Theorem39_AdditiveRounding.lean}), assuming the contraction principle, which is proved in
+\file{ContractionPrinciple.lean}. (A detailed overview of this part is written separately.)}
+
+\section{Combining both bounds: the proof of Theorem 11 (Appendix E.2.3, p. 44)}
+\begin{enumerate}
+\item \emph{Lower bound} (l.~1363): permutation matrices are doubly stochastic: \lean{deltaOTCut_le_deltaCut}.
+\item \emph{Optimal $Q$}: ``let $Q\in\mathrm{DS}(n)$ be optimal, so that $\zeta_Q=\varepsilon$'': attained by compactness of
+$\mathrm{DS}(V,W)$ and continuity of $C_\square$ (\lean{isCompact_DS}, \lean{continuous_costCut},
+\lean{exists_costCut_eq_dOTCut}).
+\item \emph{Eq. (39)} (l.~1364--1366): $\ln(2n)\ln\ln(4n)\ge\ln4\cdot\ln\ln8>1$ for $n\ge2$
+(\lean{one_lt_log_four_mul_log_log_eight}, \lean{one_le_log_mul_log_log}), so Theorem~38 gives
+$\delta_\square\le C_1\ln(2n)\ln\ln(4n)\,\varepsilon$ with $C_1=1+4C_{\mathrm{thin}}$: \lean{eq39}.
+\item \emph{Cases} (all in \lean{main_numeric}): $\varepsilon=0$ (from Eq.~(39)); $\varepsilon\ge\frac12$ ($\delta_\square\le1$, $C\ge2$);
+$0<\varepsilon<\frac12$ with $L_\varepsilon=\ln(e/\varepsilon)$:
+  \begin{itemize}
+  \item $n\le\varepsilon^{-12}$: $\ln(2n)\le13L_\varepsilon$ and $\ln\ln(4n)\le\ln(14L_\varepsilon)\le3\ln(eL_\varepsilon)$ using $\ln14<3$
+  (\lean{log_fourteen_lt_three}), hence $C=39C_1$;
+  \item $n>\varepsilon^{-12}$: $d_n\le3\log n$ (\lean{dn_mul_log_two_le}) and the error term of Theorem~39 is $<112\varepsilon$
+  (\lean{error_term_le}), hence $\delta_\square\le113\varepsilon$.
+  \end{itemize}
+  So $C=\max\{2,39C_1,113\}$ (\lean{theorem11}).
+\item \emph{Power bound} (l.~1377--1379): $\varepsilon^{1-\alpha}\ln(e/\varepsilon)\ln(e\ln(e/\varepsilon))$ is bounded on $(0,1]$:
+\lean{power_numeric} ($0<\alpha<1$, with constant $(1+\frac2{1-\alpha})^2$) and \lean{power_numeric_lt_one} (every $\alpha<1$;
+for $\alpha\le\frac12$ via $\alpha=\frac12$ and $f^{1/2}\le f^\alpha$). Results: \lean{theorem11_power_lt_one},
+\lean{theorem2_cut_of_thin} ($\alpha=1-\varepsilon$).
+\end{enumerate}
+
+\section{Assumptions and trusted base}
+\begin{itemize}
+\item \hyp{Theorem 35} [HOG26, Thm.~1.4] is the hypothesis \lean{ThinPermutationTheorem} of the \lean{_of_thin} theorems; it is
+derived from [RS14] (\lean{RackeShahTheorem}, cited in [HOG26]) in the \file{ThinMatching/} library, so the
+\lean{_of_rackeShah} theorems assume only [RS14].
+\item The contraction principle [LT91] (Lemma~43) is a hypothesis of \lean{theorem11}, but it is proved
+(\lean{contractionPrinciple}), so the \lean{_of_thin} theorems do not assume it.
+\item Only the standard axioms \lean{propext}, \lean{Classical.choice}, \lean{Quot.sound} are used.
+\end{itemize}
+
+\section{Notes on the formalisation}
+\begin{itemize}
+\item Lemma~37 is proved for $y=\mathbf1_T$ only (the case used).
+\item The Lean hypothesis gives thinness with exactly $\alpha=C_{\mathrm{thin}}\ln(2n)\ln\ln(4n)$, so the monotonicity step of the
+proof of Theorem~38 (``$\alpha'$-thin, $\alpha'\le\alpha$, hence $\alpha$-thin'') is not needed.
+\item $n=1$ (excluded by ``$n\ge2$'' in Appendix~E.2) is handled separately: $\delta_\square=0$
+(\lean{deltaCut_le_zero_of_card_eq_one}, \lean{rhs_nonneg}).
+\item For $n>\varepsilon^{-12}$ the paper uses that $x\mapsto x^{-1/6}\sqrt{\ln x}$ is decreasing and
+$\varepsilon\sqrt{\ln(1/\varepsilon)}\le(2e)^{-1/2}$; Lean uses $m=n^{1/6}>\varepsilon^{-2}$ and $\ln m\le m/e$ (the same
+inequality), with the same constant $112$.
+\end{itemize}
+
+\section{How to check this result}
+\begin{verbatim}
+lake build GsimOT.Theorem11_CutUpperBound.Theorem11 GsimOT.Theorem11_CutUpperBound.FromThinMatching
+lake env lean scripts/CheckAxioms.lean   # axioms of theorem11_of_thin, theorem11_of_rackeShah, ...
+\end{verbatim}
+The correspondence table is \file{Theorem11_correspondence.pdf} in the same folder.
+\end{document}

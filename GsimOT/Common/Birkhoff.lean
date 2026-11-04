@@ -4,8 +4,8 @@
 Paper, Section 2, Eq. (3) (p. 5, l. 193–196): by the Birkhoff–von Neumann theorem every
 `Q ∈ DS(V, W)` is a convex combination `∑ λᵢ P_{πᵢ}` of permutation matrices with `λᵢ > 0`.
 Consequently the graph of each `πᵢ` is contained in `supp(Q)`, as used for the reference bijection
-`σ` of Eq. (18) (App. D.2, p. 28, l. 867–869).  We only need this consequence, which we derive from
-Mathlib's Birkhoff–von Neumann theorem `exists_eq_sum_perm_of_mem_doublyStochastic`.
+`σ` of Eq. (18) (Appendix D.2, p. 28, l. 867–869).  We only need this consequence, which we derive
+from Mathlib's Birkhoff–von Neumann theorem `exists_eq_sum_perm_of_mem_doublyStochastic`.
 -/
 import GsimOT.Common.Basic
 

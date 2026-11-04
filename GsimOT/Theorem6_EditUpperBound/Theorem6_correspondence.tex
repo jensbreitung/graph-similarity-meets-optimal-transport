@@ -1,0 +1,73 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,landscape]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{array,booktabs,longtable}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\lean}[1]{\textcolor{blue!50!black}{\texttt{\detokenize{#1}}}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+
+
+\begin{center}{\Large\bfseries Theorem 6: upper bound for the edit distance}\\[4pt]
+
+{\small Correspondence between the paper and the Lean~4/Mathlib formalisation}\end{center}
+
+\noindent\textbf{Paper.} J.~Breitung, T.~Gervens, M.~Grohe. \emph{Graph Similarity Meets Optimal Transport} (file \texttt{Graph\_Similarity\_Meets\_Optimal\_Transport.pdf} in the repository). Statement, equation, page and line numbers refer to this PDF; \texttt{docs/NUMBERING.md} lists the Lean files and declarations of all numbered statements.\par\smallskip
+
+The folder \texttt{GsimOT/Theorem6\_EditUpperBound} formalises Theorem~6 (p.~7) with its proof in Appendix~C.2 (Eq.~(17) and the steps (a)--(g)) and the $\delta_{\mathrm{ed}}$ part of Theorem~2. Shared notions (the edit distance, Eq.~(3)) come from \texttt{GsimOT/Common}; they are listed at the end.\par\paragraph{Checking.} Run \texttt{bash build.sh} in the repository root (see \texttt{README.md}). The script builds the library and runs \texttt{scripts/CheckAxioms.lean}, which must report only the standard axioms \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}: no \texttt{sorry} and no additional axioms.
+
+\paragraph{Main statement in Lean.} \lean{GsimOT.theorem6}: for weights $\lambda_i\ge0$ with $\sum_i\lambda_i=1$ and bijections
+$\pi_i\colon V\to W$ over a finite index set, if $Q=\sum_i\lambda_iP_{\pi_i}$, then
+\[ \sum_i\lambda_i\,C_{\mathrm{ed}}(\pi_i)\le2\,C_{\mathrm{ed}}(Q). \]
+\lean{GsimOT.theorem6_dEdit}: $d_{\mathrm{ed}}(G,H)\le2\,d^{\mathrm{OT}}_{\mathrm{ed}}(G,H)$, and
+\lean{GsimOT.theorem2_edit} (Theorem~2, first bound): $\delta_{\mathrm{ed}}(G,H)\le2\,\delta^{\mathrm{OT}}_{\mathrm{ed}}(G,H)$,
+for all finite graphs $G,H$.
+
+\section*{Correspondence: Theorem 6 and its proof}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Eq.~(17) (l.~762--765) & 24 & $C_{\mathrm{ed}}(R)=\|A_G\|_F^2+\|A_H\|_F^2-2\langle A_GR,RA_H\rangle_F$ for $R\in\mathrm{DS}(V,W)$, from $|a-b|=a^2+b^2-2ab$ for $a,b\in\{0,1\}$ & \lean{GsimOT.costEdit_eq_frob}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:186}} \newline \lean{GsimOT.abs_disc_eq}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:177}} \newline \lean{GsimOT.frob}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:37}} \newline \lean{GsimOT.adjMul}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:83}} \newline \lean{GsimOT.mulAdj}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:86}} \\ \midrule
+{}Proof of Thm.~6, first step (l.~767) & 24 & $C_{\mathrm{ed}}(\pi)=\|A_G-P_\pi A_HP_\pi^\top\|_F^2$ & \lean{GsimOT.costEditBij_eq_frob_conjMul}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:147}} \newline \lean{GsimOT.conjMul}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:90}} \newline \lean{GsimOT.conjMul_permMat}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:110}} \\ \midrule
+{}Proof of Thm.~6, step~(a) (l.~768) & 25 & $\|A_G-PA_HP^\top\|_F=\|A_GP-PA_H\|_F$ (permutation invariance) & \lean{GsimOT.frob_conjMul_eq}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:158}} \newline \lean{GsimOT.adjMul_permMat}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:95}} \newline \lean{GsimOT.mulAdj_permMat}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:103}} \\ \midrule
+{}Proof of Thm.~6, step~(b) (l.~770) & 25 & $\|X+Y\|_F^2\le2\|X\|_F^2+2\|Y\|_F^2$ & \lean{GsimOT.frob_add_self_le}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:50}} \\ \midrule
+{}Proof of Thm.~6, steps~(c), (f) (l.~771, 774) & 25 & $\|X-Y\|_F^2=\|X\|_F^2+\|Y\|_F^2-2\langle X,Y\rangle_F$ & \lean{GsimOT.frob_sub_self}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:44}} \newline \lean{GsimOT.frob_comm}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:40}} \\ \midrule
+{}Proof of Thm.~6, steps~(d), (g) (l.~772, 776) & 25 & $\mathbb E[P]=Q$: $A_GQ=\sum_i\lambda_iA_GP_{\pi_i}$, $QA_H=\sum_i\lambda_iP_{\pi_i}A_H$, and $\langle\cdot,\cdot\rangle_F$ is linear; $\|A_GP_\pi\|_F=\|A_G\|_F$, $\|P_\pi A_H\|_F=\|A_H\|_F$ & \lean{GsimOT.adjMul_eq_sum}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:130}} \newline \lean{GsimOT.mulAdj_eq_sum}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:138}} \newline \lean{GsimOT.frob_eq_sum_left}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:56}} \newline \lean{GsimOT.frob_eq_sum_right}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:68}} \newline \lean{GsimOT.frob_adjMul_permMat}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:118}} \newline \lean{GsimOT.frob_mulAdj_permMat}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/TraceFormula.lean:124}} \\ \midrule
+{}Theorem~6 (l.~245--246) & 7, 24--25 & $\sum_i\lambda_iC_{\mathrm{ed}}(\pi_i)\le2\,C_{\mathrm{ed}}(Q)$ for $Q=\sum_i\lambda_iP_{\pi_i}$; the proof is the chain (a)--(g) and Eq.~(17) of Appendix~C.2 (l.~767--777) & \lean{GsimOT.theorem6}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/Theorem6.lean:44}} \\ \midrule
+{}Theorem~6 (``in particular'', l.~247, 783--785) & 7, 25 & $d_{\mathrm{ed}}(G,H)\le2\,d^{\mathrm{OT}}_{\mathrm{ed}}(G,H)$ (in Lean for all $G,H$) & \lean{GsimOT.theorem6_dEdit}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/Theorem6.lean:112}} \\ \midrule
+{}Theorem~2 (first bound, l.~119) & 3 & $\delta_{\mathrm{ed}}(G,H)\le2\,\delta^{\mathrm{OT}}_{\mathrm{ed}}(G,H)$ & \lean{GsimOT.theorem2_edit}\newline{\scriptsize\texttt{Theorem6\_EditUpperBound/Theorem6.lean:129}} \\
+\end{longtable}
+
+\section*{Shared notions used (from \texttt{GsimOT/Common})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Section~1, Section~2 & 2, 5 & $C_{\mathrm{ed}}(Q)=\sum_{v,w,v',w'}|D(v,w,v',w')|\,Q(v,w)\,Q(v',w')$ and $C_{\mathrm{ed}}(\pi)=C_{\mathrm{ed}}(P_\pi)=\|A_G^\pi-A_H\|_{\mathrm{ed}}$ & \lean{GsimOT.costEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:35}} \newline \lean{GsimOT.costEditBij}\newline{\scriptsize\texttt{Common/EditDistance.lean:39}} \newline \lean{GsimOT.costEditBij_eq}\newline{\scriptsize\texttt{Common/EditDistance.lean:60}} \\ \midrule
+{}Section~1, Eq.~(1), Section~2, Appendix~A & 2, 5, 14--15 & $d_{\mathrm{ed}}=\min_\pi C_{\mathrm{ed}}(\pi)$ and $d^{\mathrm{OT}}_{\mathrm{ed}}=\min_{Q\in\mathrm{DS}(V,W)}C_{\mathrm{ed}}(Q)$ (infimum, attained); $d^{\mathrm{OT}}_{\mathrm{ed}}\le d_{\mathrm{ed}}$ & \lean{GsimOT.dEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:42}} \newline \lean{GsimOT.dOTEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:45}} \newline \lean{GsimOT.exists_dOTEdit_eq}\newline{\scriptsize\texttt{Common/EditDistance.lean:109}} \newline \lean{GsimOT.dOTEdit_le_dEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:102}} \\ \midrule
+{}Section~1, Section~2 & 1--2, 5 & $\delta_{\mathrm{ed}}=n^{-2}d_{\mathrm{ed}}$, $\delta^{\mathrm{OT}}_{\mathrm{ed}}=n^{-2}d^{\mathrm{OT}}_{\mathrm{ed}}$ (scaling by $1/n^2$) & \lean{GsimOT.deltaEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:48}} \newline \lean{GsimOT.deltaOTEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:51}} \\ \midrule
+{}Section~1, Section~2, Appendix~A & 2, 5, 14 & $C_{\mathrm{ed}}(Q)=\|B(G,H,Q)\|_{\mathrm{ed}}$ for $Q\ge0$ (entrywise $1$-norm $\|\cdot\|_{\mathrm{ed}}=\|\cdot\|_{(1)}$) & \lean{GsimOT.entrywiseNorm}\newline{\scriptsize\texttt{Common/MatrixNorms.lean:53}} \newline \lean{GsimOT.costEdit_eq_entrywiseNorm_B}\newline{\scriptsize\texttt{Common/MatrixNorms.lean:119}} \\ \midrule
+{}Section~2, Eq.~(3) & 5 & Birkhoff--von Neumann: $Q=\sum_i\lambda_iP_{\pi_i}$ with $\lambda_i>0$, $\sum_i\lambda_i=1$ (also: over all $\sigma\in\mathrm{Perm}(V)$ with $\lambda\ge0$); conversely every such combination is in $\mathrm{DS}(V,W)$ & \lean{GsimOT.exists_birkhoff_decomposition_pos}\newline{\scriptsize\texttt{Common/BirkhoffDecomposition.lean:72}} \newline \lean{GsimOT.exists_birkhoff_decomposition}\newline{\scriptsize\texttt{Common/BirkhoffDecomposition.lean:42}} \newline \lean{GsimOT.isDS_of_decomposition}\newline{\scriptsize\texttt{Common/BirkhoffDecomposition.lean:23}} \\
+\end{longtable}
+
+\section*{Notes on the formalisation}
+
+\begin{enumerate}[leftmargin=*]
+\item The formalisation follows the proof of Theorem~6 in Appendix~C.2. The expectation $\mathbb E[f(\pi)]$ over the random bijection with $\Pr(\pi=\pi_i)=\lambda_i$ is the sum $\sum_i\lambda_if(\pi_i)$, and the chain of l.~767--777 is a \texttt{calc} block with one step per line, commented with the paper's line numbers and labels (a)--(g).
+\item Matrices are functions $V\to W\to\mathbb R$, as in \texttt{Common/Basic.lean}: \lean{adjMul G R} is $A_GR$, \lean{mulAdj H R} is $RA_H$, \lean{conjMul H R} is $RA_HR^\top$ and \lean{frob X Y} is $\langle X,Y\rangle_F$, so $\|X\|_F^2$ is \lean{frob X X}.
+\item A decomposition is given by weights $\lambda_i\ge0$ with $\sum_i\lambda_i=1$ over any finite index type; only these are assumed, so \lean{theorem6} applies to every decomposition as in Eq.~(3).
+\item The first step of the chain (l.~767) holds since the entries of $A_G$ and $A_H$ are in $\{0,1\}$ (\lean{costEditBij_eq_frob_conjMul}).
+\item Example~7 (p.~7) and the remark at the end of Appendix~C.2 (p.~25, arbitrary matrices via thresholds) are not formalised.
+\end{enumerate}
+
+\end{document}

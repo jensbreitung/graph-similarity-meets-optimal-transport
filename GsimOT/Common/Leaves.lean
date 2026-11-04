@@ -3,7 +3,7 @@ import GsimOT.Common.MatrixNorms
 /-!
 # Attaching leaves
 
-The reductions of Theorems 17 and 18 (App. G, p. 54, l. 1714–1715, and p. 57, l. 1832–1834)
+The reductions of Theorems 17 and 18 (Appendix G, p. 54, l. 1714–1715, and p. 57, l. 1832–1834)
 attach `ℓ b` new leaves to every vertex `b` of a base graph `G'`. The resulting graph
 `addLeaves G' ℓ` has vertex type `B ⊕ Σ b, Fin (ℓ b)`: the base vertex `b` is `inl b` and the
 leaves of `b` are `inr ⟨b, t⟩`.

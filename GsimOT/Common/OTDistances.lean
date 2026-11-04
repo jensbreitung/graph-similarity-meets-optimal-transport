@@ -2,24 +2,24 @@
 # The matrices `B`, `B_{p→q}` and the optimal transport distances
 
 Paper, Section 1 (Fractional Alignments and Optimal Transport, pp. 2–3, Eqs. (1), (2)), Section 2
-(p. 5) and App. A (pp. 14–15).
+(p. 5) and Appendix A (pp. 14–15).
 
 * `IsCoupling Q`      : `Q ∈ DS*(V, W)`, a fractional alignment (coupling of the uniform
                          distributions): nonnegative, row sums `1/|V|`, column sums `1/|W|`
-                         (p. 2, l. 50–54; App. A, p. 14, l. 493–494).
+                         (p. 2, l. 50–54; Appendix A, p. 14, l. 493–494).
 * `powZ x a`          : `x^a` with the convention `0^a := 0` (in particular `0^0 = 0`, p. 3, l. 84;
-                         App. A, p. 14, l. 500).
+                         Appendix A, p. 14, l. 500).
 * `B G H Q`           : `B(G, H, Q)` with entries `Q(v,w) D(v,w,v',w') Q(v',w')` (edit and cut
                          distance; p. 2, l. 68–69).
 * `Bmat p q G H Q`    : `B_{p→q}(G, H, Q)` with entries `Q(v,w)^{1/q} D(v,w,v',w') Q(v',w')^{1-1/p}`
-                         (p. 3, l. 84–85; App. A, p. 14, l. 499).
+                         (p. 3, l. 84–85; Appendix A, p. 14, l. 499).
 * `deltaOTPQ p q G H` : `δ^OT_{p→q}(G, H) = min_{Q ∈ DS*(V,W)} ‖B_{p→q}(G,H,Q)‖_{p→q}`
                          (Eq. (2), p. 3).
 * `dOT p q G H`       : `d^OT_{p→q}(G, H) = min_{Q ∈ DS(V,W)} ‖B_{p→q}(G,H,Q)‖_{p→q}`, the
                          minimum of the unnormalised cost `C_{p→q}` over `DS(V, W)` (Section 2,
                          p. 5, l. 184–187; graphs of the same order).
 
-All minima are taken as infima; that they are attained (App. A, pp. 14–15, l. 503–510) is
+All minima are taken as infima; that they are attained (Appendix A, pp. 14–15, l. 503–510) is
 proved in `GsimOT.Common.Attainment`.
 -/
 import GsimOT.Common.Basic
@@ -125,8 +125,8 @@ lemma Bmat_smul {n : ℝ} (hn : 0 < n) {Q : V → W → ℝ} (hQ : ∀ v w, 0 �
 
 /-- `δ^OT_{p→q}(G, H) = n^{-κ} d^OT_{p→q}(G, H)` for graphs of the same order `n ≥ 1`: the
 unnormalised `d^OT_{p→q}` (Section 2, p. 5, l. 184–187) and `δ^OT_{p→q}` (Eq. (2)) differ by the
-factor `s(n) = n^κ` (p. 3, l. 88–90; App. B, p. 15, l. 513–514). The proof uses
-`DS(V, W) = n DS*(V, W)` (App. A, p. 14, l. 494–495) and the homogeneity of `B_{p→q}`
+factor `s(n) = n^κ` (p. 3, l. 88–90; Appendix B, p. 15, l. 513–514). The proof uses
+`DS(V, W) = n DS*(V, W)` (Appendix A, p. 14, l. 494–495) and the homogeneity of `B_{p→q}`
 (`Bmat_smul`) and of the operator norm (`opNorm_smul_of_nonneg`). -/
 theorem deltaOTPQ_eq_dOT (hp : 1 ≤ p) (hq : 1 ≤ q) (hcard : Fintype.card V = Fintype.card W)
     [Nonempty V] :

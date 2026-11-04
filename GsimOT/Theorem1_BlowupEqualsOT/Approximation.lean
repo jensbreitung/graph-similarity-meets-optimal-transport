@@ -1,7 +1,7 @@
 /-
 # Approximating a coupling by couplings with denominator `N = ℓmn`
 
-Paper, App. B, Eq. (13) and Claim 20 (pp. 17–18, l. 570–581): "let `ε > 0` and
+Paper, Appendix B, Eq. (13) and Claim 20 (pp. 17–18, l. 570–581): "let `ε > 0` and
 `Q* ∈ DS*(V, W)` be a rational matrix such that
 `‖B_{p→q}(G,H,Q*)‖ ≤ min_{Q*_0} ‖B_{p→q}(G,H,Q*_0)‖ + ε`."
 The proof of Claim 20 takes a minimiser `Q*_0`, a sequence of rational couplings with the same

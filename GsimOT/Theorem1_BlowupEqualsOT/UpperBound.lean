@@ -1,8 +1,8 @@
 /-
 # The upper bound for couplings with denominator `N` (Eq. (15))
 
-Paper, App. B, second part of the proof of Theorem 1 (pp. 18–20, l. 592–638).
-The theorem `eq16` is Eq. (15) for an arbitrary `ℓ` with `N Q` integral; `eq15` (Claim20.lean) is
+Paper, Appendix B, second part of the proof of Theorem 1 (pp. 18–20, l. 592–638).
+The theorem `eq15_of_integral` is Eq. (15) for an arbitrary `ℓ` with `N Q` integral; `eq15` (Claim20.lean) is
 the paper's form `ℓ = ks`.
 
 Construction.  With `q(v, w) := N Q(v, w) ∈ ℕ` we have `∑_w q(v, w) = ℓn` and `∑_v q(v, w) = ℓm`.
@@ -21,7 +21,8 @@ open Finset Matrix
 namespace GsimOT
 
 /-- A function `Fin k → α` with prescribed fibre sizes `r a` (where `∑ r a = k`); used to
-choose the partitions `I(v, ·)` of `[ℓn]` and `J(·, w)` of `[ℓm]` (App. B, p. 18, l. 597–599). -/
+choose the partitions `I(v, ·)` of `[ℓn]` and `J(·, w)` of `[ℓm]` (Appendix B, p. 18,
+l. 597–599). -/
 lemma exists_fin_fun_card_fiber {α : Type*} [Fintype α] [DecidableEq α] (k : ℕ) (r : α → ℕ)
     (hr : ∑ a, r a = k) : ∃ g : Fin k → α, ∀ a, #{i | g i = a} = r a := by
   let e : Fin k ≃ Σ a, Fin (r a) := Fintype.equivOfCardEq (by simp [hr])
@@ -42,7 +43,7 @@ lemma card_fiber_prod {X Y : Type*} [Fintype X] [DecidableEq X] [DecidableEq Y] 
 variable {V W : Type*} [Fintype V] [Fintype W] [DecidableEq V] [DecidableEq W]
 variable {G : SimpleGraph V} [DecidableRel G.Adj] {H : SimpleGraph W} [DecidableRel H.Adj]
 
-/-- The bijection `π : V × [ℓn] → W × [ℓm]` of App. B (proof of Eq. (15), p. 18, l. 597–601):
+/-- The bijection `π : V × [ℓn] → W × [ℓm]` of Appendix B (proof of Eq. (15), p. 18, l. 597–601):
 there is a bijection `π` and a map `c : W × [ℓm] → V` (with `c(w, j) = v` iff `j ∈ J(v, w)`)
 such that `π⁻¹(w, j) ∈ {c(w, j)} × [ℓn]` and `|J(v, w)| = q(v, w)`. -/
 lemma exists_blowup_bij (k k' : ℕ) (qn : V → W → ℕ)
@@ -95,7 +96,7 @@ lemma block_sum_eq {α β : Type*} [Fintype β] [DecidableEq α] (b : β → α)
 `N Q(v, w) ∈ ℕ` for all `v, w`, where `N = ℓmn`, then
 `δ_{p→q}(G^{•nℓ}, H^{•mℓ}) ≤ ‖B_{p→q}(G, H, Q)‖_{p→q}`.  (In the paper `ℓ = ks`, where `k` is
 the least common multiple of the denominators of `Q`; see `eq15`.) -/
-theorem eq16 {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) [Nonempty V] [Nonempty W] (ℓ : ℕ)
+theorem eq15_of_integral {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) [Nonempty V] [Nonempty W] (ℓ : ℕ)
     (hℓ : 0 < ℓ) {Q : V → W → ℝ} (hQ : IsCoupling Q)
     (hint : ∀ v w, ∃ k : ℕ,
       ((Fintype.card V * (Fintype.card W * ℓ) : ℕ) : ℝ) * Q v w = k) :

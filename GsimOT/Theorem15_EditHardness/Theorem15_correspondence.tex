@@ -1,0 +1,70 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,landscape]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{array,booktabs,longtable}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\lean}[1]{\textcolor{blue!50!black}{\texttt{\detokenize{#1}}}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+
+
+\begin{center}{\Large\bfseries Theorem 15: hardness of the optimal-transport edit distance}\\[4pt]
+
+{\small Correspondence between the paper and the Lean~4/Mathlib formalisation}\end{center}
+
+\noindent\textbf{Paper.} J.~Breitung, T.~Gervens, M.~Grohe. \emph{Graph Similarity Meets Optimal Transport} (file \texttt{Graph\_Similarity\_Meets\_Optimal\_Transport.pdf} in the repository). Statement, equation, page and line numbers refer to this PDF; \texttt{docs/NUMBERING.md} lists the Lean files and declarations of all numbered statements.\par\smallskip
+
+The folder \texttt{GsimOT/Theorem15\_EditHardness} formalises the reduction of Theorem~15 (p.~12, proof in Appendix~G, pp.~50--51) from Three-Partition. It gives Theorem~4\,(1). Shared notions come from \texttt{GsimOT/Common}; they are listed at the end.\par\paragraph{Checking.} Run \texttt{bash build.sh} in the repository root (see \texttt{README.md}). The script builds the library and runs \texttt{scripts/CheckAxioms.lean}, which must report only the standard axioms \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}: no \texttt{sorry} and no additional axioms.
+
+\paragraph{Main statement in Lean.} \lean{GsimOT.Hardness.ThreePartition.dOTEdit_le_iff}: for an instance $(A,a_1,\dots,a_{3m})$ of
+Three-Partition with all $a_i\ge2$, the union $F_1$ of paths on $a_i$ vertices and the union $F_2$ of $m$ paths
+on $A$ vertices satisfy
+\[ d^{\mathrm{OT}}_{\mathrm{ed}}(F_1,F_2)\le4m\iff\text{the instance is a YES-instance}. \]
+
+\section*{Correspondence}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Proof of Thm.~15, l.~1600--1602 & 51 & $\|B(F_1,F_2,Q)\|_{(1)}=2|E(F_2)|-2|E(F_1)|+2\,\mathrm{lost}(Q)=4m+2\,\mathrm{lost}(Q)$ for $Q\in\mathrm{DS}$, where $\mathrm{lost}(Q)\ge0$ is the edge mass of $F_1$ mapped to non-edges of $F_2$ (the paper's $\|A^\pi_{F_1'}-A_{F_2'}\|_{(1)}=4mk^2+4b$ for blowups) & \lean{GsimOT.Hardness.lost}\newline{\scriptsize\texttt{Theorem15\_EditHardness/Theorem15.lean:57}} \newline \lean{GsimOT.Hardness.entrywiseNorm_B_eq}\newline{\scriptsize\texttt{Theorem15\_EditHardness/Theorem15.lean:68}} \newline \lean{GsimOT.Hardness.ThreePartition.sum_adj_sub_sum_adj}\newline{\scriptsize\texttt{Theorem15\_EditHardness/Theorem15.lean:113}} \\ \midrule
+{}Proof of Thm.~15, l.~1611--1616 & 51 & If $\mathrm{lost}(Q)=0$, no edge of $F_1$ is mapped to a non-edge of $F_2$, so every path of $F_1$ goes into one path of $F_2$ (the paper's $j(\cdot)$ is constant on paths) & \lean{GsimOT.Hardness.mul_eq_zero_of_lost_eq_zero}\newline{\scriptsize\texttt{Theorem15\_EditHardness/Theorem15.lean:84}} \\ \midrule
+{}Proof of Thm.~15, l.~1588--1597 & 50--51 & YES-instances: the layout bijection maps edges to edges, so $\mathrm{lost}=0$ and the cost is $4m$ & \lean{GsimOT.Hardness.lost_permMat}\newline{\scriptsize\texttt{Theorem15\_EditHardness/Theorem15.lean:93}} \\ \midrule
+{}Theorem~15, Theorem~4\,(1) & 4, 12, 50--51 & $d^{\mathrm{OT}}_{\mathrm{ed}}(F_1,F_2)\le4m$ if and only if the Three-Partition instance is a YES-instance & \lean{GsimOT.Hardness.ThreePartition.dOTEdit_le_iff}\newline{\scriptsize\texttt{Theorem15\_EditHardness/Theorem15.lean:128}} \\ \midrule
+{}Theorem~15 (arbitrary instances), l.~1586--1587 & 50 & The same after adding $3$ to each $a_i$ and $9$ to $A$ & \lean{GsimOT.Hardness.ThreePartition.dOTEdit_shift_le_iff}\newline{\scriptsize\texttt{Theorem15\_EditHardness/Theorem15.lean:170}} \\
+\end{longtable}
+
+\section*{Shared notions used (from \texttt{GsimOT/Common})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Section~1, Section~2 & 2, 5 & $C_{\mathrm{ed}}(Q)=\sum_{v,w,v',w'}|D(v,w,v',w')|\,Q(v,w)\,Q(v',w')$ and $C_{\mathrm{ed}}(\pi)=C_{\mathrm{ed}}(P_\pi)=\|A_G^\pi-A_H\|_{\mathrm{ed}}$ & \lean{GsimOT.costEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:35}} \newline \lean{GsimOT.costEditBij}\newline{\scriptsize\texttt{Common/EditDistance.lean:39}} \newline \lean{GsimOT.costEditBij_eq}\newline{\scriptsize\texttt{Common/EditDistance.lean:60}} \\ \midrule
+{}Section~1, Eq.~(1), Section~2, Appendix~A & 2, 5, 14--15 & $d_{\mathrm{ed}}=\min_\pi C_{\mathrm{ed}}(\pi)$ and $d^{\mathrm{OT}}_{\mathrm{ed}}=\min_{Q\in\mathrm{DS}(V,W)}C_{\mathrm{ed}}(Q)$ (infimum, attained); $d^{\mathrm{OT}}_{\mathrm{ed}}\le d_{\mathrm{ed}}$ & \lean{GsimOT.dEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:42}} \newline \lean{GsimOT.dOTEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:45}} \newline \lean{GsimOT.exists_dOTEdit_eq}\newline{\scriptsize\texttt{Common/EditDistance.lean:109}} \newline \lean{GsimOT.dOTEdit_le_dEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:102}} \\ \midrule
+{}Section~1, Section~2 & 1--2, 5 & $\delta_{\mathrm{ed}}=n^{-2}d_{\mathrm{ed}}$, $\delta^{\mathrm{OT}}_{\mathrm{ed}}=n^{-2}d^{\mathrm{OT}}_{\mathrm{ed}}$ (scaling by $1/n^2$) & \lean{GsimOT.deltaEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:48}} \newline \lean{GsimOT.deltaOTEdit}\newline{\scriptsize\texttt{Common/EditDistance.lean:51}} \\ \midrule
+{}Section~1, Section~2, Appendix~A & 2, 5, 14 & $C_{\mathrm{ed}}(Q)=\|B(G,H,Q)\|_{\mathrm{ed}}$ for $Q\ge0$ (entrywise $1$-norm $\|\cdot\|_{\mathrm{ed}}=\|\cdot\|_{(1)}$) & \lean{GsimOT.entrywiseNorm}\newline{\scriptsize\texttt{Common/MatrixNorms.lean:53}} \newline \lean{GsimOT.costEdit_eq_entrywiseNorm_B}\newline{\scriptsize\texttt{Common/MatrixNorms.lean:119}} \\ \midrule
+{}Section~2, Eq.~(3) & 5 & Birkhoff--von Neumann: $Q=\sum_i\lambda_iP_{\pi_i}$ with $\lambda_i>0$, $\sum_i\lambda_i=1$ (also: over all $\sigma\in\mathrm{Perm}(V)$ with $\lambda\ge0$); conversely every such combination is in $\mathrm{DS}(V,W)$ & \lean{GsimOT.exists_birkhoff_decomposition_pos}\newline{\scriptsize\texttt{Common/BirkhoffDecomposition.lean:72}} \newline \lean{GsimOT.exists_birkhoff_decomposition}\newline{\scriptsize\texttt{Common/BirkhoffDecomposition.lean:42}} \newline \lean{GsimOT.isDS_of_decomposition}\newline{\scriptsize\texttt{Common/BirkhoffDecomposition.lean:23}} \\ \midrule
+{}Proofs of Thms.~15--17 & 50--57 & Disjoint unions of paths ($F_1$) and of cycles; their degrees and edge counts & \lean{GsimOT.Hardness.pathUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:56}} \newline \lean{GsimOT.Hardness.cycleUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:226}} \newline \lean{GsimOT.Hardness.sum_adj_pathUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:134}} \newline \lean{GsimOT.Hardness.deg_cycleUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:238}} \\ \midrule
+{}Proof of Thm.~15 & 50 & Three-Partition instances $(A,a_1,\dots,a_{3m})$; the step of adding $3$ to each $a_i$ and $9$ to $A$ & \lean{GsimOT.Hardness.ThreePartition}\newline{\scriptsize\texttt{Common/ThreePartition.lean:26}} \newline \lean{GsimOT.Hardness.ThreePartition.IsYes}\newline{\scriptsize\texttt{Common/ThreePartition.lean:39}} \newline \lean{GsimOT.Hardness.ThreePartition.shift}\newline{\scriptsize\texttt{Common/ThreePartition.lean:206}} \newline \lean{GsimOT.Hardness.ThreePartition.shift_isYes_iff}\newline{\scriptsize\texttt{Common/ThreePartition.lean:223}} \\ \midrule
+{}Proofs of Thms.~15--17 & 50--56 & A solution gives a bijection mapping each path into one component; conversely a $Q\in\mathrm{DS}$ mapping every path into a single component gives a solution (counting mass) & \lean{GsimOT.Hardness.ThreePartition.layoutEquiv}\newline{\scriptsize\texttt{Common/ThreePartition.lean:137}} \newline \lean{GsimOT.Hardness.ThreePartition.isYes_of_isDS}\newline{\scriptsize\texttt{Common/ThreePartition.lean:168}} \\ \midrule
+{}Proofs of Thms.~17, 18 & 54, 57 & Attaching $\ell(b)$ leaves to every vertex $b$ of a base graph & \lean{GsimOT.Hardness.addLeaves}\newline{\scriptsize\texttt{Common/Leaves.lean:33}} \\
+\end{longtable}
+
+\section*{Notes on the formalisation}
+
+\begin{enumerate}[leftmargin=*]
+\item Only the correctness of the reduction is formalised: for the constructed graphs, YES-instances have a small and NO-instances a large distance. The complexity side (polynomial running time, NP-hardness of Three-Partition, H\aa{}stad's bound for MaxCut) is not formalised. The results of Section~4 and their shared gadgets are in the namespace \lean{GsimOT.Hardness}.
+\item $d^{\mathrm{OT}}_{\mathrm{ed}}$ is \lean{GsimOT.dOTEdit}, the definition Theorem~6 uses. The paper argues with blowups via $d^{\mathrm{OT}}_{\mathrm{ed}}=d^{\bullet}_{\mathrm{ed}}$, cited from [Gro25, Theorem~3.10] (p.~50, l.~1585--1586). The formalisation works directly with doubly stochastic matrices: the same edge count with $b/k^2$ replaced by $\mathrm{lost}(Q)/2$, where the paper's approximation by $\gamma=1/(2mA)$ becomes exact because the minimum is attained (\lean{GsimOT.exists_dOTEdit_eq}). So nothing is cited.
+\item The formalisation assumes $a_i\ge2$ (\lean{GsimOT.Hardness.ThreePartition.dOTEdit_le_iff}); the shifted version \lean{GsimOT.Hardness.ThreePartition.dOTEdit_shift_le_iff} holds for every instance.
+\item Proposition~57 (p.~57; membership in NP, exact blowup sizes) is not formalised.
+\end{enumerate}
+
+\end{document}

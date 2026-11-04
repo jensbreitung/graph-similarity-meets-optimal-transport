@@ -23,7 +23,7 @@ Throughout, `G` is a graph on `V` and `H` a graph on `W`, both finite.
 
 The paper takes minima; the minimum over the finitely many bijections is attained trivially and we
 take the infimum over `DS(V, W)` for `d₁^OT`.  All results are stated for the infimum, which
-coincides with the paper's minimum since the minimum is attained (App. A, pp. 14–15, l. 503–510;
+coincides with the paper's minimum since the minimum is attained (Appendix A, pp. 14–15, l. 503–510;
 not needed for `d₁^OT` and not formalised for it; see `GsimOT.Common.Attainment` for the operator
 norms).
 -/

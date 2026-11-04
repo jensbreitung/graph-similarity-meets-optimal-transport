@@ -7,14 +7,14 @@ top of `GsimOT.Common.Basic` (`adj`, `disc`, `IsDS`, `localCost`, `costOne`):
 * `B G H Q` and `Bmat p q G H Q`: the matrices `B(G, H, Q)` and `B_{p→q}(G, H, Q)` (Eqs. (1), (2)), indexed
   by `V × W` and built from the discrepancy `disc G H`;
 * `entrywiseNorm`, `cutNorm`, `opNorm p q`: the norms `‖·‖_ed = ‖·‖_(1)`, `‖·‖_□` and
-  `‖·‖_{p→q}` (App. A, p. 14, l. 476–481);
+  `‖·‖_{p→q}` (Appendix A, p. 14, l. 476–481);
 * `dOTCut`, `dOT p q`: the distances `d^OT_□` and `d^OT_{p→q}` (Section 2, p. 5, l. 184–187). Like
   `dOTOne` and `dOTEdit` they are infima over `DS(V, W)`; the paper defines them as minima.
 * `costEdit_eq_entrywiseNorm_B`: `C_ed(Q) = ‖B(G, H, Q)‖_ed` for `Q ≥ 0`, so `dOTEdit` is
   `d^OT_ed` as defined in Section 1 (Eq. (1)) and Section 2.
 * **Eq. (7)** (`opNorm_Bpq_one_one_eq_costOne`, `dOT_one_one_eq_dOTOne`): for `Q ∈ DS(V, W)`,
   `‖B_{1→1}(G, H, Q)‖_{1→1} = C₁(Q)`, the largest local cost on `supp(Q)` (Section 2, p. 5,
-  l. 188–189); hence `d^OT_{1→1} = d₁^OT`. Eq. (7) (App. A, p. 14, l. 500–502) is the same
+  l. 188–189); hence `d^OT_{1→1} = d₁^OT`. Eq. (7) (Appendix A, p. 14, l. 500–502) is the same
   identity for couplings `Q* ∈ DS*(V, W)`, inside the minimum defining `δ₁^OT`.
 
 The paper puts `Q ∈ DS(V, W)` (not `Q/n`) into `B` for graphs of the same order (Section 2, p. 5,
@@ -49,7 +49,7 @@ end Graphs
 
 /-! ### Norms -/
 
-/-- The entrywise 1-norm `‖M‖_ed = ‖M‖_(1) = ∑ |M(x,y)|` (App. A, p. 14, l. 476–477). -/
+/-- The entrywise 1-norm `‖M‖_ed = ‖M‖_(1) = ∑ |M(x,y)|` (Appendix A, p. 14, l. 476–477). -/
 def entrywiseNorm (M : Matrix X Y ℝ) : ℝ := ∑ x, ∑ y, |M x y|
 
 /-! The cut norm `cutNorm` (`Common/CutNorm.lean`) and the operator norm `opNorm p q`
@@ -84,7 +84,7 @@ lemma norm_toLp_one (x : X → ℝ) : ‖WithLp.toLp 1 x‖ = ∑ i, |x i| := by
   simp [PiLp.norm_eq_of_L1, Real.norm_eq_abs]
 
 /-- Every absolute column sum is at most `‖M‖_1 = ‖M‖_{1→1}` (the maximum absolute column sum,
-App. A, p. 14, l. 480). -/
+Appendix A, p. 14, l. 480). -/
 lemma sum_abs_le_opNorm_one [DecidableEq Y] (M : Matrix X Y ℝ) (c : Y) :
     ∑ r, |M r c| ≤ opNorm 1 1 M := by
   have h := norm_mulVec_le_opNorm (p := 1) (q := 1) M (Pi.single c 1)
@@ -145,7 +145,7 @@ lemma sum_abs_Bpq_one_one (hQ : ∀ v w, 0 ≤ Q v w) (y : V × W) :
   · rw [localCost_eq_sum_col]
     exact sum_congr rfl fun x _ ↦ by rw [abs_mul, abs_of_nonneg (hQ _ _)]
 
-/-- **Eq. (7)** (App. A, p. 14, l. 500–502; Section 2, p. 5, l. 188–189): for `Q ∈ DS(V, W)`,
+/-- **Eq. (7)** (Appendix A, p. 14, l. 500–502; Section 2, p. 5, l. 188–189): for `Q ∈ DS(V, W)`,
 `‖B_{1→1}(G, H, Q)‖_{1→1} = C₁(Q)`, the largest local cost on `supp(Q)`. -/
 lemma opNorm_Bpq_one_one_eq_costOne (hQ : IsDS Q) :
     opNorm 1 1 (Bmat 1 1 G H Q) = costOne G H Q := by

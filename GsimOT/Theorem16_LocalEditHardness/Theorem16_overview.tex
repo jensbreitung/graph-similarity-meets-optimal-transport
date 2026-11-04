@@ -1,0 +1,144 @@
+\input{../../scripts/overview_preamble.tex}
+\begin{document}
+\overviewtitle{Theorem 16: inapproximability of the optimal-transport local edit distance}{Folder \file{GsimOT/Theorem16_LocalEditHardness}}
+\paperversion
+
+\section{Statement}
+
+\paragraph{Paper.} Theorem~16 (Section~4, p.~12, l.~424--425; proof in Appendix~G, pp.~51--52,
+l.~1621--1670): \emph{for any $\varepsilon>0$, unless $\mathrm{P}=\mathrm{NP}$, there is no polynomial-time
+approximation algorithm computing $d^{\mathrm{OT}}_1$ with multiplicative error guarantee $2-\varepsilon$, even
+for graphs of maximum degree two.} It is the case $p=1$ of Theorem~4\,(2) (p.~4, l.~135--137). The reduction maps an
+instance $(A,a_1,\dots,a_{3m})$ of Three-Partition ($\sum_ia_i=mA$, $A/4<a_i<A/2$, unary) to $F_1$, the
+disjoint union of paths on $a_i$ vertices, and $F_2$, the disjoint union of $m$ cycles on $A$ vertices,
+and shows the gap: YES-instances have $d^{\mathrm{OT}}_1(F_1,F_2)\le1$, NO-instances
+$d^{\mathrm{OT}}_1(F_1,F_2)\ge2$ (shown for $d^{\bullet}_1$, l.~1624--1625, and transferred to
+$d^{\mathrm{OT}}_1$ by Theorem~1, l.~1667--1668).
+
+\paragraph{Lean.} Only the gap (the correctness of the reduction) is formalised. With
+$F_1=$ \lean{pathUnion I.a} and $F_2=$ \lean{cycleUnion I.m I.A}:
+\begin{itemize}
+\item \lean{GsimOT.Hardness.ThreePartition.dOTOne_le_of_isYes}: if $a_i\ge2$ for all $i$ and $I$ is a
+  YES-instance, then $d^{\mathrm{OT}}_1(F_1,F_2)\le1$;
+\item \lean{GsimOT.Hardness.ThreePartition.two_le_dOTOne_of_not_isYes}: if $I$ is a NO-instance, then
+  $d^{\mathrm{OT}}_1(F_1,F_2)\ge2$ (no hypothesis on the $a_i$);
+\item \lean{GsimOT.Hardness.ThreePartition.dOTOne_shift_gap}: both, for every instance, after the shift
+  of l.~1622--1624 (add $3$ to each $a_i$, $9$ to $A$).
+\end{itemize}
+$d^{\mathrm{OT}}_1(G,H)=\inf_{Q\in\mathrm{DS}(V,W)}C_1(Q)$ with $C_1(Q)=\max_{(v,w)\in\mathrm{supp}(Q)}L_Q(v,w)$
+is \lean{GsimOT.dOTOne} (\file{Common/Basic.lean}), the definition of Proposition~8 and Theorem~9; by
+Eq.~(7) it equals the operator-norm distance $d^{\mathrm{OT}}_{1\to1}$ of the paper
+(\lean{GsimOT.dOT_one_one_eq_dOTOne}). Both graphs have maximum degree two
+(\lean{deg_pathUnion_le}, \lean{deg_cycleUnion}).
+
+\section{Where the proof lives}
+\begin{longtable}{>{\raggedright\arraybackslash}p{5.2cm} >{\raggedright\arraybackslash}p{10.6cm}}
+\toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
+\file{Theorem16_LocalEditHardness/Theorem16.lean} & $Q(N(v),N(w))$ (\lean{nbrMass}), the local-cost formula
+  \lean{localCost_eq}, the YES- and NO-directions, the shifted version. \\
+\file{Common/ThreePartition.lean} & Three-Partition instances, the layout bijection
+  (\lean{layoutEquiv}, \lean{layout_adj_cycleUnion}), the counting step \lean{isYes_of_isDS}, the shift. \\
+\file{Common/PathsAndCycles.lean} & \lean{pathUnion}, \lean{cycleUnion}, degrees, constancy along paths
+  (\lean{eq_of_pathUnion_adj}). \\
+\file{Common/Basic.lean}, \file{Common/MatrixNorms.lean} & \lean{dOTOne}, \lean{costOne}, \lean{localCost},
+  \lean{dOTOne_le}, \lean{le_dOTOne}, \lean{localCost_le_costOne}, \lean{localCost_eq_sum_col}, Eq.~(7). \\
+\end{longtable}
+
+\section{Proof layout}
+\begin{center}
+\begin{tikzpicture}
+  \node[main] (gap) at (0,0) {Theorem 16 (any instance)\\\lean{dOTOne_shift_gap}};
+  \node[shared] (shift) at (6,0) {shift\\\lean{shift_isYes_iff}};
+  \node[main] (yes) at (-3.6,-2) {YES: $d^{\mathrm{OT}}_1\le1$\\\lean{dOTOne_le_of_isYes}};
+  \node[main] (no) at (3.6,-2) {NO: $d^{\mathrm{OT}}_1\ge2$\\\lean{two_le_dOTOne_of_not_isYes}};
+  \node[res] (loc) at (0,-4.2) {$L_Q(v,w)=\deg v+\deg w-2\,Q(N(v),N(w))$\\\lean{localCost_eq}, \lean{nbrMass}};
+  \node[shared] (lay) at (-5.4,-4.2) {layout bijection\\\lean{layoutEquiv}\\\lean{layout_adj_cycleUnion}};
+  \node[shared] (count) at (5.6,-4.2) {counting step\\\lean{isYes_of_isDS}};
+  \node[shared] (cost) at (-3,-6.3) {$C_1$, $d^{\mathrm{OT}}_1$ (Common)\\\lean{dOTOne_le}, \lean{le_dOTOne}\\\lean{localCost_le_costOne}};
+  \node[shared] (deg) at (3,-6.3) {degrees\\\lean{deg_cycleUnion}, \lean{deg_pathUnion_le}};
+  \draw[dep] (gap) -- (yes); \draw[dep] (gap) -- (no); \draw[dep] (gap) -- (shift);
+  \draw[dep] (yes) -- (loc); \draw[dep] (no) -- (loc);
+  \draw[dep] (yes) -- (lay.north); \draw[dep] (no) -- (count.north);
+  \draw[dep] (loc) -- (cost); \draw[dep] (loc) -- (deg);
+\end{tikzpicture}
+\end{center}
+Blue: this folder; grey: \file{GsimOT/Common}. Nothing is cited. (The YES- and NO-proofs also use the
+$C_1$ lemmas and the degrees directly.)
+
+\section{The proof step by step}
+
+\paragraph{Step 0: w.l.o.g.\ $a_i\ge3$ (l.~1622--1624).} Add $3$ to every $a_i$ and $9$ to $A$:
+\lean{ThreePartition.shift}, \lean{shift_isYes_iff}; used in \lean{dOTOne_shift_gap}.
+
+\paragraph{Step 1: blowups (l.~1624--1625, l.~1667).} The paper proves the bounds for the blowup distance
+$d^{\bullet}_1$, by looking at permutations of the $k$-blowups, and transfers them with Theorem~1
+($d^{\mathrm{OT}}_1=d^{\bullet}_1$). \emph{The formalisation skips this step} and proves the bounds for every
+$Q\in\mathrm{DS}(V,W)$ directly; see Section~6. The key identity is (\lean{localCost_eq})
+\[ L_Q(v,w)=\deg_{F_1}(v)+\deg_{F_2}(w)-2\,Q(N(v),N(w)),\qquad
+   Q(N(v),N(w))=\sum_{v'\sim v,\ w'\sim w}Q(v',w'), \]
+the fractional form of the paper's mismatch count ``$(2k-\ell)+(dk-\ell)$'' (l.~1661): $\deg(v)$ edges to
+lose, $\deg(w)=2$ edges to gain, minus twice the preserved mass.
+
+\paragraph{Step 2: YES-instances (l.~1626--1632).} A solution maps the triples consecutively into the cycles;
+under the layout bijection $\pi$ every edge goes to an edge, and only the endpoints of the paths gain one
+neighbour. Lean: \lean{layout_adj_cycleUnion} gives $Q(N(v),N(\pi v))=\deg(v)$ for $Q=P_\pi$, so
+$L_{P_\pi}(v,\pi v)=2-\deg(v)\le1$ (each vertex has a neighbour as $a_i\ge2$); \lean{costOne_le} and
+\lean{dOTOne_le} conclude.
+
+\paragraph{Step 3: NO-instances, reduction to Eq.~(44) (p.~52, l.~1633--1644).} The paper: if every blown-up path
+went into one blown-up cycle (Eq.~(44)), counting would give a solution; so some path is split, and Cases~1
+and~2 show that some vertex has mismatch $\ge2k$. Lean (contrapositive): suppose $C_1(Q)<2$ for some
+$Q\in\mathrm{DS}$ (via \lean{le_dOTOne}). Then by Step~1, for every $(v,w)\in\mathrm{supp}(Q)$,
+$\deg(v)<2\,Q(N(v),N(w))$ (local step \lean{hloc}).
+
+\paragraph{Step 4: Case 2, a split cloud (l.~1653--1663).} The paper: if $(v,j),(v,j')$ go to different
+cycles, the neighbourhoods of their images are disjoint, so $\ell+\ell'\le dk$ and one of them has mismatch
+$\ge2k$. Lean (local step \lean{hrow}): if $Q(v,w_1),Q(v,w_2)>0$ with $w_1,w_2$ in different cycles, then
+$Q(N(v),N(w_1))+Q(N(v),N(w_2))\le\deg(v)$ (the neighbourhoods are disjoint and the rows of $Q$ sum to $1$),
+contradicting $\deg(v)<2Q(N(v),N(w_i))$ for $i=1,2$. Hence every row of $Q$ lies in one cycle.
+
+\paragraph{Step 5: Case 1, adjacent clouds in different cycles (l.~1645--1652).} The paper: $v$ of degree
+two whose neighbour $w$ goes to a different cycle loses $k$ and gains $\ge k$ adjacencies. Lean (local step
+\lean{hconst}): if the neighbour $v''$ of $v$ goes to another cycle than $v$, the mass of $v''$ does not
+contribute, so $Q(N(v),N(w))\le\deg(v)-1$ and $\deg(v)<2\deg(v)-2$, i.e.\ $\deg(v)>2$, contradicting
+\lean{deg_pathUnion_le}. The argument applies to either endpoint of the edge; it only uses
+$\deg(v)\le2$.
+
+\paragraph{Step 6: counting (after Eq.~(44), l.~1639--1642).} Every path of $F_1$ goes into a single cycle
+(\lean{eq_of_pathUnion_adj}); as all cycles have $A$ vertices, \lean{isYes_of_isDS} produces a solution,
+contradicting the NO-assumption.
+
+\section{Assumptions and trusted base}
+No hypotheses: the results are unconditional and use only \lean{propext}, \lean{Classical.choice},
+\lean{Quot.sound} (checked by \file{scripts/CheckAxioms.lean}). The complexity-theoretic conclusion
+(polynomial construction, ``unless P $=$ NP'') is not formalised; nor is Proposition~57 (p.~57,
+l.~1805--1808: NP membership and the $2^{nm}\mathrm{poly}$ algorithm for $\delta^{\mathrm{OT}}_1$).
+
+\section{Notes on the formalisation}
+\begin{itemize}
+\item \textbf{No blowups, no Theorem~1.} The paper bounds $d^{\bullet}_1$ via permutations of blowups and applies
+  Theorem~1, which is formalised (\lean{GsimOT.theorem1}). Following it in Lean would require, in addition,
+  the combinatorial Cases~1 and~2 for permutations of $k$-blowups, the column-sum formula for those
+  permutations, the passage between $\delta^{\mathrm{OT}}_{1\to1}$ (couplings) and $d^{\mathrm{OT}}_1$
+  (\lean{deltaOTPQ_eq_dOT}, \lean{dOT_one_one_eq_dOTOne}) and a limit argument. The direct proof has the same
+  case distinction (Steps~4 and~5) on the matrix $Q$ instead of on the cloud of a vertex, and it is at least as
+  strong: applied to the doubly stochastic matrix $Q_\pi$ induced by a blowup permutation $\pi$ (as in the
+  proof of Proposition~57), it would also give the paper's blowup bound (not formalised).
+\item \textbf{Hypotheses.} \lean{dOTOne_le_of_isYes} assumes $a_i\ge2$ for all $i$,
+  \lean{two_le_dOTOne_of_not_isYes} has no hypothesis on the $a_i$, and \lean{dOTOne_shift_gap} holds for
+  every instance.
+\end{itemize}
+
+\section{How to check this result}
+From the repository root (after \texttt{export PATH=\$HOME/.elan/bin:\$PATH}):
+\begin{itemize}
+\item build the module:\\ \texttt{lake build GsimOT.Theorem16\_LocalEditHardness.Theorem16}\\
+  (or, after a full build, \texttt{lake env lean GsimOT/Theorem16\_LocalEditHardness/Theorem16.lean});
+\item check the axioms: \texttt{bash build.sh} runs \file{scripts/CheckAxioms.lean}, which contains\\
+  \texttt{\#print axioms GsimOT.Hardness.ThreePartition.dOTOne\_le\_of\_isYes}\\
+  \texttt{\#print axioms GsimOT.Hardness.ThreePartition.two\_le\_dOTOne\_of\_not\_isYes}\\
+  \texttt{\#print axioms GsimOT.Hardness.ThreePartition.dOTOne\_shift\_gap};
+\item the table \file{Theorem16_correspondence.pdf} in this folder lists every paper item with its Lean
+  declaration and source line.
+\end{itemize}
+\end{document}

@@ -19,100 +19,100 @@ lists the shared lemmas and which result folders use them.
   matrix is real-valued with entries in $\{0,1\}$.
 \item \textbf{Minima are infima.} Every $\min$ in the definitions of $d_\diamondsuit$, $d^{\mathrm{OT}}_\diamondsuit$,
   $\delta^{\mathrm{OT}}_{p\to q}$ is a Lean infimum (\texttt{iInf}). For the finite set $\mathrm{Bij}(V,W)$ this is the minimum.
-  For optimal transport the paper argues that the minima are attained (App.~A, pp.~14--15, l.~503--510); this is
+  For optimal transport the paper argues that the minima are attained (Appendix~A, pp.~14--15, l.~503--510); this is
   formalised for the operator norms (\lean{exists_deltaOTPQ_eq}, \lean{exists_dOT_eq}) and the edit distance
   (\lean{exists_dOTEdit_eq}); for $d^{\mathrm{OT}}_1$ and $d^{\mathrm{OT}}_\square$ it is not needed. Infima in
   $\mathbb{R}$ of empty families are $0$: if $|V|\neq|W|$ there is no bijection and no doubly stochastic matrix, and
   $d_\diamondsuit$, $d^{\mathrm{OT}}_\diamondsuit$ evaluate to $0$ (the paper does not define them in this case).
   Results that need $|V|=|W|$ or $V,W\neq\emptyset$ assume it explicitly.
-\item \textbf{Convention $0^0=0$} (p.~3, l.~84; App.~A, p.~14, l.~500) is built into \lean{powZ x a} $=0$ if $x=0$, else $x^a$.
+\item \textbf{Convention $0^0=0$} (p.~3, l.~84; Appendix~A, p.~14, l.~500) is built into \lean{powZ x a} $=0$ if $x=0$, else $x^a$.
 \item \textbf{Operator norms} are suprema over the unit \emph{ball}; for nonempty index sets this equals the
-  paper's maximum over the unit sphere (App.~A, p.~14, l.~479). Lemma~19 is stated with unit balls as well.
+  paper's maximum over the unit sphere (Appendix~A, p.~14, l.~479). Lemma~19 is stated with unit balls as well.
 \item \textbf{Normalisation.} For graphs of the same order $n$, $\delta_\diamondsuit=d_\diamondsuit/s(n)$ and
   $\delta^{\mathrm{OT}}_\diamondsuit=d^{\mathrm{OT}}_\diamondsuit/s(n)$, with $s(n)=n^2$ for the edit and the cut distance
   (p.~1, l.~24--27) and $s(n)=n^{\kappa_{p\to q}}$, $\kappa_{p\to q}=1/q+1-1/p$, for $\|\cdot\|_{p\to q}$
-  (p.~3, l.~88--90; App.~B, p.~15, l.~513--514); so $s(n)=n$ for the $p$-operator norms $\|\cdot\|_p=\|\cdot\|_{p\to p}$.
+  (p.~3, l.~88--90; Appendix~B, p.~15, l.~513--514); so $s(n)=n$ for the $p$-operator norms $\|\cdot\|_p=\|\cdot\|_{p\to p}$.
   Lean divides by $n=|V|$ or $n^2$ (\lean{deltaOne}, \lean{deltaOTOne}, \lean{deltaEdit}, \lean{deltaOTEdit},
   \lean{deltaCut}, \lean{deltaOTCut}) and multiplies by $n^{-\kappa}$ in \lean{deltaPQ}; \lean{deltaOTPQ_eq_dOT} proves
-  $\delta^{\mathrm{OT}}_{p\to q}=n^{-\kappa}d^{\mathrm{OT}}_{p\to q}$ from $\mathrm{DS}(V,W)=n\,\mathrm{DS}^*(V,W)$ (App.~A, p.~14, l.~494--495).
+  $\delta^{\mathrm{OT}}_{p\to q}=n^{-\kappa}d^{\mathrm{OT}}_{p\to q}$ from $\mathrm{DS}(V,W)=n\,\mathrm{DS}^*(V,W)$ (Appendix~A, p.~14, l.~494--495).
 \end{itemize}
 
 \section{Definitions: paper versus Lean}
 ``(inf)'' marks an infimum in place of the paper's minimum.
 \begin{longtable}{>{\raggedright\arraybackslash}p{5.3cm} >{\raggedright\arraybackslash}p{4.0cm} >{\raggedright\arraybackslash}p{6.3cm}}
 \toprule \textbf{Paper} & \textbf{Lean} & \textbf{Lean definition / remarks} \\ \midrule\endhead \bottomrule\endfoot
-\multicolumn{3}{l}{\textit{Graphs and matrices (Sec.~1, p.~1; Sec.~2, p.~5; App.~A, p.~14)}} \\
+\multicolumn{3}{l}{\textit{Graphs and matrices (Section~1, p.~1; Section~2, p.~5; Appendix~A, p.~14)}} \\
 adjacency matrix $A_G\in\{0,1\}^{V\times V}$ (p.~5, l.~181) & \lean{adj G v v'} & $1$ if \lean{G.Adj v v'}, else $0$ (real) \\
-$\deg_G(v)=|N_G(v)|$ (App.~A, l.~472) & \lean{deg G v} & number of neighbours (natural number) \\
+$\deg_G(v)=|N_G(v)|$ (Appendix~A, l.~472) & \lean{deg G v} & number of neighbours (natural number) \\
 $\mathrm{DS}(V,W)$ (p.~5, l.~176--177) & \lean{IsDS Q} & $Q\ge0$, all row and column sums $1$ \\
 $P_\pi\in\mathrm{Perm}(V,W)$, $P_\pi(v,w)=1\iff\pi(v)=w$ (l.~175--176) & \lean{permMat pi} & as in the paper; \lean{permMat_isDS} \\
 $\mathrm{supp}(Q)=\{(v,w)\mid Q(v,w)>0\}$ (l.~178) & \texttt{Q v w $\neq$ 0} & for $Q\ge0$ the same set \\
 $A_G^\pi$, i.e.\ $A_G$ with rows and columns permuted according to $\pi$; $A_G^\pi-A_H$ (p.~1, l.~9--10) & \lean{alignedDiff G H pi} & $w,w'\mapsto A_G(\pi^{-1}w,\pi^{-1}w')-A_H(w,w')$, i.e.\ $A_G^\pi(\pi(v),\pi(v'))=A_G(v,v')$ \\
 discrepancy $D_{G,H}(v,w,v',w')$, Eq.~(6) (p.~14) & \lean{disc G H v w v' w'} & $A_G(v,v')-A_H(w,w')$ \\
-\multicolumn{3}{l}{\textit{Norms (App.~A, Matrix Norms, p.~14)}} \\
+\multicolumn{3}{l}{\textit{Norms (Appendix~A, Matrix Norms, p.~14)}} \\
 $\ell^p$ norm, $1\le p\le\infty$ & \lean{lpNorm p x} & Mathlib's \lean{PiLp} norm; $p$ is an \lean{ENNReal} \\
 $\|A\|_{p\to q}=\max_{\|x\|_p=1}\|Ax\|_q$ (l.~477--479) & \lean{opNorm p q A} & $\sup\{\|Ax\|_q:\|x\|_p\le1\}$ (attained: \lean{exists_lpNorm_mulVec_eq_opNorm}) \\
 $\|A\|_{\mathrm{ed}}=\|A\|_{(1)}=\sum|A(v,w)|$ (l.~476--477) & \lean{entrywiseNorm} & as in the paper \\
 cut norm $\|A\|_\square=\max_{S,T}|A(S,T)|$ (l.~480--481) & \lean{cutNorm A} & $\sup$ over pairs of finsets (attained: \lean{exists_eq_cutNorm}) \\
 H\"older conjugate $q^*$ (l.~482--483) & \lean{ENNReal.conjExponent q} & Mathlib; $1/q^*=1-1/q$ (\lean{inv_conjExponent_toReal}) \\
-\multicolumn{3}{l}{\textit{Costs and local costs (Sec.~2, p.~5; App.~A, p.~14)}} \\
+\multicolumn{3}{l}{\textit{Costs and local costs (Section~2, p.~5; Appendix~A, p.~14)}} \\
 $L_Q(v,w)=\sum_{(v',w')}|D(v,w,v',w')|\,Q(v',w')$ (l.~187--188) & \lean{localCost G H Q v w} & as in the paper \\
 $C_1(Q)=\|B_{1\to1}(G,H,Q)\|_1=\max_{\mathrm{supp}(Q)}L_Q$ (l.~185, 188; Eq.~(7)) & \lean{costOne G H Q} & \emph{defined} as $\sup_{(v,w)\in\mathrm{supp}(Q)}L_Q(v,w)$; equality with $\|B_{1\to1}\|_{1\to1}$ is proved (\lean{opNorm_Bpq_one_one_eq_costOne}) \\
 $C_{\mathrm{ed}}(Q)=\|B(G,H,Q)\|_{\mathrm{ed}}$ (l.~184--185) & \lean{costEdit G H Q} & $\sum|D|\,Q(v,w)Q(v',w')$; $=\|B\|_{\mathrm{ed}}$ for $Q\ge0$ (\lean{costEdit_eq_entrywiseNorm_B}) \\
 $C_\square(Q)=\|B(G,H,Q)\|_\square$ (l.~184--185) & \lean{costCut G H Q} & \lean{cutNorm (B G H Q)} \\
 $C_\diamondsuit(\pi)=C_\diamondsuit(P_\pi)=\|A_G^\pi-A_H\|_\diamondsuit$ (l.~185--186) & \lean{costOneBij}, \lean{costEditBij} & $C_\diamondsuit(P_\pi)$; the identity with $\|A^\pi_G-A_H\|$ is \lean{costEditBij_eq}, \lean{localCost_permMat_apply} \\
-\multicolumn{3}{l}{\textit{Fractional alignments and $B$-matrices (Sec.~1, pp.~2--3)}} \\
-$\mathrm{DS}^*(V,W)$: $Q^*\ge0$, row sums $1/|V|$, column sums $1/|W|$ (p.~2, l.~50--54; App.~A, l.~493--494) & \lean{IsCoupling Q} & as in the paper \\
+\multicolumn{3}{l}{\textit{Fractional alignments and $B$-matrices (Section~1, pp.~2--3)}} \\
+$\mathrm{DS}^*(V,W)$: $Q^*\ge0$, row sums $1/|V|$, column sums $1/|W|$ (p.~2, l.~50--54; Appendix~A, l.~493--494) & \lean{IsCoupling Q} & as in the paper \\
 $B(G,H,Q)((v,w),(v',w'))=Q(v,w)\,D\,Q(v',w')$ (p.~2, l.~68--69) & \lean{B G H Q} & as in the paper \\
 $B_{p\to q}(G,H,Q)=Q(v,w)^{1/q}\,D\,Q(v',w')^{1-1/p}$ (p.~3, l.~84--85) & \lean{Bmat p q G H Q} & with \lean{powZ}, exponents $1/q$, $1-1/p$ (so $1/\infty=0$) \\
-$\kappa_{p\to q}=1/q+1-1/p$ (App.~B, p.~15, l.~513) & \lean{kappa p q} & as in the paper \\
+$\kappa_{p\to q}=1/q+1-1/p$ (Appendix~B, p.~15, l.~513) & \lean{kappa p q} & as in the paper \\
 \multicolumn{3}{l}{\textit{Distances}} \\
 $d_\diamondsuit(G,H)=\min_\pi\|A_G^\pi-A_H\|_\diamondsuit$ (p.~1, l.~7--9) & \lean{dOne}, \lean{dEdit}, \lean{dCut}, \lean{distPQ p q} & (inf) over \texttt{V $\simeq$ W} \\
 $d^{\mathrm{OT}}_\diamondsuit=\min_{Q\in\mathrm{DS}(V,W)}C_\diamondsuit(Q)$ (p.~5, l.~184--187) & \lean{dOTOne}, \lean{dOTEdit}, \lean{dOTCut}, \lean{dOT p q} & (inf) over \lean{IsDS}; graphs of the same order \\
-$\delta_\diamondsuit=d_\diamondsuit/s(n)$, $\delta^{\mathrm{OT}}_\diamondsuit=d^{\mathrm{OT}}_\diamondsuit/s(n)$ with $s(n)=n^2$ for $\mathrm{ed}$, $\square$ (p.~1, l.~24--27) and $s(n)=n^{\kappa_{p\to q}}$ for $p\to q$ (p.~3, l.~88--90; App.~B, l.~513--514) & \lean{deltaOne}, \lean{deltaOTOne}, \lean{deltaEdit}, \lean{deltaOTEdit}, \lean{deltaCut}, \lean{deltaOTCut}, \lean{deltaPQ} & division by $n=|V|$ resp.\ $n^2$; \lean{deltaPQ} multiplies by $n^{-\kappa}$ \\
+$\delta_\diamondsuit=d_\diamondsuit/s(n)$, $\delta^{\mathrm{OT}}_\diamondsuit=d^{\mathrm{OT}}_\diamondsuit/s(n)$ with $s(n)=n^2$ for $\mathrm{ed}$, $\square$ (p.~1, l.~24--27) and $s(n)=n^{\kappa_{p\to q}}$ for $p\to q$ (p.~3, l.~88--90; Appendix~B, l.~513--514) & \lean{deltaOne}, \lean{deltaOTOne}, \lean{deltaEdit}, \lean{deltaOTEdit}, \lean{deltaCut}, \lean{deltaOTCut}, \lean{deltaPQ} & division by $n=|V|$ resp.\ $n^2$; \lean{deltaPQ} multiplies by $n^{-\kappa}$ \\
 $\delta^{\mathrm{OT}}_{p\to q}=\min_{Q^*\in\mathrm{DS}^*}\|B_{p\to q}(G,H,Q^*)\|_{p\to q}$, Eq.~(2) (p.~3, l.~87) & \lean{deltaOTPQ p q G H} & (inf; attained, \lean{exists_deltaOTPQ_eq}) over couplings, any orders; $=n^{-\kappa}d^{\mathrm{OT}}_{p\to q}$ for equal orders (\lean{deltaOTPQ_eq_dOT}) \\
 $\delta^{\mathrm{OT}}_{\mathrm{ed}}$, Eq.~(1), and $\delta^{\mathrm{OT}}_\square$ via couplings (p.~2, l.~66, 77) & \lean{deltaOTEdit}, \lean{deltaOTCut} & only for graphs of the same order, via $\mathrm{DS}(V,W)$ and $n^{-2}$ (the coupling form for different orders is not used by any formalised result) \\
 blowup $G^{\bullet k}$, $\delta^\bullet=\lim_\ell\delta(G^{\bullet n\ell},H^{\bullet m\ell})$ (p.~1, l.~36--42) & \lean{blowup}, \lean{deltaBlowup} & in \file{Definitions.lean} of \file{Theorem1_BlowupEqualsOT}; vertex set $V\times[k]$, $(v,i)\sim(v',i')\iff v\sim v'$; \lean{limUnder} \\
-$\zeta_Q(A,B)=\|D_{A,B}\|_{\square,\mu_Q}$, $\mu_Q=Q/n$ (App.~E.2.2, p.~36, l.~1129--1139; Eq.~(21), p.~32) & \lean{epsR A B Q} & cut norm of $\mu_Q\otimes\mu_Q\cdot D_{A,B}$; $=n^{-2}C_\square(Q)$ for graphs (\lean{epsR_adjMat}) \\
+$\zeta_Q(A,B)=\|D_{A,B}\|_{\square,\mu_Q}$, $\mu_Q=Q/n$ (Appendix~E.2.2, p.~36, l.~1129--1139; Eq.~(21), p.~32) & \lean{epsR A B Q} & cut norm of $\mu_Q\otimes\mu_Q\cdot D_{A,B}$; $=n^{-2}C_\square(Q)$ for graphs (\lean{epsR_adjMat}) \\
 $\rho_H(w,w')=|N_H(w)\triangle N_H(w')|$ (p.~28, l.~866) & \lean{rho H w w'} & $\sum_{w''}|A_H(w,w'')-A_H(w',w'')|$ \\
 \end{longtable}
 
 \section{Shared lemmas and where they are used}
 \begin{longtable}{>{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash\small}p{6.6cm} >{\raggedright\arraybackslash}p{5.4cm}}
 \toprule \textbf{Paper} & \textbf{Lean (file)} & \textbf{Used by (folder: result)} \\ \midrule\endhead \bottomrule\endfoot
-Lemma~19 (p.~14) & \lean{lemma24}, \lean{abs_dotProduct_mulVec_le_opNorm}, \lean{exists_abs_dotProduct_mulVec_eq_opNorm} (\file{OperatorNorm.lean}) & \file{Theorem1}: Thm.~1; \file{Proposition14}: Prop.~13; \file{Theorem15}: Thm.~14 \\
-Eq.~(3), Birkhoff (p.~5) & \lean{exists_bij_subset_supp} (\file{Birkhoff.lean}) & \file{Theorem10}: Thm.~9 (reference bijection, Eq.~(18)); inside Common: Lemma~29 \\
- & \lean{exists_birkhoff_decomposition}, \lean{exists_birkhoff_decomposition_pos}, \lean{isDS_of_decomposition} (\file{BirkhoffDecomposition.lean}) & \file{Theorem7}: Thm.~6; \file{Theorem15}: Thm.~14 \\
-Eq.~(7) (p.~14) & \lean{opNorm_Bpq_one_one_eq_costOne}, \lean{dOT_one_one_eq_dOTOne} (\file{MatrixNorms.lean}) & \file{Theorem17}: Thm.~16 \\
-App.~A, minima attained & \lean{exists_deltaOTPQ_eq}, \lean{exists_dOT_eq} (\file{Attainment.lean}) & \file{Theorem1}: Claim~20; \file{Theorem15}: Thm.~14 \\
- & \lean{exists_dOTEdit_eq} (\file{EditDistance.lean}) & \file{Theorem16}: Thm.~15 \\
-normalisation, $\delta^{\mathrm{OT}}_{p\to q}=n^{-\kappa}d^{\mathrm{OT}}_{p\to q}$ (Secs.~1--2) & \lean{deltaOTPQ_eq_dOT} (\file{OTDistances.lean}) & \file{Proposition14}: Prop.~13; \file{Theorem15}: Thm.~14 \\
-Observation~21 (p.~20) & \lean{claim26}, \lean{claim26_bij} (\file{Claim26_DegreeBound.lean}) & inside Common: Lemma~22 (1) and Lemma~29; hence Props.~5, 8, Thm.~9 \\
-Lemma~22, $\diamondsuit=1$ (pp.~20--21) & \lean{lockGraph}, \lean{lemma27_bij}, \lean{lemma27_cost} (\file{Lemma27_LockingMarkers.lean}) & \file{Proposition9}: Prop.~8; the construction \lean{lockGraph} also \file{Proposition6}: Prop.~5 \\
-Lemma~22, $\diamondsuit=\mathrm{ed}$ & \lean{lemma27_bij_edit}, \lean{lemma27_cost_edit} (\file{Lemma27_LockingMarkersEdit.lean}) & \file{Proposition6}: Prop.~5 \\
-Lemma~29 (p.~28) & \lean{lemma35_rho_le}, \lean{lemma35_iso}, \lean{lemma35_dOne_eq_zero}, \lean{lemma35_one_le_dOTOne} (\file{Lemma35_Integrality.lean}) & \file{Proposition9}: Prop.~8 (Lemma~27); \file{Theorem10}: Thm.~9 \\
-cut norm, $C_\square$, $\zeta_Q$ & \file{CutNorm.lean} & \file{Proposition11}: Prop.~12; \file{Proposition12}: Prop.~10; \file{Theorem13}: Thm.~11; \file{Theorem22}: Thm.~18 \\
-$C_{\mathrm{ed}}$, $d_{\mathrm{ed}}$, $d^{\mathrm{OT}}_{\mathrm{ed}}$ & \file{EditDistance.lean} & \file{Proposition6}: Prop.~5; \file{Theorem7}: Thm.~6; \file{Theorem16}: Thm.~15 \\
-paths, cycles, Three-Partition (App.~G) & \file{PathsAndCycles.lean}, \file{ThreePartition.lean} & \file{Theorem16}--\file{Theorem18}: Thms.~15--17 \\
-attached leaves (App.~G) & \file{Leaves.lean} & \file{Theorem18}: Thm.~17; \file{Theorem22}: Thm.~18 \\
+Lemma~19 (p.~14) & \lean{lemma19}, \lean{abs_dotProduct_mulVec_le_opNorm}, \lean{exists_abs_dotProduct_mulVec_eq_opNorm} (\file{OperatorNorm.lean}) & \file{Theorem1}: Thm.~1; \file{Proposition13}: Prop.~13; \file{Theorem14}: Thm.~14 \\
+Eq.~(3), Birkhoff (p.~5) & \lean{exists_bij_subset_supp} (\file{Birkhoff.lean}) & \file{Theorem9}: Thm.~9 (reference bijection, Eq.~(18)); inside Common: Lemma~29 \\
+ & \lean{exists_birkhoff_decomposition}, \lean{exists_birkhoff_decomposition_pos}, \lean{isDS_of_decomposition} (\file{BirkhoffDecomposition.lean}) & \file{Theorem6}: Thm.~6; \file{Theorem14}: Thm.~14 \\
+Eq.~(7) (p.~14) & \lean{opNorm_Bpq_one_one_eq_costOne}, \lean{dOT_one_one_eq_dOTOne} (\file{MatrixNorms.lean}) & \file{Theorem16}: Thm.~16 \\
+Appendix~A, minima attained & \lean{exists_deltaOTPQ_eq}, \lean{exists_dOT_eq} (\file{Attainment.lean}) & \file{Theorem1}: Claim~20; \file{Theorem14}: Thm.~14 \\
+ & \lean{exists_dOTEdit_eq} (\file{EditDistance.lean}) & \file{Theorem15}: Thm.~15 \\
+normalisation, $\delta^{\mathrm{OT}}_{p\to q}=n^{-\kappa}d^{\mathrm{OT}}_{p\to q}$ (Sections~1--2) & \lean{deltaOTPQ_eq_dOT} (\file{OTDistances.lean}) & \file{Proposition13}: Prop.~13; \file{Theorem14}: Thm.~14 \\
+Observation~21 (p.~20) & \lean{observation21}, \lean{observation21_bij} (\file{Observation21_DegreeBound.lean}) & inside Common: Lemma~22 (1) and Lemma~29; hence Props.~5, 8, Thm.~9 \\
+Lemma~22, $\diamondsuit=1$ (pp.~20--21) & \lean{lockGraph}, \lean{lemma22_bij}, \lean{lemma22_cost} (\file{Lemma22_LockingMarkers.lean}) & \file{Proposition8}: Prop.~8; the construction \lean{lockGraph} also \file{Proposition5}: Prop.~5 \\
+Lemma~22, $\diamondsuit=\mathrm{ed}$ & \lean{lemma22_bij_edit}, \lean{lemma22_cost_edit} (\file{Lemma22_LockingMarkersEdit.lean}) & \file{Proposition5}: Prop.~5 \\
+Lemma~29 (p.~28) & \lean{lemma29_rho_le}, \lean{lemma29_iso}, \lean{lemma29_dOne_eq_zero}, \lean{lemma29_one_le_dOTOne} (\file{Lemma29_Integrality.lean}) & \file{Proposition8}: Prop.~8 (Lemma~27); \file{Theorem9}: Thm.~9 \\
+cut norm, $C_\square$, $\zeta_Q$ & \file{CutNorm.lean} & \file{Proposition12}: Prop.~12; \file{Proposition10}: Prop.~10; \file{Theorem11}: Thm.~11; \file{Theorem18}: Thm.~18 \\
+$C_{\mathrm{ed}}$, $d_{\mathrm{ed}}$, $d^{\mathrm{OT}}_{\mathrm{ed}}$ & \file{EditDistance.lean} & \file{Proposition5}: Prop.~5; \file{Theorem6}: Thm.~6; \file{Theorem15}: Thm.~15 \\
+paths, cycles, Three-Partition (Appendix~G) & \file{PathsAndCycles.lean}, \file{ThreePartition.lean} & \file{Theorem15}--\file{Theorem17}: Thms.~15--17 \\
+attached leaves (Appendix~G) & \file{Leaves.lean} & \file{Theorem17}: Thm.~17; \file{Theorem18}: Thm.~18 \\
 \end{longtable}
-(Folder names are abbreviated: \file{Theorem10} is \file{Theorem10_LocalEditUpperBound}, etc.)
+(Folder names are abbreviated: \file{Theorem9} is \file{Theorem9_LocalEditUpperBound}, etc.)
 
 \section{Module structure}
 \begin{center}
 \begin{tikzpicture}
   \node[shared] (basic) at (0,0) {\file{Basic}\\$A_G$, $D$, DS, $L_Q$, $C_1$, $d_1$};
   \node[shared] (opn)   at (6,0) {\file{OperatorNorm}\\$\ell^p$, $\|\cdot\|_{p\to q}$, Lemma 19};
-  \node[res] (obs)   at (-4.5,-1.8) {\file{Claim26_DegreeBound}\\Observation 21};
+  \node[res] (obs)   at (-4.5,-1.8) {\file{Observation21_DegreeBound}\\Observation 21};
   \node[res] (bir)   at (0,-1.8) {\file{Birkhoff}, \file{BirkhoffDecomposition}\\Eq.~(3)};
   \node[shared] (ds) at (-4.5,-3.6) {\file{DoublyStochastic}\\compactness, $Q(S,T)$};
-  \node[res] (lock)  at (-6.2,-5.4) {\file{Lemma27_LockingMarkers}\\Lemma 22, $\diamondsuit=1$};
-  \node[res] (int)   at (-1.6,-5.4) {\file{Lemma35_Integrality}\\Lemma 29};
+  \node[res] (lock)  at (-6.2,-5.4) {\file{Lemma22_LockingMarkers}\\Lemma 22, $\diamondsuit=1$};
+  \node[res] (int)   at (-1.6,-5.4) {\file{Lemma29_Integrality}\\Lemma 29};
   \node[shared] (al) at (6,-1.8) {\file{AlignedDistances}\\$\kappa$, $d_{p\to q}$, $\delta_{p\to q}$};
   \node[shared] (ot) at (6,-3.6) {\file{OTDistances}\\DS$^*$, $B$, $B_{p\to q}$, Eq.~(2)};
-  \node[res] (att)   at (6,-5.4) {\file{Attainment}\\App.~A (minima)};
+  \node[res] (att)   at (6,-5.4) {\file{Attainment}\\Appendix~A (minima)};
   \node[shared] (ed) at (-4.5,-7.2) {\file{EditDistance}\\$C_{\mathrm{ed}}$, $d_{\mathrm{ed}}$};
-  \node[res] (locke) at (-6.2,-9) {\file{Lemma27_LockingMarkersEdit}\\Lemma 22, $\diamondsuit=\mathrm{ed}$};
+  \node[res] (locke) at (-6.2,-9) {\file{Lemma22_LockingMarkersEdit}\\Lemma 22, $\diamondsuit=\mathrm{ed}$};
   \node[shared] (cut) at (2.6,-7.2) {\file{CutNorm}\\$\|\cdot\|_\square$, $C_\square$, $\zeta_Q$};
   \node[res] (mn) at (0,-9) {\file{MatrixNorms}\\Eq.~(7)};
   \node[shared] (gad) at (4.6,-9) {\file{PathsAndCycles}, \file{ThreePartition},\\\file{Leaves} (Section 4)};
@@ -137,7 +137,7 @@ Arrows point from a module to (some of) the modules it imports; \file{DoublyStoc
 \item \textbf{Eq.~(7)}: $\|B_{1\to1}(G,H,Q)\|_{1\to1}=\max_{\mathrm{supp}(Q)}L_Q$ for $Q\in\mathrm{DS}(V,W)$, the identity
   $C_1(Q)=\max_{(v,w)\in\mathrm{supp}(Q)}L_Q(v,w)$ of Section~2 (p.~5, l.~188--189). Eq.~(7) (p.~14, l.~500--502) is the same
   identity for couplings $Q^*\in\mathrm{DS}^*(V,W)$, inside the minimum defining $\delta^{\mathrm{OT}}_1$.
-\item \textbf{App.~A, minima attained} (pp.~14--15, l.~503--510): the paper's argument (compactness; for operator norms, restricting
+\item \textbf{Appendix~A, minima attained} (pp.~14--15, l.~503--510): the paper's argument (compactness; for operator norms, restricting
   $B_{p\to q}(G,H,Q_k)$ to the rows and columns indexed by $\mathrm{supp}(\lim Q_k)$ gives convergent matrices and does
   not increase the norm) is \lean{opNorm_restrict_le} and \lean{lowerSemicontinuous_opNorm_Bmat}.
 \item \textbf{Observation 21} (p.~20, l.~642--643; $L_Q(v,w)\ge|\deg_G(v)-\deg_H(w)|$): triangle inequality and the row/column sums of $Q$, as in the paper.
@@ -151,8 +151,8 @@ Arrows point from a module to (some of) the modules it imports; \file{DoublyStoc
 
 \section{How to check}
 \begin{verbatim}
-lake build GsimOT.Common.MatrixNorms GsimOT.Common.Attainment GsimOT.Common.Lemma27_LockingMarkersEdit \
-           GsimOT.Common.Lemma35_Integrality GsimOT.Common.BirkhoffDecomposition GsimOT.Common.Leaves
+lake build GsimOT.Common.MatrixNorms GsimOT.Common.Attainment GsimOT.Common.Lemma22_LockingMarkersEdit \
+           GsimOT.Common.Lemma29_Integrality GsimOT.Common.BirkhoffDecomposition GsimOT.Common.Leaves
 \end{verbatim}
 or \texttt{bash build.sh} for everything. The table of all correspondences is \file{Common_correspondence.pdf}.
 \end{document}

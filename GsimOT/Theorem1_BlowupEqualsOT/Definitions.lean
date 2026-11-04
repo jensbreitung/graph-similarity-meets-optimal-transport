@@ -2,9 +2,9 @@
 # Definitions for Theorem 1: blowups and optimal transport distances for `p → q`-norms
 
 Paper, Section 1 (paragraphs "The Blowup Construction" and "Fractional Alignments and Optimal
-Transport", pp. 1–3, l. 36–96; Eq. (1), Eq. (2)), Section 2 and App. A; `κ = κ_{p→q}` and
-`s(n) = n^κ` are in App. B (p. 15, l. 513–514). The paper marks blowups with a bomb symbol, written
-`•` here: the blowup `G^{•k}` and the blowup distance `δ^•`; the Lean names use `blowup`.
+Transport", pp. 1–3, l. 36–96; Eq. (1), Eq. (2)), Section 2 and Appendix A; `κ = κ_{p→q}` and
+`s(n) = n^κ` are in Appendix B (p. 15, l. 513–514). The paper marks blowups with a bomb symbol,
+written `•` here: the blowup `G^{•k}` and the blowup distance `δ^•`; the Lean names use `blowup`.
 
 Throughout, `G` is a graph on `V` (order `m = |V|`) and `H` a graph on `W` (order `n = |W|`).
 

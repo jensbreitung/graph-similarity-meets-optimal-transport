@@ -5,10 +5,10 @@ Paper, Section 1, Theorem 1 (p. 3, l. 92): For all `1 ≤ p, q ≤ ∞`, `δ^•
 (The paper marks blowups with a bomb symbol, written `•` here: `G^{•k}`, `δ^•`; the Lean names
 use `blowup`.)
 
-Proof (App. B, pp. 15–20, l. 511–638).  Eq. (8) (`deltaOTPQ_le_blowupSeq`, via Eqs. (9)–(11)):
+Proof (Appendix B, pp. 15–20, l. 511–638).  Eq. (8) (`deltaOTPQ_le_blowupSeq`, via Eqs. (9)–(11)):
 every term of the blowup sequence is at least `δ^OT`.  Eq. (12): for every `ε > 0` take a
 near-optimal coupling, approximate it by couplings with denominator `N = ℓmn`
-(`exists_integral_approx`, a strengthened Claim 20) and apply Eq. (15) (`eq16`, the bound for every
+(`exists_integral_approx`, a strengthened Claim 20) and apply Eq. (15) (`eq15_of_integral`, the bound for every
 `ℓ` with `N Q` integral).
 
 Formalisation note.  The paper uses that the limit defining `δ^•` exists (it cites [Gro25] for
@@ -59,7 +59,7 @@ theorem theorem1_tendsto {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) [Nonempty
   refine ⟨max L₀ 1, fun ℓ hℓ => ?_⟩
   have hℓ0 : 0 < ℓ := lt_of_lt_of_le one_pos (le_of_max_le_right hℓ)
   obtain ⟨Q', hQ', hint, hle⟩ := hL₀ ℓ (le_of_max_le_left hℓ)
-  have hup := eq16 (G := G) (H := H) hp hq ℓ hℓ0 hQ' hint
+  have hup := eq15_of_integral (G := G) (H := H) hp hq ℓ hℓ0 hQ' hint
   have hlow := deltaOTPQ_le_blowupSeq (G := G) (H := H) hp hq ℓ hℓ0
   rw [Real.dist_eq, abs_lt]
   constructor <;> linarith

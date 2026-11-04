@@ -1,7 +1,7 @@
 /-
 # Common definitions: the edit distance and its optimal-transport relaxation
 
-Paper, Section 1 (p. 1, l. 13–14 and footnote 1; Eq. (1), p. 2), Section 2 (p. 5) and App. A
+Paper, Section 1 (p. 1, l. 13–14 and footnote 1; Eq. (1), p. 2), Section 2 (p. 5) and Appendix A
 (pp. 14–15): the edit distance `d_ed`, i.e. the distance induced by the entrywise `1`-norm
 `‖·‖_ed = ‖·‖_(1)`, and its relaxation `d^OT_ed`. As in `GsimOT.Common.Basic`, `G` is a graph on
 `V` and `H` a graph on `W`, both finite.
@@ -104,7 +104,7 @@ lemma dOTEdit_le_dEdit [Nonempty (V ≃ W)] : dOTEdit G H ≤ dEdit G H :=
 
 /-! ### The infimum `d^OT_ed` is a minimum -/
 
-/-- The infimum `d^OT_ed(G, H)` is attained, as the paper's minimum (App. A, pp. 14–15,
+/-- The infimum `d^OT_ed(G, H)` is attained, as the paper's minimum (Appendix A, pp. 14–15,
 l. 503–510): some `Q ∈ DS(V, W)` has `C_ed(Q) = d^OT_ed(G, H)`. -/
 lemma exists_dOTEdit_eq [Nonempty (V ≃ W)] : ∃ Q, IsDS Q ∧ costEdit G H Q = dOTEdit G H := by
   have hne : {Q : V → W → ℝ | IsDS Q}.Nonempty :=

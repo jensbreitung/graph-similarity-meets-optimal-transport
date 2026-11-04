@@ -1,0 +1,88 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,landscape]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{array,booktabs,longtable}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\lean}[1]{\textcolor{blue!50!black}{\texttt{\detokenize{#1}}}}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{document}
+
+
+\begin{center}{\Large\bfseries Theorem 17: inapproximability for the operator $p$-norms}\\[4pt]
+
+{\small Correspondence between the paper and the Lean~4/Mathlib formalisation}\end{center}
+
+\noindent\textbf{Paper.} J.~Breitung, T.~Gervens, M.~Grohe. \emph{Graph Similarity Meets Optimal Transport} (file \texttt{Graph\_Similarity\_Meets\_Optimal\_Transport.pdf} in the repository). Statement, equation, page and line numbers refer to this PDF; \texttt{docs/NUMBERING.md} lists the Lean files and declarations of all numbered statements.\par\smallskip
+
+The folder \texttt{GsimOT/Theorem17\_OperatorNormHardness} formalises Eq.~(45), Lemma~53, Corollary~54 and the reduction of Theorem~17 (p.~12, proof in Appendix~G, pp.~54--57) from Three-Partition with Claims~55 and~56 and Eq.~(46). It gives Theorem~4\,(2). Shared notions come from \texttt{GsimOT/Common}; they are listed at the end.\par\paragraph{Checking.} Run \texttt{bash build.sh} in the repository root (see \texttt{README.md}). The script builds the library and runs \texttt{scripts/CheckAxioms.lean}, which must report only the standard axioms \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}: no \texttt{sorry} and no additional axioms.
+
+\paragraph{Main statement in Lean.} For an instance $(A,a_1,\dots,a_{3m})$ of Three-Partition, the graphs $G$ and $H$ arise from the
+union of paths on $a_i$ vertices and the union of $m$ cycles on $A$ vertices by attaching $M$ leaves to every
+vertex. Let $1\le p\le\infty$.
+\lean{GsimOT.Hardness.ThreePartition.dOT_le_one_of_isYes}: for a YES-instance with all $a_i\ge2$,
+$d^{\mathrm{OT}}_p(G,H)\le1$.
+\lean{GsimOT.Hardness.ThreePartition.lt_dOT_of_not_isYes}: for a NO-instance with all $a_i\ge3$, $0<\varepsilon\le1$
+and $M$ as in Eq.~(46), $d^{\mathrm{OT}}_p(G,H)>2^{b(p)}-\varepsilon$.
+
+\section*{Correspondence}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Eq.~(45) & 53 & The aggregated matrix $A^Q_{G,H}=A_G-QA_HQ^\top$, $A^Q_{G,H}(v,v')=\sum_{w,w'}Q(v,w)D(v,w,v',w')Q(v',w')$ & \lean{GsimOT.Hardness.aggMatrix}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Lemma53\_AggregatedMatrix.lean:88}} \newline \lean{GsimOT.Hardness.aggMatrix_isSymm}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Lemma53\_AggregatedMatrix.lean:91}} \\ \midrule
+{}Lemma~53 & 53--54 & $\|A^Q_{G,H}\|_p\le\|B_p(G,H,Q)\|_p$ for all $Q\in\mathrm{DS}(V,W)$ and $1\le p\le\infty$ & \lean{GsimOT.Hardness.opNorm_aggMatrix_le}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Lemma53\_AggregatedMatrix.lean:100}} \\ \midrule
+{}Corollary~54 & 54 & If a column of $A^Q_{G,H}$ has $k$ entries of absolute value $\ge\varepsilon$, then $\|A^Q_{G,H}\|_p\ge k^{b(p)}\varepsilon$, so $\|B_p(G,H,Q)\|_p\ge k^{b(p)}\varepsilon$ by Lemma~53; hence $\|B_p(G,H,Q)\|_p>c$ if $k>(c/\varepsilon)^{1/b(p)}$ & \lean{GsimOT.Hardness.rpow_bExp_mul_le_opNorm}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/OperatorPNorms.lean:147}} \newline \lean{GsimOT.Hardness.rpow_bExp_mul_le_opNorm_Bpq}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Corollary54\_ColumnBound.lean:41}} \newline \lean{GsimOT.Hardness.lt_opNorm_Bpq}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Corollary54\_ColumnBound.lean:47}} \\ \midrule
+{}Proof of Thm.~17: $G$, $H$ & 54 & Paths on $a_i$ vertices and $m$ cycles on $A$ vertices, with $M$ leaves attached to every vertex & \lean{GsimOT.Hardness.ThreePartition.graphG}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Theorem17.lean:103}} \newline \lean{GsimOT.Hardness.ThreePartition.graphH}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Theorem17.lean:107}} \\ \midrule
+{}Proof of Thm.~17: observation & 54 & If $xx'\in E(G)$, then $A^Q_{G,H}(x,x')=\sum_{yy'\notin E(H)}Q(x,y)Q(x',y')$ (and the analogue for non-edges) & \lean{GsimOT.Hardness.aggMatrix_of_adj}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Claim55\_LeafMass.lean:23}} \newline \lean{GsimOT.Hardness.aggMatrix_of_not_adj}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Claim55\_LeafMass.lean:29}} \\ \midrule
+{}Claim~55 & 55 & If $Q(v,L_H)\ge\eta>0$ for a base vertex $v$ and $M>2(4/\eta)^2+1$, then $\|B_p(G,H,Q)\|_p>2^{b(p)}$ & \lean{GsimOT.Hardness.claim55}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Claim55\_LeafMass.lean:71}} \\ \midrule
+{}Claim~56 & 55--56 & If $Q(v,w),Q(v,w')\ge\varepsilon>0$ for distinct base vertices $w,w'$ (with at most one common neighbour, which follows from $A\ge5$) and $M>2(2/\varepsilon)^2+1$, then $\|B_p(G,H,Q)\|_p>2^{b(p)}$ & \lean{GsimOT.Hardness.claim56}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Claim56\_SplitMass.lean:32}} \\ \midrule
+{}Theorem~17 (YES) & 12, 55 & YES-instances: $d^{\mathrm{OT}}_p(G,H)\le1$ for all $1\le p\le\infty$ & \lean{GsimOT.Hardness.ThreePartition.dOT_le_one_of_isYes}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Theorem17.lean:113}} \newline \lean{GsimOT.Hardness.opNorm_Bpq_permMat_le_one}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Theorem17.lean:56}} \\ \midrule
+{}Theorem~17 (NO), Eq.~(46) & 12, 56--57 & NO-instances with all $a_i\ge3$: $d^{\mathrm{OT}}_p(G,H)>2^{b(p)}-\varepsilon$ for $0<\varepsilon\le1$ and $M$ as in Eq.~(46) & \lean{GsimOT.Hardness.ThreePartition.lt_dOT_of_not_isYes}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Theorem17.lean:168}} \\ \midrule
+{}Theorem~17 (w.l.o.g.\ $a_i\ge3$) & 54 & Both bounds after adding $3$ to each $a_i$ and $9$ to $A$ & \lean{GsimOT.Hardness.ThreePartition.dOT_shift_gap}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Theorem17.lean:345}} \\ \midrule
+{}Theorem~4\,(2) & 4 & Hardness of approximating $d^{\mathrm{OT}}_p$ within $2^{b(p)}-\varepsilon$ (complexity side not formalised) & \lean{GsimOT.Hardness.ThreePartition.dOT_shift_gap}\newline{\scriptsize\texttt{Theorem17\_OperatorNormHardness/Theorem17.lean:345}} \\
+\end{longtable}
+
+\section*{Shared notions used (from \texttt{GsimOT/Common})}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\centering\arraybackslash}p{1.1cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{10.2cm}}
+\toprule
+\textbf{Paper} & \textbf{Page} & \textbf{Statement} & \textbf{Lean declaration(s) and location} \\
+\midrule\endhead
+\bottomrule\endfoot
+{}Appendix~A & 14 & $\ell^p$ norm $\|x\|_p$ ($1\le p\le\infty$) & \lean{GsimOT.lpNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:25}} \newline \lean{GsimOT.lpNorm_eq_sum}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:57}} \newline \lean{GsimOT.lpNorm_top}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:62}} \\ \midrule
+{}Appendix~A & 14 & Operator norm $\|A\|_{p\to q}=\max_{\|x\|_p=1}\|Ax\|_q$ (in Lean the supremum over the unit ball $\|x\|_p\le1$, the same value for nonempty index sets) & \lean{GsimOT.opNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:28}} \newline \lean{GsimOT.lpNorm_mulVec_le}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:128}} \newline \lean{GsimOT.opNorm_le_of_bound}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:135}} \newline \lean{GsimOT.exists_lpNorm_mulVec_eq_opNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:142}} \\ \midrule
+{}Appendix~A & 14 & Hölder conjugate $q^*$ with $1/q^*=1-1/q$ & \lean{GsimOT.one_le_conjExponent}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:33}} \newline \lean{GsimOT.inv_conjExponent_toReal}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:38}} \\ \midrule
+{}Appendix~A & 14 & Hölder's inequality $|y^\top z|\le\|y\|_{q^*}\|z\|_q$ and its equality case & \lean{GsimOT.abs_dotProduct_le_lpNorm_mul}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:188}} \newline \lean{GsimOT.exists_dotProduct_eq_lpNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:224}} \\ \midrule
+{}Lemma~19 & 14 & $\|A\|_{p\to q}=\max_{\|y\|_{q^*}=1,\|x\|_p=1}|y^\top Ax|$ (in Lean over the unit balls) & \lean{GsimOT.lemma19}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:290}} \newline \lean{GsimOT.abs_dotProduct_mulVec_le_opNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:267}} \newline \lean{GsimOT.exists_abs_dotProduct_mulVec_eq_opNorm}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:281}} \\ \midrule
+{}-- & -- & Triangle inequality, $\|A\|_{p\to q}\le\sum_{i,j}|A_{ij}|$ and continuity of $\|\cdot\|_{p\to q}$ & \lean{GsimOT.opNorm_add_le}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:169}} \newline \lean{GsimOT.opNorm_le_sum_abs}\newline{\scriptsize\texttt{Common/OperatorNorm.lean:158}} \newline \lean{GsimOT.abs_opNorm_sub_le}\newline{\scriptsize\texttt{Common/Attainment.lean:78}} \newline \lean{GsimOT.continuous_opNorm}\newline{\scriptsize\texttt{Common/Attainment.lean:91}} \\ \midrule
+{}Appendix~A & 15 & Restricting to rows and columns ``cannot increase the operator norm'' & \lean{GsimOT.lpNorm_le_of_abs_le}\newline{\scriptsize\texttt{Common/Attainment.lean:39}} \newline \lean{GsimOT.opNorm_restrict_le}\newline{\scriptsize\texttt{Common/Attainment.lean:53}} \\ \midrule
+{}Section~1, Appendix~A & 2--3, 14 & Couplings $\mathrm{DS}^*(V,W)$; $x^a$ with $0^a:=0$ (convention $0^0=0$) & \lean{GsimOT.IsCoupling}\newline{\scriptsize\texttt{Common/OTDistances.lean:36}} \newline \lean{GsimOT.powZ}\newline{\scriptsize\texttt{Common/OTDistances.lean:42}} \\ \midrule
+{}Section~1, Eqs.~(1), (2) & 2--3 & $B(G,H,Q)$ and $B_{p\to q}(G,H,Q)$ & \lean{GsimOT.B}\newline{\scriptsize\texttt{Common/OTDistances.lean:58}} \newline \lean{GsimOT.Bmat}\newline{\scriptsize\texttt{Common/OTDistances.lean:70}} \\ \midrule
+{}Eq.~(2), Section~2 & 3, 5 & $\delta^{\mathrm{OT}}_{p\to q}$ (couplings) and $d^{\mathrm{OT}}_{p\to q}$ ($\mathrm{DS}(V,W)$), both infima & \lean{GsimOT.deltaOTPQ}\newline{\scriptsize\texttt{Common/OTDistances.lean:74}} \newline \lean{GsimOT.dOT}\newline{\scriptsize\texttt{Common/OTDistances.lean:79}} \\ \midrule
+{}Sections~1--2, Appendices~A--B & 3, 5, 14--15 & $\delta^{\mathrm{OT}}_{p\to q}=n^{-\kappa_{p\to q}}d^{\mathrm{OT}}_{p\to q}$ for graphs of the same order $n$ ($d^{\mathrm{OT}}_{p\to q}$ is the unnormalised version, $s(n)=n^{\kappa_{p\to q}}$), via $\mathrm{DS}(V,W)=n\,\mathrm{DS}^*(V,W)$ and the homogeneity of $B_{p\to q}$ and of $\|\cdot\|_{p\to q}$ & \lean{GsimOT.deltaOTPQ_eq_dOT}\newline{\scriptsize\texttt{Common/OTDistances.lean:131}} \newline \lean{GsimOT.Bmat_smul}\newline{\scriptsize\texttt{Common/OTDistances.lean:117}} \newline \lean{GsimOT.opNorm_smul_of_nonneg}\newline{\scriptsize\texttt{Common/OTDistances.lean:94}} \\ \midrule
+{}Appendix~A & 14--15 & ``All minima \dots\ are attained'' for $\delta^{\mathrm{OT}}_{p\to q}$ and $d^{\mathrm{OT}}_{p\to q}$: lower semicontinuity of $Q\mapsto\|B_{p\to q}(G,H,Q)\|$, compactness & \lean{GsimOT.lowerSemicontinuous_opNorm_Bmat}\newline{\scriptsize\texttt{Common/Attainment.lean:136}} \newline \lean{GsimOT.isCompact_setOf_isCoupling}\newline{\scriptsize\texttt{Common/Attainment.lean:168}} \newline \lean{GsimOT.exists_deltaOTPQ_eq}\newline{\scriptsize\texttt{Common/Attainment.lean:199}} \newline \lean{GsimOT.exists_dOT_eq}\newline{\scriptsize\texttt{Common/Attainment.lean:223}} \\ \midrule
+{}Proofs of Thms.~15--17 & 50--57 & Disjoint unions of paths ($F_1$) and of cycles; their degrees and edge counts & \lean{GsimOT.Hardness.pathUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:56}} \newline \lean{GsimOT.Hardness.cycleUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:226}} \newline \lean{GsimOT.Hardness.sum_adj_pathUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:134}} \newline \lean{GsimOT.Hardness.deg_cycleUnion}\newline{\scriptsize\texttt{Common/PathsAndCycles.lean:238}} \\ \midrule
+{}Proof of Thm.~15 & 50 & Three-Partition instances $(A,a_1,\dots,a_{3m})$; the step of adding $3$ to each $a_i$ and $9$ to $A$ & \lean{GsimOT.Hardness.ThreePartition}\newline{\scriptsize\texttt{Common/ThreePartition.lean:26}} \newline \lean{GsimOT.Hardness.ThreePartition.IsYes}\newline{\scriptsize\texttt{Common/ThreePartition.lean:39}} \newline \lean{GsimOT.Hardness.ThreePartition.shift}\newline{\scriptsize\texttt{Common/ThreePartition.lean:206}} \newline \lean{GsimOT.Hardness.ThreePartition.shift_isYes_iff}\newline{\scriptsize\texttt{Common/ThreePartition.lean:223}} \\ \midrule
+{}Proofs of Thms.~15--17 & 50--56 & A solution gives a bijection mapping each path into one component; conversely a $Q\in\mathrm{DS}$ mapping every path into a single component gives a solution (counting mass) & \lean{GsimOT.Hardness.ThreePartition.layoutEquiv}\newline{\scriptsize\texttt{Common/ThreePartition.lean:137}} \newline \lean{GsimOT.Hardness.ThreePartition.isYes_of_isDS}\newline{\scriptsize\texttt{Common/ThreePartition.lean:168}} \\ \midrule
+{}Proofs of Thms.~17, 18 & 54, 57 & Attaching $\ell(b)$ leaves to every vertex $b$ of a base graph & \lean{GsimOT.Hardness.addLeaves}\newline{\scriptsize\texttt{Common/Leaves.lean:33}} \\
+\end{longtable}
+
+\section*{Notes on the formalisation}
+
+\begin{enumerate}[leftmargin=*]
+\item Only the correctness of the reduction is formalised: for the constructed graphs, YES-instances have a small and NO-instances a large distance. The complexity side (polynomial running time, NP-hardness of Three-Partition, H\aa{}stad's bound for MaxCut) is not formalised. The results of Section~4 and their shared gadgets are in the namespace \lean{GsimOT.Hardness}.
+\item Theorem~17 is proved with the bound $2^{b(p)}-\varepsilon$ of its statement. The paper fixes $0<\varepsilon^*<\sqrt2-1$ (p.~54, l.~1728), so that $2^{b(p)}-\varepsilon^*>1$ (l.~1729--1730); the Lean statement holds for all $0<\varepsilon\le1$, which includes this range.
+\item Lemma~53 is proved without the duality of Lemma~19 (Appendix~A): $A^Qx$ is the $Q$-average of $B_p\tilde x$ with $\tilde x(v,w)=Q(v,w)^{1/p}x(v)$ (the paper's $\tilde x$), and the averaging is an $\ell^p$ contraction by Jensen. Corollary~54 uses the test vectors $e_v$ and a normalised sign vector on the column support instead of $\|A\|_p=\|A^\top\|_{p^*}$.
+\item YES-instances: the paper observes that $A_H-A^\pi_G$ is the adjacency matrix of $3m$ disjoint edges, so $\|A^\pi_G-A_H\|_p=1$ (p.~55, l.~1736--1737); the formalisation bounds it by $1$ by the Schur test (all absolute row and column sums are at most $1$).
+\item Claim~56 takes $|N_H(w)\cap N_H(w')|\le1$ as a hypothesis; it is discharged with $A\ge7$ in the proof of the theorem.
+\item Remark~62 (other operator $p\to q$-norms, p.~62) is not formalised.
+\end{enumerate}
+
+\end{document}

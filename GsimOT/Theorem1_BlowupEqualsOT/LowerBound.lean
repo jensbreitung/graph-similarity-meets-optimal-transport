@@ -1,8 +1,8 @@
 /-
 # The lower bound `δ^• ≥ δ^OT` (Eqs. (8)–(11))
 
-Paper, App. B, first part of the proof of Theorem 1 (pp. 15–17, l. 516–567).
-The theorem `eq13` is Eq. (11).
+Paper, Appendix B, first part of the proof of Theorem 1 (pp. 15–17, l. 516–567).
+The theorem `eq11` is Eq. (11).
 -/
 import GsimOT.Theorem1_BlowupEqualsOT.BlockNorms
 import GsimOT.Theorem1_BlowupEqualsOT.Definitions
@@ -124,7 +124,7 @@ lemma alignedDiff_blowup_eq_disc {ℓ : ℕ}
 /-- **Eq. (11)** (p. 15, l. 535) for nonempty `V`, `W`. For every bijection `π` between the
 blowups `G^{•nℓ}` and `H^{•mℓ}` the coupling `Q(v,w) = |J(v,w)|/N` satisfies
 `‖M_π‖_{p→q} ≥ N^κ ‖B_{p→q}(G, H, Q)‖_{p→q}`, where `N = ℓmn`. -/
-theorem eq13 [Nonempty V] [Nonempty W] {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q)
+theorem eq11 [Nonempty V] [Nonempty W] {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q)
     (ℓ : ℕ) (hℓ : 0 < ℓ)
     (π : V × Fin (Fintype.card W * ℓ) ≃ W × Fin (Fintype.card V * ℓ)) :
     ∃ Q, IsCoupling Q ∧
@@ -223,7 +223,7 @@ theorem deltaOTPQ_le_blowupSeq {p q : ENNReal} (hp : 1 ≤ p) (hq : 1 ≤ q) [No
   have h11 : N ^ kappa p q * deltaOTPQ p q G H ≤
       distPQ p q (blowup G (Fintype.card W * ℓ)) (blowup H (Fintype.card V * ℓ)) := by
     refine le_ciInf fun π => ?_
-    obtain ⟨Q, hQ, hle⟩ := eq13 (G := G) (H := H) hp hq ℓ hℓ π
+    obtain ⟨Q, hQ, hle⟩ := eq11 (G := G) (H := H) hp hq ℓ hℓ π
     rw [← hNdef] at hle
     refine le_trans ?_ hle
     exact mul_le_mul_of_nonneg_left (ciInf_le hbdd ⟨Q, hQ⟩) (Real.rpow_nonneg hN.le _)

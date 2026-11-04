@@ -3,7 +3,7 @@ import GsimOT.Common.MatrixNorms
 /-!
 # Disjoint unions of paths and cycles
 
-The reductions of Section 4 (proofs in App. G, pp. 50–57) compare a disjoint union of paths `F₁`
+The reductions of Section 4 (proofs in Appendix G, pp. 50–57) compare a disjoint union of paths `F₁`
 with a disjoint union of paths (Theorem 15) or cycles (Theorems 16 and 17). This file defines
 these graphs and computes their degrees and edge counts.
 

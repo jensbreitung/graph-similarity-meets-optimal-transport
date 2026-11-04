@@ -3,9 +3,9 @@ import GsimOT.Common.PathsAndCycles
 /-!
 # Three-Partition
 
-The NP-hard variant of Three-Partition [GJ79] used in the proofs of Theorems 15–17 (App. G, p. 50,
-l. 1577–1580): given `A` and `a₁, …, a_{3m}` with `∑ aᵢ = mA` and `A/4 < aᵢ < A/2`, decide whether
-the `aᵢ` can be partitioned into `m` triples of sum `A` each.
+The NP-hard variant of Three-Partition [GJ79] used in the proofs of Theorems 15–17 (Appendix G,
+p. 50, l. 1577–1580): given `A` and `a₁, …, a_{3m}` with `∑ aᵢ = mA` and `A/4 < aᵢ < A/2`, decide
+whether the `aᵢ` can be partitioned into `m` triples of sum `A` each.
 
 The reductions compare the paths `F₁ = pathUnion I.a` (path `i` has `aᵢ` vertices) with `m` paths
 or cycles on `A` vertices each. This file provides the two directions shared by all reductions:

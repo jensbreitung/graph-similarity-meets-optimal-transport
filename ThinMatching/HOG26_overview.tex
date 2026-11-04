@@ -8,7 +8,7 @@ Factors}, arXiv:2606.01330v2 (2026) [HOG26]. Statement, section, algorithm and e
 to [HOG26]; its numbering is independent of the main paper. The main paper (J.~Breitung, T.~Gervens,
 M.~Grohe, \emph{Graph Similarity Meets Optimal Transport},
 \file{Graph_Similarity_Meets_Optimal_Transport.pdf}) cites [HOG26, Theorem~1.4] as its
-\textbf{Theorem~35} (p.~32, l.~1021--1022, App.~E.2.1) and uses it, through Theorem~38, for the
+\textbf{Theorem~35} (p.~32, l.~1021--1022, Appendix~E.2.1) and uses it, through Theorem~38, for the
 multiplicative upper bound of Theorem~11 (cut distance). This document is for a reviewer who wants to
 check that Theorem~35 is proved in Lean, conditionally on the tree-cut sparsifier theorem of
 R\"acke and Shah [RS14]. The line-by-line correspondence table is \file{ThinMatching/HOG26_correspondence.pdf}.
@@ -16,7 +16,7 @@ R\"acke and Shah [RS14]. The line-by-line correspondence table is \file{ThinMatc
 
 \noindent\textbf{Name clashes.} The Lean names follow [HOG26]: \lean{ThinMatching.Lemma36} is
 [HOG26, Lemma~3.6] (not Lemma~36 of the main paper), \lean{ThinMatching.theorem13_support} is
-[HOG26, Theorem~1.3] (not the main paper's Theorem~11, whose Lean name is \lean{GsimOT.theorem13_of_rackeShah}),
+[HOG26, Theorem~1.3] (not the main paper's Theorem~11, whose Lean name is \lean{GsimOT.theorem11_of_rackeShah}),
 and \lean{ThinMatching.theorem14_bip} is [HOG26, Theorem~1.4].
 
 \section{Statements}
@@ -29,7 +29,7 @@ $\alpha$-thin with respect to $Q\in\mathrm{DS}(n)$ if
 \emph{Theorem~35} ([HOG26, Theorem~1.4]): there is an absolute constant $C_{\mathrm{thin}}>0$ such that every
 $Q\in\mathrm{DS}(n)$ admits an $\alpha$-thin permutation matrix with $\alpha\le C_{\mathrm{thin}}\ln(2n)\ln\ln(4n)$.
 
-In Lean (main library, \file{GsimOT/Theorem13_CutUpperBound/Definitions.lean}) this is the proposition
+In Lean (main library, \file{GsimOT/Theorem11_CutUpperBound/Definitions.lean}) this is the proposition
 \lean{GsimOT.ThinPermutationTheorem}, with thinness \lean{GsimOT.IsThin}: for $\pi:V\simeq W$ and all
 $U_V\subseteq V$, $U_W\subseteq W$,
 \[ \#\{v : \neg(v\in U_V\leftrightarrow\pi(v)\in U_W)\}\le a\sum_{v,w}[\neg(v\in U_V\leftrightarrow w\in U_W)]\,Q_{vw}, \]
@@ -91,7 +91,7 @@ of the library inconsistent, and \texttt{\#print axioms} shows only \texttt{prop
 \noindent Paths are relative to \file{ThinMatching/} unless stated otherwise.
 \begin{longtable}{>{\raggedright\arraybackslash}p{5.8cm} >{\raggedright\arraybackslash}p{9.8cm}}
 \toprule \textbf{File} & \textbf{Content} \\ \midrule\endhead \bottomrule\endfoot
-\file{Basic.lean} & weighted graphs, cuts, perfect matchings (fixed-point-free involutions), thinness, $\mathrm{PM}(G)$; bipartite versions (Secs.~1, 2) \\
+\file{Basic.lean} & weighted graphs, cuts, perfect matchings (fixed-point-free involutions), thinness, $\mathrm{PM}(G)$; bipartite versions (Sections~1, 2) \\
 \file{TreeSparsifier.lean} & rooted trees, subtrees, tree cuts, $\lambda_T$, Definition~2.1, hypothesis \lean{RackeShahTheorem} (Theorem~2.2) \\
 \file{Load.lean} & loads and discrepancies (Definitions~4.1, 4.2, 4.4) \\
 \file{LoadVsCut.lean} & Proposition~4.3 (\lean{prop43}) and the charging lemma \lean{exists_cut_edge} \\
@@ -105,14 +105,14 @@ of the library inconsistent, and \texttt{\#print axioms} shows only \texttt{prop
 \file{SupportConstrained/}\newline\file{TutteWitness.lean} & Tutte witnesses (Definition~3.3, Theorem~2.4 via Mathlib's \lean{SimpleGraph.tutte}), Lemma~3.4, Eq.~(1) \\
 \file{SupportConstrained/}\newline\file{Lemma35.lean} & Lemma~3.5 \\
 \file{SupportConstrained.lean} & Theorem~1.3 (\lean{theorem13_support}), Algorithm~1 \\
-\file{GsimOT/Theorem13_CutUpperBound/}\newline\file{FromThinMatching.lean} & bridge (main library): Theorem~35 and Theorem~11 of the main paper assuming only [RS14] \\
+\file{GsimOT/Theorem11_CutUpperBound/}\newline\file{FromThinMatching.lean} & bridge (main library): Theorem~35 and Theorem~11 of the main paper assuming only [RS14] \\
 \end{longtable}
 
 \section{Proof layout}
 \subsection{Theorem 1.4 and the bridge to the main paper}
 \begin{center}
 \begin{tikzpicture}[x=1cm,y=1cm, leaf/.style={res, font=\scriptsize}]
-  \node[shared] (t11) at (0,0) {Main paper, Theorem 11\\\lean{GsimOT.theorem13_of_rackeShah}};
+  \node[shared] (t11) at (0,0) {Main paper, Theorem 11\\\lean{GsimOT.theorem11_of_rackeShah}};
   \node[main] (t35) at (0,-1.5) {Main paper, Theorem 35\\\lean{GsimOT.thinPermutationTheorem_of_rackeShah}};
   \node[main] (t14b) at (-1.6,-3.2) {Theorem 1.4 (bipartite)\\\lean{theorem14_bip}};
   \node[res] (t14g) at (4.2,-3.2) {Theorem 1.4 (general)\\\lean{theorem14}};
@@ -134,8 +134,8 @@ of the library inconsistent, and \texttt{\#print axioms} shows only \texttt{prop
   \draw[dep] (l45) -- (odd); \draw[dep] (l46) -- (lam);
 \end{tikzpicture}
 \end{center}
-\noindent Theorem~11 of the main paper also needs the rest of \file{GsimOT/Theorem13_CutUpperBound}
-(Lemmas~36, 37, Theorems~38, 39, \dots{} of the main paper, \lean{GsimOT.theorem13_of_thin}); see the overview of that folder.
+\noindent Theorem~11 of the main paper also needs the rest of \file{GsimOT/Theorem11_CutUpperBound}
+(Lemmas~36, 37, Theorems~38, 39, \dots{} of the main paper, \lean{GsimOT.theorem11_of_thin}); see the overview of that folder.
 
 \subsection{Theorem 1.3 and Lemma 1.2}
 \begin{center}
@@ -162,7 +162,7 @@ outside this part (Mathlib's Tutte theorem; the main paper's Theorem~11).
 \section{The proof of Theorem 1.4 step by step}
 The proof of [HOG26, Section~4] has three ingredients and a short assembly.
 
-\paragraph{Step 0: trees and tree-cut sparsifiers (Sec.~2, Definition~2.1, Theorem~2.2).}
+\paragraph{Step 0: trees and tree-cut sparsifiers (Section~2, Definition~2.1, Theorem~2.2).}
 A weighted tree with Steiner nodes is a \lean{RootedTree N} (parent function, every vertex reaches the root),
 edge weights $y:N\to\mathbb R$ (edge $\{v,\mathrm{parent}(v)\}$ has weight $y_v$) and an embedding
 $e:V\hookrightarrow N$. \lean{treeCutWeight} is $y(\delta_T(\mathcal S))$, \lean{lambdaT} is
@@ -224,7 +224,7 @@ avoiding both events (\lean{exists_not_of_prob_lt_one}) gives $M\subseteq Y\subs
 several blocks. Constant: $C=K(\max(c,4)+2)$.
 
 \section{The bridge to the main paper}
-\file{GsimOT/Theorem13_CutUpperBound/FromThinMatching.lean} (main library; it imports
+\file{GsimOT/Theorem11_CutUpperBound/FromThinMatching.lean} (main library; it imports
 \file{ThinMatching.Theorem14}):
 \begin{itemize}
 \item \lean{GsimOT.thinPermutationTheorem_of_rackeShah} (hRS : \lean{ThinMatching.RackeShahTheorem}) :
@@ -233,9 +233,9 @@ several blocks. Constant: $C=K(\max(c,4)+2)$.
   in the sense of \lean{GsimOT.IsThin} after unfolding \lean{bipCrossCount}, \lean{bipCutWeight} (a \texttt{simpa}).
   Hence Theorem~35 holds with $C_{\mathrm{thin}}=6\,C_{\mathrm{RS}}$, where $C_{\mathrm{RS}}$ is the constant of
   \lean{RackeShahTheorem}.
-\item \lean{GsimOT.theorem13_of_rackeShah}, \lean{GsimOT.theorem13_power_of_rackeShah}: Theorem~11 of the main
+\item \lean{GsimOT.theorem11_of_rackeShah}, \lean{GsimOT.theorem11_power_of_rackeShah}: Theorem~11 of the main
   paper (both bounds) assuming only [RS14], by plugging the above into
-  \lean{GsimOT.theorem13_of_thin} and \lean{GsimOT.theorem13_power_of_thin}.
+  \lean{GsimOT.theorem11_of_thin} and \lean{GsimOT.theorem11_power_of_thin}.
 \end{itemize}
 
 \section{Differences from [HOG26]}
@@ -264,16 +264,16 @@ No error in [HOG26] was found in the formalised parts.
 From the repository root (with \texttt{elan} on the \texttt{PATH}):
 \begin{itemize}
 \item \texttt{lake build ThinMatching} builds the library (it imports only Mathlib);
-  \texttt{lake build GsimOT.Theorem13\_CutUpperBound.FromThinMatching} builds the bridge.
+  \texttt{lake build GsimOT.Theorem11\_CutUpperBound.FromThinMatching} builds the bridge.
 \item \texttt{bash build.sh} builds everything, greps for \texttt{sorry}/\texttt{admit}/\texttt{axiom}, and runs
   \file{scripts/CheckAxioms.lean}, which contains
   \texttt{\#print axioms} for \lean{ThinMatching.theorem14_bip}, \lean{ThinMatching.theorem14},
   \lean{ThinMatching.theorem13_support}, \lean{ThinMatching.lemma12}, the lemmas of Sections~3--4 and
-  \lean{GsimOT.thinPermutationTheorem_of_rackeShah}, \lean{GsimOT.theorem13_of_rackeShah}. Each must report
+  \lean{GsimOT.thinPermutationTheorem_of_rackeShah}, \lean{GsimOT.theorem11_of_rackeShah}. Each must report
   only \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}.
 \item To review the statements: read the definitions in \file{Basic.lean} and \file{TreeSparsifier.lean}, the
   hypothesis \lean{Lemma36} in \file{SupportConstrained/Sampling.lean}, the main theorems in
   \file{Theorem14.lean}, \file{SupportConstrained.lean}, \file{LowerBound.lean}, and the bridge with
-  \lean{GsimOT.IsThin}, \lean{GsimOT.ThinPermutationTheorem} in \file{GsimOT/Theorem13_CutUpperBound/Definitions.lean}.
+  \lean{GsimOT.IsThin}, \lean{GsimOT.ThinPermutationTheorem} in \file{GsimOT/Theorem11_CutUpperBound/Definitions.lean}.
 \end{itemize}
 \end{document}
